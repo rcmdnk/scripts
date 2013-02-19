@@ -42,7 +42,7 @@ for f in *.sh;do
   if [ "`ls $instdir/$name 2>/dev/null`" != "" ];then
     if [ "$backup" != "" ];then
       echo "$name exists, make backup ${name}.$backup"
-      mv $instdir/$name $HOME/${name}.$backup
+      mv $instdir/$name $instdir/${name}.$backup
     else
       echo "$name exists, replace it"
       rm $instdir/$name
