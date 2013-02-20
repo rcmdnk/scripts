@@ -18,15 +18,15 @@
 mailto=""
 if [ -f ~/.mailto ];then
   mailto=`grep MAILTO ~/.mailto|cut -d= -f2`
+  mailto=`eval echo $mailto`
 fi
 
 crontmp=cron.$PPID
 $@ >$crontmp 2>&1
 if [ -s $crontmp ];then
   node=`hostname`
-  sed -i'' -e "1s/^/working at $HOSTNAME\n\n/" $crontmp
-  if [ "$MAILTO" != "" ];then
-    cat $crontmp | mail -s "$@" $MAILTO
+  if [ "$mailto" != "" ];then
+    cat $crontmp | mail -s "$@ at $HOSTNAME CRONINFORMATION" $mailto
   else
     cat $crontmp
   fi
