@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HELP="  usage: calc num1 (add, sub, mul or div) num2
-  or   : calc rem to num2 (num1%num2)
+  or   : calc num1 rem num2 (num1%num2)
   or   : calc num1 sqrt (root num1)
   or   : calc num1 sqr (num1*num1)
   or   : calc num1 comp num2 (retun->num1>num2:1,num1=num2:0,num1<num2:-1)
