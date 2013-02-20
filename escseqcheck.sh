@@ -8,13 +8,28 @@ for i in {0..64};do
 done
 echo
 
-### escape sequences for colors
+### escape sequences
+# \e == \033 :ASCII ESC
+# \a == \007 :ASCII BEL
+# \e\\ (ESC+backslash): string terminator (can be used instead of \a in below)
+#
+#
+## xterm
+# \e]0;{hoge}\a : Set icon name and window title
+# \e]1;{hoge}\a : Set icon name
+# \e]2;{hoge}\a : Set window title
+#
+## screen
+# \ek{hoge}\a : Set screen's window title
+# \eP\e]0;{hoge}\a\e\\ : send to external directly
+#
+## color/style changes
+# \e[{color/style}m]
 # place  | 16 colors | 256 colors
 # fore   | \e[3[0-7]m  | \e[38;5;[0-255]m
 # back   | \e[4[0-7]m  | \e[48;5;[0-255]m
-# (\e == \033)
-
-### color change examples
+#
+## color change examples
 # 16 colors ) bright red: \e[1;31mhoge\e[m
 # 256 colors ) red: \e[38;5;001mhoge\e[m
 
