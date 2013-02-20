@@ -1,13 +1,12 @@
 #!/bin/bash
-echo -en '\033k'
-sdir=$(pwd | sed s#${HOME}#~#)
-#dirlen=$(echo $sdir | wc -c)
-dirlen=`echo ${#sdir}`
-if [ $dirlen -gt 19 ] ; then
-  #ssdir="$(echo $sdir | cut -b 1-9)~$(echo $sdir | cut -b $(($dirlen-8))-$dirlen)"
-  ssdir="~$(echo $sdir | cut -b $(($dirlen-19))-$dirlen)"
-else
-  ssdir="$(echo $sdir)"
+maxlen=15
+dir=$'\ek'
+dir=`pwd | sed "s|${HOME}|~|"`
+if [ ${#dir} -gt $maxlen ];then
+  dir=!`echo $dir | cut -b $((${#dir}-$maxlen+2))-${#dir}`
 fi
-echo $ssdir
-echo -en '\033\\'
+if [[ "$TERM" =~ "screen" ]]; then
+  printf "\ek$dir\e\\"
+else
+  printf "$dir\n"
+fi

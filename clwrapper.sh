@@ -1,4 +1,4 @@
-CLCHECK=$HOME/usr/share/scripts/clcheck.sh
+CLCHECK=$HOME/usr/bin/clcheck
 if [ "$LASTDIRFILE" = "" ];then
   LASTDIRFILE=$HOME/.lastDir
 fi
