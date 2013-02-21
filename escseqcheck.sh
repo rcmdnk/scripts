@@ -11,7 +11,7 @@ echo
 ### escape sequences
 # \e == \033 :ASCII ESC
 # \a == \007 :ASCII BEL
-# \e\\ (ESC+backslash): string terminator (can be used instead of \a in below)
+# \e\\ (ESC+backslash): string terminator
 #
 #
 ## xterm
