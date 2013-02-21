@@ -21,7 +21,7 @@ echo
 #
 ## screen
 # \ek{hoge}\a : Set screen's window title
-# \eP\e]0;{hoge}\a\e\\ : send to external directly
+# \eP\e]0;{hoge}\a\e\\ (\eP{}\e\\) send to external
 #
 ## color/style changes
 # \e[{color/style}m]

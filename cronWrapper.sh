@@ -12,7 +12,7 @@
 #  # weekly
 #  10 1 * * 0 cronWrapper echo weekly at 1:10 Sunday!
 #  # daily
-#  00 15 * * * cronWrapper.sh echo daily at 15:00!
+#  00 15 * * * cronWrapper echo daily at 15:00!
 
 # mail setting
 mailto=""
@@ -25,8 +25,10 @@ crontmp=cron.$PPID
 $@ >$crontmp 2>&1
 if [ -s $crontmp ];then
   node=`hostname`
+  exe=`basename $1`
+  shift
   if [ "$mailto" != "" ];then
-    cat $crontmp | mail -s "$@ at $HOSTNAME CRONINFORMATION" $mailto
+    cat $crontmp | mail -s "$exe $@ at $HOSTNAME CRONINFORMATION" $mailto
   else
     cat $crontmp
   fi
