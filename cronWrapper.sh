@@ -21,7 +21,7 @@ if [ -f ~/.mailto ];then
   mailto=`eval echo $mailto`
 fi
 
-crontmp=cron.$PPID
+crontmp=.cron.$HOSTNAME.$PPID
 $@ >$crontmp 2>&1
 if [ -s $crontmp ];then
   node=`hostname`
