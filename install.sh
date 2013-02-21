@@ -1,6 +1,6 @@
 #!/bin/bash
 exclude=('.' '..' 'README.md' 'install.sh')
-instdir=$HOME/usr/bin
+instdir="$HOME/usr/bin"
 
 backup="bak"
 overwrite=1
@@ -23,8 +23,8 @@ Arguments:
 while getopts b:e:i:ndh OPT;do
   case $OPT in
     "b" ) backup=$OPTARG ;;
-    "e" ) exclude=(${exclude[@]} $OPTARG) ;;
-    "i" ) instdir=$OPTARG ;;
+    "e" ) exclude=(${exclude[@]} "$OPTARG") ;;
+    "i" ) instdir="$OPTARG" ;;
     "n" ) overwrite=0 ;;
     "d" ) dryrun=1 ;;
     "h" ) echo "$HELP" 1>&2; exit ;;
@@ -42,7 +42,7 @@ else
   echo "*** This is dry run, not install anything ***"
 fi
 for f in *.sh;do
-  for e in ${exclude[*]};do
+  for e in ${exclude[@]};do
     flag=0
     if [ "$f" = "$e" ];then
       flag=1
@@ -57,22 +57,22 @@ for f in *.sh;do
   if [ $dryrun -eq 1 ];then
     install=0
   fi
-  if [ "`ls $instdir/$name 2>/dev/null`" != "" ];then
-    exist=(${exist[@]} $name)
+  if [ "`ls "$instdir/$name" 2>/dev/null`" != "" ];then
+    exist=(${exist[@]} "$name")
     if [ $dryrun -eq 1 ];then
       echo -n ""
     elif [ $overwrite -eq 0 ];then
       install=0
     elif [ "$backup" != "" ];then
-      mv $instdir/$name $instdir/${name}.$backup
+      mv "$instdir/$name" "$instdir/${name}.$backup"
     else
-      rm $instdir/$name
+      rm "$instdir/$name"
     fi
   else
-    newlink=(${newlink[@]} $name)
+    newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
-    ln -s $curdir/$f $instdir/$name
+    ln -s "$curdir/$f" "$instdir/$name"
   fi
 done
 echo ""
