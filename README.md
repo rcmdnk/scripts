@@ -1,7 +1,7 @@
 scripts
 =======
 
-**scripts for linux/mac**
+**scripts for linux/mac/windows(cygwin)**
 
 # Install
 
