@@ -1,5 +1,5 @@
 #!/bin/bash
-exclude=('.' '..' 'README.md' 'install.sh')
+exclude=('.' '..' 'README.md' 'install.sh' 'updatevimr.sh')
 instdir="$HOME/usr/bin"
 
 backup="bak"
@@ -41,7 +41,7 @@ if [[ "$OSTYPE" =~ "cygwin" ]];then
       shift
     fi
     target="$1"
-    if [ -d $target ];then
+    if [ -d "$target" ];then
       opt="/D $opt"
     fi
     if [ $# -eq 2 ];then
