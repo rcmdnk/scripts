@@ -11,6 +11,8 @@ curdir=`pwd -P`
 # help
 HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
 
+Make links of scripts (default:in $instdir)
+
 Arguments:
       -b  Set backup postfix (default: make *.bak file)
           Set \"\" if backups are not necessary
