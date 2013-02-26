@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#default values
+# default values
 clb=$HOME/.clipboard
 max=10
 mycl=
 
-#values from environment settings
+# values from environment settings
 if [ "$CLIPBOARD" != "" ];then
   clb=$CLIPBOARD
 fi
@@ -16,7 +16,7 @@ if [ "$MYCL" != "" ];then
   mycl=$MYCL
 fi
 
-#check new words
+# check new words
 mkdir -p $clb
 touch $clb/clb.0
 old=`cat $clb/clb.0`
@@ -33,7 +33,7 @@ if [ "$old" != "$new" ];then
   echo -n $* > $clb/clb.0
 fi
 
-#copy to clipboard
+# copy to clipboard
 if [ "$mycl" != "" ];then
   #echo "echo -n $* | $mycl"
   echo -n $* | $mycl
