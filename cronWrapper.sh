@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+. ~/.bashrc
 
 ###########################
 #   cron tab example
