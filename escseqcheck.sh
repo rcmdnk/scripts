@@ -1,11 +1,54 @@
 #!/bin/bash
+echo "Standalone"
 for i in {0..64};do
-  num=`printf " %3d" $i`
+  num=`printf " %4d" $i`
   printf "\e[${i}m$num\e[m"
   if [ $(($i%10)) -eq 9 ];then
     echo
   fi
+  if [ $i -ge 10 ] && [ $i -le 20 ];then
+    printf "\e[10m\e[m"
+  fi
 done
+echo
+echo
+echo "Colors + Bold or Increased Intensity (1)"
+i=30
+while [ $i -lt 50 ];do
+  num=`printf " %4s" "1;$i"`
+  printf "\e[1;${i}m$num\e[m"
+  if [ $(($i%10)) -eq 9 ];then
+    echo
+  fi
+  i=$((i+1))
+done
+echo
+echo
+echo "Colors + Fait, Decreased Intensity or Second Color"
+i=30
+while [ $i -lt 50 ];do
+  num=`printf " %4s" "2;$i"`
+  printf "\e[2;${i}m$num\e[m"
+  if [ $(($i%10)) -eq 9 ];then
+    echo
+  fi
+  i=$((i+1))
+done
+echo
+echo
+echo "All with Red (31)"
+for i in {0..64};do
+  num=`printf " %5s" "31;$i"`
+  printf "\e[31;${i}m$num\e[m"
+  if [ $(($i%10)) -eq 9 ];then
+    echo
+  fi
+  if [ $i -ge 10 ] && [ $i -le 20 ];then
+    printf "\e[10m\e[m"
+  fi
+done
+printf "\e[10m\e[m"
+echo
 echo
 
 ### escape sequences
