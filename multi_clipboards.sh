@@ -37,15 +37,15 @@
 # Settings for screen {{{
 #
 # To use in screen, put this script where
-# PATH is set (or make alias), and write in .screenrc:
+# PATH is set , and write in .screenrc:
 #
 # ----------.screenrc---------
-# bufferfile "$SCREENEXCHANGE"
-# bindkey -m ' ' eval 'stuff \040' 'writebuf' 'exec !!! multi_clipboards -I'
-# bindkey -m Y eval 'stuff Y' 'writebuf' 'exec !!! multi_clipboards -I'
-# bindkey -m W eval 'stuff W' 'writebuf' 'exec !!! multi_clipboards -I'
-# bind a eval "!bash -c 'multi_clipboards -O;echo -n \"$SCREEN_PS1\"'"
-# bind ^a eval "!bash -c 'multi_clipboards -O;echo -n \"$SCREEN_PS1\"'"
+# bufferfile "$SCREENEXCHANGE" # SCREENEXCHANGE must be set in .bashrc
+# bindkey -m ' ' eval 'stuff \040' 'writebuf' 'exec !!! multi_clipboards.sh -I'
+# bindkey -m Y eval 'stuff Y' 'writebuf' 'exec !!! multi_clipboards.sh -I'
+# bindkey -m W eval 'stuff W' 'writebuf' 'exec !!! multi_clipboards.sh -I'
+# bind a eval "!bash -c 'multi_clipboards.sh -O;echo -n \"$SCREEN_PS1\"'"
+# bind ^a eval "!bash -c 'multi_clipboards.sh -O;echo -n \"$SCREEN_PS1\"'"
 # ----------.screenrc---------
 #
 # These settings enable that a clipboard copied by SPACE, Y and  W
@@ -172,7 +172,7 @@ function mcpop { # {{{
   nclbs=${#clbs[*]}
   i=$((nclbs-1))
   while [ $i -ge 0 ];do
-    clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n   /g' |perl -pe 's/   $//g'`
+    clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/   $//g'`
     printf "%2d: $clbshow\n" $i
     i=$((i-1))
   done
