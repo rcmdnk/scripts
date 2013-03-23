@@ -82,7 +82,7 @@ function mcpush { # {{{
   i=0
   j=1
   printf "$input$cls" > $clb
-  while [ $i -lt $nclbs ] && [ $j -le $((CLMAXHIST)) ] ;do
+  while [ $i -lt $nclbs ] && [ $j -lt $((CLMAXHIST)) ] ;do
     iuse=$i
     i=$((i+1))
 
@@ -106,7 +106,7 @@ function mcpush { # {{{
 } # }}}
 
 function mcpushsc { # {{{
-  mcpush `cat $scex`
+  mcpush "$(cat $scex)"
 } # }}}
 
 function mcpop { # {{{
@@ -119,13 +119,13 @@ function mcpop { # {{{
   nclbs=${#clbs[*]}
   i=$((nclbs-1))
   while [ $i -ge 0 ];do
-    printf "$i: ${clbs[$i]}\n"
+    clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n   /g' |perl -pe 's/   $//g'`
+    printf "%2d: $clbshow\n" $i
     i=$((i-1))
   done
 
   # Choose buffer
-  echo ""
-  echo -n "choose buffer:"
+  printf "\nchoose buffer:"
   read n
   if ! echo $n|grep -q "^[0-9]\+$" || [ "$n" -ge "$nclbs" ];then
     echo "$f is not valid"
