@@ -1,11 +1,13 @@
 #!/bin/sh
 
-# Multi (Manage) Clipboards!
+# Multi (Manage) Clipboards for GNU screen!
 # *** Utility to keep multiple clipboards ***
 # *** and manage screen's clipboard.      ***
 
 # Set valuse {{{
-# Following variables should be set in .bashrc or else
+# Following variables can be set in .bashrc or else
+#
+# CLIPBOARD, SCREENEXCHANGE, CLMAXHIST, CLX, CLXOS, CLSEP
 
 # File to keep clipboards
 clb=${CLIPBOARD:-$HOMOE/.clipboard}
@@ -25,13 +27,23 @@ clx=${CLX:-""}
 # to be used for "-x" option
 if [ "$CLXOS" != "" ];then
   clxos=${CLXOS}
-else
-  if [[ "$OSTYPE" =~ "linux" ]];then
-    clxos="xsel"
-  elif [[ "$OSTYPE" =~ "cygwin" ]];then
-    clxos="putclip"
-  elif [[ "$OSTYPE" =~ "darwin" ]];then
-    clxos="pbcopy"
+elif [[ "$OSTYPE" =~ "linux" ]];then
+  if which -s xsel;then
+    export clxos="xsel"
+  elif which -s xsel;then
+    export clxos="xclip"
+  fi
+elif [[ "$OSTYPE" =~ "cygwin" ]];then
+  if which -s putclip;then
+    export clxos="putclip"
+  elif which -s xsel;then
+    export clxos="xsel"
+  elif which -s xsel;then
+    export clxos="xclip"
+  fi
+elif [[ "$OSTYPE" =~ "darwin" ]];then
+  if which -s pbcopy;then
+    export clxos="pbcopy"
   fi
 fi
 
