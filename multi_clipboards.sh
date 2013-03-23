@@ -40,7 +40,7 @@
 # PATH is set , and write in .screenrc:
 #
 # ----------.screenrc---------
-# bufferfile "$SCREENEXCHANGE" # SCREENEXCHANGE must be set in .bashrc
+# bufferfile "$SCREENEXCHANGE" # SCREENEXCHANGE must be set in .bashrc !!!
 # bindkey -m ' ' eval 'stuff \040' 'writebuf' 'exec !!! multi_clipboards.sh -I'
 # bindkey -m Y eval 'stuff Y' 'writebuf' 'exec !!! multi_clipboards.sh -I'
 # bindkey -m W eval 'stuff W' 'writebuf' 'exec !!! multi_clipboards.sh -I'
@@ -55,10 +55,47 @@
 # C-a a (C-a) can be used to select a clipboard from the list,
 # instead of using multi_clipboards.sh -O
 #
-# Note: To use C-a a (C-a), it is better to set
-# "SCREEN_PS1" which should be as simialr as PS1 in .bashrc
-# (because after C-a a, it stops w/o prompt)
 #
+# And set environmental variables in .bashrc
+# ----------.bashrc---------
+# export SCREENEXCHANGE=$HOME/.screen-exchange
+# export SCREEN_PS1='printf "\e]0;%s@%s:%s\a" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/~}"'
+# # For my clipboards
+# export CLIPBOARD=$HOME/.clipboard
+# export CLMAXHIST=20
+# export CLSEP="" # "" was inserted with "C-v C-g", use bell as a separator
+# export CLX="" #xsel/xclip
+# if [[ "$OSTYPE" =~ "linux" ]];then
+#   if which -s xsel;then
+#     export CLXOS="xsel"
+#   elif which -s xsel;then
+#     export CLXOS="xclip"
+#   fi
+# elif [[ "$OSTYPE" =~ "cygwin" ]];then
+#   if which -s putclip;then
+#     export CLXOS="putclip"
+#   elif which -s xsel;then
+#     export CLXOS="xsel"
+#   elif which -s xsel;then
+#     export CLXOS="xclip"
+#   fi
+# elif [[ "$OSTYPE" =~ "darwin" ]];then
+#   if which -s pbcopy;then
+#     export CLXOS="pbcopy"
+#   fi
+# fi
+# ----------.bashrc---------
+#
+#
+# Note 1): SCREENEXCHANGE must be set in .bashrc
+#          or you must remove the bufferfile definition line from .screenrc
+#          In the later case, /tmp/screen-exchange will be used.
+#
+# Note 2): It is better to set "SCREEN_PS1", which should be similar as PS1
+#          (though it is not possible to change interactively.),
+#          because after C-a a, it stops w/o prompt.
+#          If you prefer not to show a bit wrong prompt
+#          and prefer show nothing, don't need to set this value.
 # }}}
 
 # Set valuse {{{
@@ -71,7 +108,7 @@
 clb=${CLIPBOARD:-$HOMOE/.clipboard}
 
 # File for screen's clipboard
-scex=${SCREENEXCHANGE:-$HOME/.screen-exchange}
+scex=${SCREENEXCHANGE:/tmp/screen-exchange}
 
 # Max number of clipboards to keep
 max=${CLMAXHIST:-10}
@@ -172,7 +209,7 @@ function mcpop { # {{{
   nclbs=${#clbs[*]}
   i=$((nclbs-1))
   while [ $i -ge 0 ];do
-    clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/   $//g'`
+    clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/    $//g'`
     printf "%2d: $clbshow\n" $i
     i=$((i-1))
   done
