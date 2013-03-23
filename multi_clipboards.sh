@@ -1,13 +1,71 @@
-#!/bin/sh
+#!/bin/bash
 
 # Multi (Manage) Clipboards for GNU screen!
 # *** Utility to keep multiple clipboards ***
 # *** and manage screen's clipboard.      ***
 
+
+# Usage {{{
+#
+# $ multi_clipboards.sh -i [arg]
+# # Push arg to the clipboard list
+#
+# $ multi_clipboards.sh -I
+# # Push the screen's clipboard to the clipboard list
+#
+# $ multi_clipboards.sh -o
+# # Will show the clipboard list, then select one, which will be placed
+# # the top of the clipboard list.
+#
+# $ multi_clipboards.sh -O
+# # Same as "-o", in addition, sent it to the screen's clipboard
+#
+# $ multi_clipboards.sh -s
+# # Push the arguments to the clipboard of screen
+#
+# $ multi_clipboards.sh -x
+# # Send the last clipboard to the clipboard of OS (X server)
+# # Even if CLX is not set, it uses CLXOS, is available
+#
+#
+# # For all case,
+# # f CLX is set, a selected clipboard is sent to the clipboard of OS (X server)
+#
+# See also settings for screen and variables which can be set in .bashrc below
+# }}}
+
+# Settings for screen {{{
+#
+# To use in screen, put this script where
+# PATH is set (or make alias), and write in .screenrc:
+#
+# ----------.screenrc---------
+# bufferfile "$SCREENEXCHANGE"
+# bindkey -m ' ' eval 'stuff \040' 'writebuf' 'exec !!! multi_clipboards -I'
+# bindkey -m Y eval 'stuff Y' 'writebuf' 'exec !!! multi_clipboards -I'
+# bindkey -m W eval 'stuff W' 'writebuf' 'exec !!! multi_clipboards -I'
+# bind a eval "!bash -c 'multi_clipboards -O;echo -n \"$SCREEN_PS1\"'"
+# bind ^a eval "!bash -c 'multi_clipboards -O;echo -n \"$SCREEN_PS1\"'"
+# ----------.screenrc---------
+#
+# These settings enable that a clipboard copied by SPACE, Y and  W
+# in the copy mode will be sent to the clipboard list.
+# If CLX is set, it is also sent to the OS's (X server's) clipboard.
+#
+# C-a a (C-a) can be used to select a clipboard from the list,
+# instead of using multi_clipboards.sh -O
+#
+# Note: To use C-a a (C-a), it is better to set
+# "SCREEN_PS1" which should be as simialr as PS1 in .bashrc
+# (because after C-a a, it stops w/o prompt)
+#
+# }}}
+
 # Set valuse {{{
 # Following variables can be set in .bashrc or else
 #
 # CLIPBOARD, SCREENEXCHANGE, CLMAXHIST, CLX, CLXOS, CLSEP
+# (Refer default values below)
 
 # File to keep clipboards
 clb=${CLIPBOARD:-$HOMOE/.clipboard}
@@ -49,24 +107,7 @@ fi
 
 # Separator of clipboards in the file
 cls="${CLSEP:-}"
-# }}}
 
-# Mode {{{
-# -i (mcpush)  : Push in arguments to the clipboard list
-#
-# -I (mcpushsc): Push in screen's clipboard to the clipboard list
-#
-# -o (mcpop)   : Pop out one clipboard from the clipboard list
-#
-# -O (mcpopsc) : Pop out one clipboard from the clipboard list
-#              : and put it to the screen's clipboard
-#
-# -s (mcpush)  : Push the arguments to screen's clipboard list
-#    (+mcpop)  : and put it to the screen's clipboard
-#
-# -x           : Put the newest clipboard to the OS's clipboard
-#              : using CLX  or CLXOS, if CLX is not set
-#              : (need X connection)
 # }}}
 
 function mcpush { # {{{
