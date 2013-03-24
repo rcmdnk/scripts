@@ -7,8 +7,8 @@
 
 # Usage {{{
 #
-# $ multi_clipboards.sh -i [arg]
-# # Push arg to the clipboard list
+# $ multi_clipboards.sh -i [args]
+# # Push [args]to the clipboard list
 #
 # $ multi_clipboards.sh -I
 # # Push the screen's clipboard to the clipboard list
@@ -20,8 +20,8 @@
 # $ multi_clipboards.sh -O
 # # Same as "-o", in addition, sent it to the screen's clipboard
 #
-# $ multi_clipboards.sh -s
-# # Push the arguments to the clipboard of screen
+# $ multi_clipboards.sh -s [args]
+# # Send [args] to the screen's clipboard
 #
 # $ multi_clipboards.sh -x
 # # Send the last clipboard to the clipboard of OS (X server)
@@ -60,7 +60,6 @@
 # ----------.bashrc---------
 # export SCREENEXCHANGE=$HOME/.screen-exchange
 # export SCREEN_PS1='printf "\e]0;%s@%s:%s\a" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/~}"'
-# # For my clipboards
 # export CLIPBOARD=$HOME/.clipboard
 # export CLMAXHIST=20
 # export CLSEP="" # "" was inserted with "C-v C-g", use bell as a separator
@@ -96,6 +95,8 @@
 #          because after C-a a, it stops w/o prompt.
 #          If you prefer not to show a bit wrong prompt
 #          and prefer show nothing, don't need to set this value.
+#          Or you can just use multi_clipboards.sh -O instead of
+#          screen's binding (alias may be useful)
 # }}}
 
 # Set valuse {{{
@@ -106,9 +107,11 @@
 
 # File to keep clipboards
 clb=${CLIPBOARD:-$HOMOE/.clipboard}
+touch $clb
 
 # File for screen's clipboard
-scex=${SCREENEXCHANGE:/tmp/screen-exchange}
+scex=${SCREENEXCHANGE:-/tmp/screen-exchange}
+touch $scex
 
 # Max number of clipboards to keep
 max=${CLMAXHIST:-10}
@@ -157,10 +160,8 @@ function mcpush { # {{{
   fi
 
   # Get old words
-  touch $clb
   orig_ifs=$IFS
   IFS="$cls"
-  touch $clb
   clbs=(`cat $clb`)
   IFS=$orig_ifs
   nclbs=${#clbs[*]}
@@ -203,11 +204,11 @@ function mcpop { # {{{
   ## Show stored words
   orig_ifs=$IFS
   IFS="$cls"
-  touch $clb
   clbs=(`cat $clb`)
   IFS=$orig_ifs
   nclbs=${#clbs[*]}
   i=$((nclbs-1))
+  echo
   while [ $i -ge 0 ];do
     clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/    $//g'`
     printf "%2d: $clbshow\n" $i
@@ -248,7 +249,6 @@ function mcpopsc { # {{{
   fi
   local orig_ifs=$IFS
   IFS="$cls"
-  touch $clb
   local clbs=(`cat $clb`)
   IFS=$orig_ifs
   printf "${clbs[0]}" > $scex
@@ -263,7 +263,6 @@ function mcpushx { # {{{
   fi
   orig_ifs=$IFS
   IFS="$cls"
-  touch $clb
   clbs=(`cat $clb`)
   IFS=$orig_ifs
   printf "${clbs[0]}" | $clx
