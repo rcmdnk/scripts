@@ -126,21 +126,21 @@ clx=${CLX:-""}
 if [ "$CLXOS" != "" ];then
   clxos=${CLXOS}
 elif [[ "$OSTYPE" =~ "linux" ]];then
-  if which -s xsel;then
+  if which xsel >/dev/null 2>&1;then
     export clxos="xsel"
-  elif which -s xsel;then
+  elif which xsel >/dev/null 2>&1;then
     export clxos="xclip"
   fi
 elif [[ "$OSTYPE" =~ "cygwin" ]];then
-  if which -s putclip;then
+  if which putclip >/dev/null 2>&1;then
     export clxos="putclip"
-  elif which -s xsel;then
+  elif which xsel >/dev/null 2>&1;then
     export clxos="xsel"
-  elif which -s xsel;then
+  elif which xsel >/dev/null 2>&1;then
     export clxos="xclip"
   fi
 elif [[ "$OSTYPE" =~ "darwin" ]];then
-  if which -s pbcopy;then
+  if which pbcopy >/dev/null 2>&1;then
     export clxos="pbcopy"
   fi
 fi
@@ -242,11 +242,6 @@ function mcpop { # {{{
 } # }}}
 
 function mcpopsc { # {{{
-  mcpop
-  local ret=$?
-  if [ $ret -ne 0 ];then
-    return $ret
-  fi
   local orig_ifs=$IFS
   IFS="$cls"
   local clbs=(`cat $clb`)
@@ -276,6 +271,7 @@ if [ "$1" = "-s" ];then
   mcpopsc
 elif [ "$1" = "-x" ];then
   # pushpopsc
+  shift
   mcpushx
 elif [ "$1" = "-i" ];then
   # push
@@ -283,11 +279,18 @@ elif [ "$1" = "-i" ];then
   mcpush "$*"
 elif [ "$1" = "-I" ];then
   # pushsc
+  shift
   mcpushsc
 elif [ "$1" = "-o" ];then
   # pop
+  shift
   mcpop
 else # -O or else
   # popsc"
+  mcpop
+  ret=$?
+  if [ $ret -ne 0 ];then
+    exit $ret
+  fi
   mcpopsc
 fi # }}}
