@@ -152,7 +152,7 @@ cls="${CLSEP:-}"
 
 function mcpush { # {{{
   # Set input
-  input="$*"
+  local input="$*"
 
   # Ignore blank
   if [ "$*" = "" ];then
@@ -160,21 +160,21 @@ function mcpush { # {{{
   fi
 
   # Get old words
-  orig_ifs=$IFS
+  local orig_ifs=$IFS
   IFS="$cls"
-  clbs=(`cat $clb`)
+  local clbs=(`cat $clb`)
   IFS=$orig_ifs
-  nclbs=${#clbs[*]}
+  local nclbs=${#clbs[*]}
 
   #echo
   #printf "input: $input"
   #echo
   # Renew words
-  i=0
-  j=1
+  local i=0
+  local j=1
   printf "$input$cls" > $clb
   while [ $i -lt $nclbs ] && [ $j -lt $((CLMAXHIST)) ] ;do
-    iuse=$i
+    local iuse=$i
     i=$((i+1))
 
     #echo "try $iuse, ${clbs[$iuse]}"
@@ -202,15 +202,15 @@ function mcpushsc { # {{{
 
 function mcpop { # {{{
   ## Show stored words
-  orig_ifs=$IFS
+  local orig_ifs=$IFS
   IFS="$cls"
-  clbs=(`cat $clb`)
+  local clbs=(`cat $clb`)
   IFS=$orig_ifs
-  nclbs=${#clbs[*]}
-  i=$((nclbs-1))
+  local nclbs=${#clbs[*]}
+  local i=$((nclbs-1))
   echo
   while [ $i -ge 0 ];do
-    clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/    $//g'`
+    local clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/    $//g'`
     printf "%2d: $clbshow\n" $i
     i=$((i-1))
   done
@@ -223,7 +223,7 @@ function mcpop { # {{{
     echo "Use mcpop [0-$((nclbs-1))]"
     return 1
   fi
-  c="${clbs[$n]}"
+  local c="${clbs[$n]}"
 
   # Align clipboards
   printf "$c$cls" > $clb
@@ -256,9 +256,9 @@ function mcpushx { # {{{
     echo "No clip board application is assigned!"
     return
   fi
-  orig_ifs=$IFS
+  local orig_ifs=$IFS
   IFS="$cls"
-  clbs=(`cat $clb`)
+  local clbs=(`cat $clb`)
   IFS=$orig_ifs
   printf "${clbs[0]}" | $clx
 } # }}}
