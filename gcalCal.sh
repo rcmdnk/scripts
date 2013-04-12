@@ -9,16 +9,16 @@ gcalDays=~/.gcalDays
 gcalTasks=~/.gcalTasks
 gcalHolidays=~/.gcalHolidays
 gcalCalDays=~/.gcalCalDays
-gcalMonth=~/.gcalMonth
+gcalHead=~/.gcalHead
 touch $gcalDays
 touch $gcalTasks
 touch $gcalHolidays
 touch $gcalCalDays
-touch $gcalMonth
+touch $gcalHead
 
 # calendar function
 myCal (){
-  cat $gcalMonth
+  cat $gcalHead
   w=0
   while read -r d;do
     if echo $d|grep -q "'";then
@@ -39,7 +39,9 @@ myCal (){
 
 
 # this month
-date +"      %b %Y" > $gcalMonth
+date +"      %b %Y" > $gcalHead
+echo Su Mo Tu We Th Fr Sa >> $gcalHead
+
 
 # date configuration
 gcalFormat="%d(%a)/%b/%Y:"
