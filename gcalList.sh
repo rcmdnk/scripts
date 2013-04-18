@@ -5,7 +5,7 @@
 gcallist=~/.gcallist
 
 # List of calenders
-cals="--cal=gmail --cal=Faceboodayidayik --cal=Time"
+cals="--cal=gmail --cal=Facebook --cal=Time"
 # gmail   : Main calendar
 # Facebook: Calendars of Facebook (including birthdays)
 # Time    : Calendars for each location (JapanTime, etc...)
