@@ -102,11 +102,24 @@ fi
 
 # List up deleted files/directories
 if [ $list -eq 1 ] || [ $back -eq 1 ];then
+  # Set verbose
   if [ $verbose -eq 1 ];then
-    cat -n $tlist|tail -r|awk '{printf("%3d %s\n",$1,$2)}'
+    cutn=3 # Show also deleted file/directory position
   else
-    cat -n $tlist|tail -r|awk '{split($2,o,",")}{printf("%3d %s,%s\n",$1,o[1],o[2])}'
+    cutn=2
   fi
+  # Set reverse command
+  if type tac >/dev/null 2>&1;then
+    rev=tac
+  elif tail --version|grep BSD >/dev/null 2>&1;then
+    rev=`tail -r`
+  else
+    rev=cat # can't revert...
+  fi
+
+  # List up trashes
+  cat -n $tlist|$rev|cut -d, -f1-$cutn|awk '{printf("%3d %s\n",$1,$2)}'
+
   if [ $back -ne 1 ];then
     exit 0
   fi
