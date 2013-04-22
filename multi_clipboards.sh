@@ -286,7 +286,7 @@ elif [ "$1" = "-o" ];then
   shift
   mcpop
 else # -O or else
-  # popsc"
+  # popsc
   mcpop
   ret=$?
   if [ $ret -ne 0 ];then
