@@ -216,7 +216,7 @@ function mcpop { # {{{
   done
 
   # Choose buffer
-  printf "\nchoose buffer:"
+  printf "\nchoose buffer: "
   read n
   if ! echo $n|grep -q "^[0-9]\+$" || [ "$n" -ge "$nclbs" ];then
     echo "$f is not valid"
