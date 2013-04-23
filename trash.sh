@@ -111,7 +111,7 @@ if [ $list -eq 1 ] || [ $back -eq 1 ];then
   # Set reverse command
   if type tac >/dev/null 2>&1;then
     rev=tac
-  elif tail --version|grep BSD >/dev/null 2>&1;then
+  elif tail --version|grep -q BSD;then
     rev=`tail -r`
   else
     rev=cat # can't revert...
@@ -126,7 +126,7 @@ if [ $list -eq 1 ] || [ $back -eq 1 ];then
 
   # Choose from STDIN
   ntrashes=`wc $tlist|awk '{print $1}'`
-  echo -n "choose trash number:"
+  echo -n "choose trash number: "
   read nth
 
   if ! echo $nth|grep -q "^[0-9]\+$" || [ $nth -eq 0 ] || [ "$nth" -gt "$ntrashes" ];then
@@ -150,7 +150,7 @@ if [ $list -eq 1 ] || [ $back -eq 1 ];then
   fi
   if [ $confirm -eq 1 ];then
     if [ -e "$origin_name" ];then
-      echo "$origin_name_short exists. Do you want to overwrite from trash box?"
+      echo -n "$origin_name_short exists. Do you want to overwrite from trash box? "
       read yes
       if ! [[ "$yes" =~ ^[yY] ]];then
         exit 0
@@ -211,7 +211,7 @@ while [ "$#" -gt 0 ];do
   fi
 
   if [ $confirm -eq 1 ];then
-    echo remove ${1}?
+    echo -n "remove ${1}? "
     read yes
     if ! [[ "$yes" =~ ^[yY] ]];then
       shift
