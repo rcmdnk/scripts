@@ -152,7 +152,7 @@ cls="${CLSEP:-}"
 
 function mcpush { # {{{
   # Set input
-  local input=`echo $*|sed "s${cls}%${cls}%%${cls}g"`
+  local input="$*"
 
   # Ignore blank
   if [ "$*" = "" ];then
@@ -169,22 +169,27 @@ function mcpush { # {{{
   # Renew words
   local i=0
   local j=1
-  printf -- "$input$cls" > $clb
+  echo -e "$input$cls" > $clb
   while [ $i -lt $nclbs ] && [ $j -lt $((CLMAXHIST)) ] ;do
     local iuse=$i
     i=$((i+1))
 
-    clbs[$iuse]=`echo ${clbs[$iuse]}|sed "s${cls}%${cls}%%${cls}g"`
+    #echo "try $iuse, ${clbs[$iuse]}"
+    # Remove duplications
     if [ "$input" = "${clbs[$iuse]}" ];then
+      #echo
+      #echo "$iuse      : no use"
+      #echo "\$\*    : $input"
+      #echo "clbs[$iuse]: ${clbs[$iuse]}"
       continue
     fi
-    printf -- "${clbs[$iuse]}$cls" >> $clb
+    echo -e "${clbs[$iuse]}$cls" >> $clb
     j=$((j+1))
   done
 
   # Copy to clipboard of X
   if [ "$clx" != "" ];then
-    printf -- "$input" | $clx
+    echo -e "$*" | $clx
   fi
 } # }}}
 
@@ -218,20 +223,18 @@ function mcpop { # {{{
   local c="${clbs[$n]}"
 
   # Align clipboards
-  c=`echo ${c}|sed "s${cls}%${cls}%%${cls}g"`
-  printf -- "$c$cls" > $clb
+  echo -e "$c$cls" > $clb
   i=0
   while [ $i -lt $nclbs ];do
     if [ ! $i -eq $n ];then
-      clbs[$i]=`echo ${clbs[$i]}|sed "s${cls}%${cls}%%${cls}g"`
-      printf -- "${clbs[$i]}$cls" >> $clb
+      echo -e "${clbs[$i]}$cls" >> $clb
     fi
     i=$((i+1))
   done
 
   # Copy to clipboard of X
   if [ "$clx" ];then
-    printf -- "$c" | $clx
+    echo -e "$c" | $clx
   fi
 } # }}}
 
@@ -240,7 +243,7 @@ function mcpopsc { # {{{
   IFS="$cls"
   local clbs=(`cat $clb`)
   IFS=$orig_ifs
-  printf -- "${clbs[0]}" > $scex
+  echo -e "${clbs[0]}" > $scex
   screen -X readbuf
 } # }}}
 
@@ -254,8 +257,7 @@ function mcpushx { # {{{
   IFS="$cls"
   local clbs=(`cat $clb`)
   IFS=$orig_ifs
-  clbs[0]=`echo ${clbs[0]}|sed "s${cls}%${cls}%%${cls}g"`
-  printf -- "${clbs[0]}" | $clx
+  echo -e "${clbs[0]}" | $clx
 } # }}}
 
 # Check arguments and execute commands{{{
