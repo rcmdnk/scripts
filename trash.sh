@@ -111,8 +111,8 @@ if [ $list -eq 1 ] || [ $back -eq 1 ];then
   # Set reverse command
   if type tac >/dev/null 2>&1;then
     rev=tac
-  elif tail --version|grep -q BSD;then
-    rev=`tail -r`
+  elif command man tail|cat|grep -q BSD;then
+    rev="tail -r"
   else
     rev=cat # can't revert...
   fi
