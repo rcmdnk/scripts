@@ -152,7 +152,7 @@ cls="${CLSEP:-}"
 
 function mcpush { # {{{
   # Set input
-  local input="$*"
+  local input=`echo $*|sed "s${cls}%${cls}%%${cls}g"`
 
   # Ignore blank
   if [ "$*" = "" ];then
@@ -174,13 +174,8 @@ function mcpush { # {{{
     local iuse=$i
     i=$((i+1))
 
-    #echo "try $iuse, ${clbs[$iuse]}"
-    # Remove duplications
+    clbs[$iuse]=`echo ${clbs[$iuse]}|sed "s${cls}%${cls}%%${cls}g"`
     if [ "$input" = "${clbs[$iuse]}" ];then
-      #echo
-      #echo "$iuse      : no use"
-      #echo "\$\*    : $input"
-      #echo "clbs[$iuse]: ${clbs[$iuse]}"
       continue
     fi
     printf -- "${clbs[$iuse]}$cls" >> $clb
@@ -189,7 +184,7 @@ function mcpush { # {{{
 
   # Copy to clipboard of X
   if [ "$clx" != "" ];then
-    printf -- "$*" | $clx
+    printf -- "$input" | $clx
   fi
 } # }}}
 
@@ -223,10 +218,12 @@ function mcpop { # {{{
   local c="${clbs[$n]}"
 
   # Align clipboards
+  c=`echo ${c}|sed "s${cls}%${cls}%%${cls}g"`
   printf -- "$c$cls" > $clb
   i=0
   while [ $i -lt $nclbs ];do
     if [ ! $i -eq $n ];then
+      clbs[$i]=`echo ${clbs[$i]}|sed "s${cls}%${cls}%%${cls}g"`
       printf -- "${clbs[$i]}$cls" >> $clb
     fi
     i=$((i+1))
@@ -257,6 +254,7 @@ function mcpushx { # {{{
   IFS="$cls"
   local clbs=(`cat $clb`)
   IFS=$orig_ifs
+  clbs[0]=`echo ${clbs[0]}|sed "s${cls}%${cls}%%${cls}g"`
   printf -- "${clbs[0]}" | $clx
 } # }}}
 
