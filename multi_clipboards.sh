@@ -169,7 +169,7 @@ function mcpush { # {{{
   # Renew words
   local i=0
   local j=1
-  echo -e "$input$cls" > $clb
+  echo -en "$input$cls" > $clb
   while [ $i -lt $nclbs ] && [ $j -lt $((CLMAXHIST)) ] ;do
     local iuse=$i
     i=$((i+1))
@@ -183,13 +183,13 @@ function mcpush { # {{{
       #echo "clbs[$iuse]: ${clbs[$iuse]}"
       continue
     fi
-    echo -e "${clbs[$iuse]}$cls" >> $clb
+    echo -en "${clbs[$iuse]}$cls" >> $clb
     j=$((j+1))
   done
 
   # Copy to clipboard of X
   if [ "$clx" != "" ];then
-    echo -e "$*" | $clx
+    echo -en "$*" | $clx
   fi
 } # }}}
 
@@ -223,18 +223,18 @@ function mcpop { # {{{
   local c="${clbs[$n]}"
 
   # Align clipboards
-  echo -e "$c$cls" > $clb
+  echo -en "$c$cls" > $clb
   i=0
   while [ $i -lt $nclbs ];do
     if [ ! $i -eq $n ];then
-      echo -e "${clbs[$i]}$cls" >> $clb
+      echo -en "${clbs[$i]}$cls" >> $clb
     fi
     i=$((i+1))
   done
 
   # Copy to clipboard of X
   if [ "$clx" ];then
-    echo -e "$c" | $clx
+    echo -en "$c" | $clx
   fi
 } # }}}
 
@@ -243,7 +243,7 @@ function mcpopsc { # {{{
   IFS="$cls"
   local clbs=(`cat $clb`)
   IFS=$orig_ifs
-  echo -e "${clbs[0]}" > $scex
+  echo -en "${clbs[0]}" > $scex
   screen -X readbuf
 } # }}}
 
@@ -257,7 +257,7 @@ function mcpushx { # {{{
   IFS="$cls"
   local clbs=(`cat $clb`)
   IFS=$orig_ifs
-  echo -e "${clbs[0]}" | $clx
+  echo -en "${clbs[0]}" | $clx
 } # }}}
 
 # Check arguments and execute commands{{{
