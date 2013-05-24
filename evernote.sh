@@ -1,6 +1,6 @@
 #!/bin/bash
 # evernote.sh
-# send note to ever note by email
+# Send note to Evernote by email
 
 # Constant values
 TAGMARK="#"
