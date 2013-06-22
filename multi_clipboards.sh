@@ -4,35 +4,35 @@
 # *** Utility to keep multiple clipboards ***
 # *** and manage screen's clipboard.      ***
 
+usage="
+Usage:
 
-# Usage {{{
-#
-# $ multi_clipboards.sh -i [args]
-# # Push [args]to the clipboard list
-#
-# $ multi_clipboards.sh -I
-# # Push the screen's clipboard to the clipboard list
-#
-# $ multi_clipboards.sh -o
-# # Will show the clipboard list, then select one, which will be placed
-# # the top of the clipboard list.
-#
-# $ multi_clipboards.sh -O
-# # Same as "-o", in addition, sent it to the screen's clipboard
-#
-# $ multi_clipboards.sh -s [args]
-# # Send [args] to the screen's clipboard
-#
-# $ multi_clipboards.sh -x
-# # Send the last clipboard to the clipboard of OS (X server)
-# # Even if CLX is not set, it uses CLXOS, is available
-#
-#
-# # For all case,
-# # f CLX is set, a selected clipboard is sent to the clipboard of OS (X server)
-#
-# See also settings for screen and variables which can be set in .bashrc below
-# }}}
+  $ multi_clipboards.sh -i [args]
+  # Push [args]to the clipboard list
+
+  $ multi_clipboards.sh -I
+  # Push the screen's clipboard to the clipboard list
+
+  $ multi_clipboards.sh -o
+  # Will show the clipboard list, then select one, which will be placed
+  # the top of the clipboard list.
+
+  $ multi_clipboards.sh -O # (or w/o any other options)
+  # Same as "-o", in addition, sent it to the screen's clipboard
+
+  $ multi_clipboards.sh -s [args]
+  # Send [args] to the screen's clipboard
+
+  $ multi_clipboards.sh -x
+  # Send the last clipboard to the clipboard of OS (X server)
+  # Even if CLX is not set, it uses CLXOS, is available
+
+  $ multi_clipboards.sh -c
+  # Clean up clipboard file
+
+  $ multi_clipboards.sh -h
+  # Show this usage
+"
 
 # Settings for screen {{{
 #
@@ -212,6 +212,12 @@ function mcpop { # {{{
     i=$((i-1))
   done
 
+  # Check a number of clipboards
+  if [ $nclbs -eq 0 ];then
+    printf "No clipboards in $clb\n\n"
+    return
+  fi
+
   # Choose buffer
   printf "\nchoose buffer: "
   read n
@@ -261,7 +267,9 @@ function mcpushx { # {{{
 } # }}}
 
 # Check arguments and execute commands{{{
-if [ "$1" = "-s" ];then
+if [ "$1" = "-h" ];then
+  echo "$usage"
+elif [ "$1" = "-s" ];then
   # pushpopsc
   shift
   mcpush "$*"
@@ -278,6 +286,10 @@ elif [ "$1" = "-I" ];then
   # pushsc
   shift
   mcpushsc
+elif [ "$1" = "-c" ];then
+  # cleanup store file
+  echo "echo > $clb"
+  echo > $clb
 elif [ "$1" = "-o" ];then
   # pop
   shift
