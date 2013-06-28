@@ -110,15 +110,15 @@ if [ $list -eq 1 ] || [ $back -eq 1 ];then
   fi
   # Set reverse command
   if type tac >/dev/null 2>&1;then
-    rev=tac
-  elif command man tail|cat|grep -q BSD;then
-    rev="tail -r"
+    revlines=tac
+  elif ! tail --version 2>/dev/null |grep -q GNU;then
+    revlines="tail -r"
   else
-    rev=cat # can't revert...
+    revlines=cat # can't revert...
   fi
 
   # List up trashes
-  cat -n $tlist|$rev|cut -d, -f1-$cutn|awk '{printf("%3d %s\n",$1,$2)}'
+  cat -n $tlist|$revlines|cut -d, -f1-$cutn|awk '{printf("%3d %s\n",$1,$2)}'
 
   if [ $back -ne 1 ];then
     exit 0
