@@ -12,3 +12,4 @@ If there is a file, it makes backup file (.bak)
     git clone git@github.com:rcmdnk/scripts
     cd scripts
     ./install.sh
+
