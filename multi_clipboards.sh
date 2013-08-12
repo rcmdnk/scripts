@@ -106,7 +106,7 @@ Usage:
 # (Refer default values below)
 
 # File to keep clipboards
-clb=${CLIPBOARD:-$HOMOE/.clipboard}
+clb=${CLIPBOARD:-$HOME/.clipboard}
 touch $clb
 
 # File for screen's clipboard
