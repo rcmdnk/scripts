@@ -170,7 +170,7 @@ function mcpush { # {{{
   local i=0
   local j=1
   echo -en "$input$cls" > $clb
-  while [ $i -lt $nclbs ] && [ $j -lt $((CLMAXHIST)) ] ;do
+  while [ $i -lt $nclbs ] && [ $j -lt $max ] ;do
     local iuse=$i
     i=$((i+1))
 
