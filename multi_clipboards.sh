@@ -207,7 +207,7 @@ function mcpop { # {{{
   local i=$((nclbs-1))
   echo
   while [ $i -ge 0 ];do
-    local clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/    $//g'`
+    local clbshow=`echo "${clbs[$i]}" |perl -pe 's/\n/\a/g' |perl -pe 's/\a/\n    /g' |perl -pe 's/    $//g' |perl -pe 's/%/%%/g'`
     printf "%2d: $clbshow\n" $i
     i=$((i-1))
   done
