@@ -25,9 +25,9 @@ tag=$def_tag
 notebook=$def_notebook
 
 # check evernote setting
-if [ -f ~/.evetnote ];then
-  addresstmp=`grep ADDRESS ~/.evetnote|cut -d= -f2`
-  addressothertmp=`grep ADDRESSOTHER ~/.evetnote|cut -d= -f2`
+if [ -f ~/.evernote ];then
+  addresstmp=`grep ADDRESS ~/.evernote|cut -d= -f2`
+  addressothertmp=`grep ADDRESSOTHER ~/.evernote|cut -d= -f2`
   if [ "$addresstmp" != "" ];then
     address=$addresstmp
   fi
@@ -57,7 +57,7 @@ Arguments:
  message  Be sent as a message
 
 Setting file:
-      ~/.evetnote
+      ~/.evernote
           ADDRESS=xxxx@m.evernote.com
           ADDRESSOTHER=xxxx@YYY.ZZZ
 
