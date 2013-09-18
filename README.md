@@ -12,3 +12,7 @@ If there is a file, it makes backup file (.bak)
     git clone git@github.com:rcmdnk/scripts
     cd scripts
     ./install.sh
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rcmdnk/scripts/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
