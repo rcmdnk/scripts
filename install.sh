@@ -1,5 +1,6 @@
 #!/bin/bash
 exclude=('.' '..' 'README.md' 'install.sh' 'updatevimr.sh')
+sm_files=('.submodules/evernote_mail/bin/evernote_mail')
 instdir="$HOME/usr/bin"
 
 backup="bak"
@@ -64,6 +65,18 @@ if [[ "$OSTYPE" =~ "cygwin" ]];then
 fi
 
 echo "**********************************************"
+echo "Update submodules"
+echo "**********************************************"
+echo
+if which git >&/dev/null;then
+  git submodule update --init
+else
+  echo "git is not installed, please install git or get following submodules directly:"
+  grep url .gitmodules
+fi
+echo
+
+echo "**********************************************"
 echo "Install X.sh to $instdir/X"
 echo "**********************************************"
 echo
@@ -72,7 +85,14 @@ if [ $dryrun -ne 1 ];then
 else
   echo "*** This is dry run, not install anything ***"
 fi
-for f in *.sh;do
+files=(`ls *.sh`)
+for sm_f in "${sm_files[@]}";do
+  if [ -f "$sm_f" ];then
+    files=("${files[@]}" "$sm_f")
+  fi
+done
+
+for f in "${files[@]}";do
   for e in ${exclude[@]};do
     flag=0
     if [ "$f" = "$e" ];then
@@ -83,7 +103,11 @@ for f in *.sh;do
   if [ $flag = 1 ];then
     continue
   fi
-  name=${f%.sh}
+  name=$(basename $f)
+  name=${name%.sh}
+  name=${name%.py}
+  name=${name%.rb}
+
   install=1
   if [ $dryrun -eq 1 ];then
     install=0
