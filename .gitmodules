@@ -1,3 +1,6 @@
-[submodule ".submodules/evernote_mail"]
-	path = .submodules/evernote_mail
+[submodule "submodules/seerenote_mail"]
+	path = submodules/seerenote_mail
 	url = git@github.com:rcmdnk/evernote_mail.git
+[submodule "submodules/gcalcli"]
+	path = submodules/gcalcli
+	url = git@github.com:insanum/gcalcli.git
