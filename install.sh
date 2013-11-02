@@ -1,6 +1,11 @@
 #!/bin/bash
 exclude=('.' '..' 'README.md' 'install.sh' 'updatevimr.sh')
-sm_files=('.submodules/evernote_mail/bin/evernote_mail')
+sm_dir="submodules"
+sm_files=("$sm_dir/evernote_mail/bin/evernote_mail"\
+          "$sm_dir/trash/bin/trash"\
+          "$sm_dir/stowReset/bin/stowReset"\
+          "$sm_dir/multi_clipboards/bin/multi_clipboards"\
+  )
 instdir="$HOME/usr/bin"
 
 backup="bak"
@@ -127,6 +132,7 @@ for f in "${files[@]}";do
     newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
+    chmdo 755 "$curdir/$f"
     ln -s "$curdir/$f" "$instdir/$name"
   fi
 done
