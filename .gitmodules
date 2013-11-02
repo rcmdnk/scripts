@@ -13,3 +13,6 @@
 [submodule "submodules/multi_clipboards"]
 	path = submodules/multi_clipboards
 	url = git@github.com:rcmdnk/multi_clipboards.git
+[submodule "submodules/escape_sequence"]
+	path = submodules/escape_sequence
+	url = git@github.com:rcmdnk/escape_sequence.git
