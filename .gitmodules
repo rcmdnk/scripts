@@ -4,3 +4,12 @@
 [submodule "submodules/evernote_mail"]
 	path = submodules/evernote_mail
 	url = git@github.com:rcmdnk/evernote_mail.git
+[submodule "submodules/trash"]
+	path = submodules/trash
+	url = git@github.com:rcmdnk/trash.git
+[submodule "submodules/stowReset"]
+	path = submodules/stowReset
+	url = git@github.com:rcmdnk/stowReset.git
+[submodule "submodules/multi_clipboards"]
+	path = submodules/multi_clipboards
+	url = git@github.com:rcmdnk/multi_clipboards.git
