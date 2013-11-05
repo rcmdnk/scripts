@@ -44,7 +44,7 @@ echo Su Mo Tu We Th Fr Sa >> $gcalHead
 
 
 # date configuration
-gcalFormat="%d(%a)/%b/%Y:"
+gcalFormat="%a %b %d"
 gcalSEFormat="%m/%d/%Y"
 today=`date +"$gcalFormat"`
 startDateCur=`date -v1d +"$gcalSEFormat"` #first date of this month
@@ -105,7 +105,7 @@ while [ $i -le $nDaysCur ];do
   i=$(($i+1))
 done
 if [ $nextDays -eq 0 ];then
-  endDateCal=endDateCur
+  endDateCal=$endDateCur
 elif [ $nextDays -eq 1 ];then
   endDateCal=`date -v1d -v+1m +"$gcalSEFormat"`
   date -v1d -v+1m +"$gcalFormat" >> $gcalDays
@@ -138,10 +138,10 @@ fi
 
 # get days with tasks and holidays
 gcalcli --military --nocolor $cals agenda $startDateCal $endDateCal\
-  |grep "^[0-9]"> $gcalTasks
+  |grep -v "^ " |grep -v "^$" > $gcalTasks
 gcalcli --military --nocolor --cal=$calHolidays\
   agenda $startDateCal $endDateCal\
-  |grep "^[0-9]"> $gcalHolidays
+  |grep -v "^ " |grep -v "^$"> $gcalHolidays
 
 # make day list for calendar
 rm -f $gcalCalDays
@@ -149,7 +149,7 @@ w=0
 totalDay=0
 while read d;do
   # check holidays
-  if grep -q $d $gcalHolidays;then hFlag=1;
+  if grep -q "$d" $gcalHolidays;then hFlag=1;
   else hFlag=0;fi
   # check Sunday or Saturday
   if [ $w -eq 0 ] || [ $w -eq 6 ];then
@@ -166,14 +166,14 @@ while read d;do
 
   # check tasks
   task=" "
-  if grep -q $d $gcalTasks;then task="'";fi;
+  if grep -q "$d" $gcalTasks;then task="'";fi;
   #echo "task?" $task
 
   # get only date
-  dOnly=`echo ${d%(*}|sed -e 's/^0/ /'`
+  dOnly=`echo "$d"|cut -d" " -f 3`
 
   # check today
-  if [ $d = $today ];then
+  if [ "$d" = "$today" ];then
     #echo "today!"
     att='\e[7;30m'
     if [ $hFlag -eq 1 ];then
