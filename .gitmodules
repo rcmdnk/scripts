@@ -16,3 +16,6 @@
 [submodule "submodules/escape_sequence"]
 	path = submodules/escape_sequence
 	url = git@github.com:rcmdnk/escape_sequence.git
+[submodule "submodules/gtask"]
+	path = submodules/gtask
+	url = git@github.com:rcmdnk/gtask.git

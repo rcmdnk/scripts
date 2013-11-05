@@ -6,6 +6,8 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/multi_clipboards/bin/multi_clipboards"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/escseqcheck"\
+          "submodules/gtask/bin/gtask"\
+          "submodules/gcalcli/gcalcli"\
   )
 instdir="$HOME/usr/bin"
 
