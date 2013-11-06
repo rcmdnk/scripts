@@ -170,7 +170,7 @@ while read d;do
   #echo "task?" $task
 
   # get only date
-  dOnly=`echo "$d"|cut -d" " -f 3`
+  dOnly=`echo "$d"|cut -d" " -f 3|sed "s/^0/ /g"`
 
   # check today
   if [ "$d" = "$today" ];then

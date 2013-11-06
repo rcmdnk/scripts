@@ -7,7 +7,6 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/escseqcheck"\
           "submodules/gtask/bin/gtask"\
-          "submodules/gcalcli/gcalcli"\
   )
 instdir="$HOME/usr/bin"
 
@@ -93,7 +92,7 @@ if [ $dryrun -ne 1 ];then
 else
   echo "*** This is dry run, not install anything ***"
 fi
-files=(`ls *.sh *.py *rb`)
+files=(`ls *.sh *.py *rb 2>/dev/null`)
 for sm_f in "${sm_files[@]}";do
   if [ -f "$sm_f" ];then
     files=("${files[@]}" "$sm_f")
@@ -159,3 +158,10 @@ else
 fi
 echo "  ${exist[@]}"
 echo
+
+# check gcalcli
+if ! type gcalcli >& /dev/null;then
+  echo "If you need gcalcli (for gcalCal or gcalList), do:"
+  echo "   $ cd external/gcalcli"
+  echo "   $ sudo pip install ."
+fi

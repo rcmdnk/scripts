@@ -1,6 +1,3 @@
-[submodule "submodules/gcalcli"]
-	path = submodules/gcalcli
-	url = git@github.com:insanum/gcalcli.git
 [submodule "submodules/evernote_mail"]
 	path = submodules/evernote_mail
 	url = git@github.com:rcmdnk/evernote_mail.git
@@ -19,3 +16,6 @@
 [submodule "submodules/gtask"]
 	path = submodules/gtask
 	url = git@github.com:rcmdnk/gtask.git
+[submodule "external/gcalcli"]
+	path = external/gcalcli
+	url = git@github.com:insanum/gcalcli.git
