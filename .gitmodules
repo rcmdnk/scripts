@@ -19,3 +19,6 @@
 [submodule "external/gcalcli"]
 	path = external/gcalcli
 	url = git@github.com:insanum/gcalcli.git
+[submodule "submodules/apt-cyg"]
+	path = submodules/apt-cyg
+	url = git@github.com:rcmdnk/apt-cyg.git
