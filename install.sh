@@ -7,6 +7,7 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/escseqcheck"\
           "submodules/gtask/bin/gtask"\
+          "submodules/apt-cyg/apt-cyg"\
   )
 instdir="$HOME/usr/bin"
 
@@ -163,5 +164,5 @@ echo
 if ! type gcalcli >& /dev/null;then
   echo "If you need gcalcli (for gcalCal or gcalList), do:"
   echo "   $ cd external/gcalcli"
-  echo "   $ sudo pip install ."
+  echo "   $ pip install ."
 fi
