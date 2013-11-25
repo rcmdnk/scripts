@@ -1,18 +1,15 @@
 #!/bin/bash
 #. ~/.bashrc
 
-# default
-def_output=summary
-
 # parameters
 remaintex=0
-output=$def_output
+output=summary
 exclude=()
 
 # help
 HELP="Usage: $0 [-r] [-f <filename>] [-e <excludename>]
    -r  remain tex file
-   -f  set output file name (default: $def_output)
+   -f  set output file name (default: $output)
    -e  exclude word (can use multiple time)
    -h  print this help
 "
