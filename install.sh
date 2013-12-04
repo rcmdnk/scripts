@@ -3,7 +3,7 @@ exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh')
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
           "submodules/stowReset/bin/stowReset"\
-          "submodules/multi_clipboards/bin/multi_clipboards"\
+          "submodules/multi_clipboard/bin/multi_clipboard"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/escseqcheck"\
           "submodules/gtask/bin/gtask"\
