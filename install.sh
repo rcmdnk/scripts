@@ -2,7 +2,7 @@
 exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh')
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
-          "submodules/stowReset/bin/stowReset"\
+          "submodules/stow_reset/bin/stow_reset"\
           "submodules/multi_clipboard/bin/multi_clipboard"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/escseqcheck"\
@@ -66,7 +66,6 @@ if [[ "$OSTYPE" =~ "cygwin" ]];then
     fi
     t_winpath=$(cygpath -w -a "$target")
     t_link=$(cygpath -w -a "$link")
-    echo "cmd /c mklink $opt $t_link $t_winpath"
     cmd /c mklink $opt "$t_link" "$t_winpath"
   }
 # }}}

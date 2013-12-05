@@ -4,9 +4,6 @@
 [submodule "submodules/trash"]
 	path = submodules/trash
 	url = git@github.com:rcmdnk/trash.git
-[submodule "submodules/stowReset"]
-	path = submodules/stowReset
-	url = git@github.com:rcmdnk/stowReset.git
 [submodule "submodules/escape_sequence"]
 	path = submodules/escape_sequence
 	url = git@github.com:rcmdnk/escape_sequence.git
@@ -22,3 +19,6 @@
 [submodule "submodules/multi_clipboard"]
 	path = submodules/multi_clipboard
 	url = git@github.com:rcmdnk/multi_clipboard.git
+[submodule "submodules/stow_reset"]
+	path = submodules/stow_reset
+	url = git@github.com:rcmdnk/stow_reset
