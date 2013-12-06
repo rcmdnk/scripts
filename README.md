@@ -8,9 +8,9 @@ scripts
 Below commands will make links to scripts in $HOME/usr/bin directory
 If there is a file, it makes backup file (.bak)
 
-    cd ~/tmp
-    git clone --recursive git@github.com:rcmdnk/scripts
-    cd scripts
+    mkdir -p ~/tmp;cd ~/tmp
+    git clone --recursive git@github.com:rcmdnk/windows
+    cd windows
     ./install.sh
 
 
