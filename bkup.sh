@@ -5,7 +5,7 @@ if [ $# -ne 2 ];then
   exit
 fi
 
-logfile=~/tmp/bkup.log
+logfile=$(mktemp 2>/dev/null||mktemp -t tmp)
 
 checkdir() {
   #echo $1
