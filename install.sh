@@ -8,6 +8,7 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/escape_sequence/bin/escseqcheck"\
           "submodules/gtask/bin/gtask"\
           "submodules/apt-cyg/apt-cyg"\
+          "submodules/ascii_art/bin/ascii_art"\
   )
 instdir="$HOME/usr/bin"
 
@@ -96,6 +97,8 @@ files=(`ls *.sh *.py *rb 2>/dev/null`)
 for sm_f in "${sm_files[@]}";do
   if [ -f "$sm_f" ];then
     files=("${files[@]}" "$sm_f")
+  else
+    echo "WARNING: $sm_f is not found"
   fi
 done
 
