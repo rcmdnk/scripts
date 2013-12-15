@@ -22,3 +22,6 @@
 [submodule "submodules/stow_reset"]
 	path = submodules/stow_reset
 	url = git@github.com:rcmdnk/stow_reset
+[submodule "submodules/ascii_art"]
+	path = submodules/ascii_art
+	url = git@github.com:rcmdnk/ascii_art
