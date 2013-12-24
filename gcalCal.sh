@@ -124,7 +124,7 @@ gcals=(`gcalcli --nocolor list|grep owner|sed -e 's/  owner  //'`)
 
 # make cal argument w/o holidays
 cals=""
-for l in ${gcals[*]};do
+for l in "${gcals[@]}";do
   if ! echo "$l"| grep -q "$calHolidays";then
     cals="$cals --cal=$l"
   fi
