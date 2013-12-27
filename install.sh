@@ -8,9 +8,10 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/escape_sequence/bin/escseqcheck"\
           "submodules/gtask/bin/gtask"\
           "submodules/apt-cyg/apt-cyg"\
-          "submodules/ascii_art/bin/ascii_art"\
   )
-instdir="$HOME/usr/bin"
+sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
+  )
+prefix="$HOME/usr/"
 
 backup="bak"
 overwrite=1
@@ -21,22 +22,22 @@ curdir=`pwd -P`
 # help
 HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
 
-Make links of scripts (default:in $instdir)
+Make links of scripts (default:in $prefix/bin, $prefix/etc)
 
 Arguments:
       -b  Set backup postfix (default: make *.bak file)
           Set \"\" if backups are not necessary
       -e  Set additional exclude file (default: ${exclude[@]})
-      -i  Set install directory (default: $instdir)
+      -p  Set install directory prefix (default: $prefix)
       -n  Don't overwrite if file is already exist
       -d  Dry run, don't install anything
       -h  Print Help (this message) and exit
 "
-while getopts b:e:i:ndh OPT;do
+while getopts b:e:p:ndh OPT;do
   case $OPT in
     "b" ) backup=$OPTARG ;;
     "e" ) exclude=(${exclude[@]} "$OPTARG") ;;
-    "i" ) instdir="$OPTARG" ;;
+    "p" ) prefix="$OPTARG" ;;
     "n" ) overwrite=0 ;;
     "d" ) dryrun=1 ;;
     "h" ) echo "$HELP" 1>&2; exit ;;
@@ -84,12 +85,13 @@ else
 fi
 echo
 
-echo "**********************************************"
-echo "Install X.sh to $instdir/X"
-echo "**********************************************"
+echo "*************************************************"
+echo "Install X(.sh) to $prefix/bin/X or $prefix/etc/X"
+echo "*************************************************"
 echo
 if [ $dryrun -ne 1 ];then
-  mkdir -p $instdir
+  mkdir -p $prefix/bin
+  mkdir -p $prefix/etc
 else
   echo "*** This is dry run, not install anything ***"
 fi
@@ -122,25 +124,77 @@ for f in "${files[@]}";do
   if [ $dryrun -eq 1 ];then
     install=0
   fi
-  if [ "`ls "$instdir/$name" 2>/dev/null`" != "" ];then
+  if [ "`ls "$prefix/bin/$name" 2>/dev/null`" != "" ];then
     exist=(${exist[@]} "$name")
     if [ $dryrun -eq 1 ];then
       echo -n ""
     elif [ $overwrite -eq 0 ];then
       install=0
     elif [ "$backup" != "" ];then
-      mv "$instdir/$name" "$instdir/${name}.$backup"
+      mv "$prefix/bin/$name" "$prefix/bin/${name}.$backup"
     else
-      rm "$instdir/$name"
+      rm "$prefix/bin/$name"
     fi
   else
     newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
     chmod 755 "$curdir/$f"
-    ln -s "$curdir/$f" "$instdir/$name"
+    ln -s "$curdir/$f" "$prefix/bin/$name"
   fi
 done
+
+
+# etc
+files=()
+for sm_f in "${sm_files_etc[@]}";do
+  if [ -f "$sm_f" ];then
+    files=("${files[@]}" "$sm_f")
+  else
+    echo "WARNING: $sm_f is not found"
+  fi
+done
+
+for f in "${files[@]}";do
+  for e in ${exclude[@]};do
+    flag=0
+    if [ "$f" = "$e" ];then
+      flag=1
+      break
+    fi
+  done
+  if [ $flag = 1 ];then
+    continue
+  fi
+  name=$(basename $f)
+  name=${name%.sh}
+  name=${name%.py}
+  name=${name%.rb}
+
+  install=1
+  if [ $dryrun -eq 1 ];then
+    install=0
+  fi
+  if [ "`ls "$prefix/etc/$name" 2>/dev/null`" != "" ];then
+    exist=(${exist[@]} "$name")
+    if [ $dryrun -eq 1 ];then
+      echo -n ""
+    elif [ $overwrite -eq 0 ];then
+      install=0
+    elif [ "$backup" != "" ];then
+      mv "$prefix/etc/$name" "$prefix/etc/${name}.$backup"
+    else
+      rm "$prefix/etc/$name"
+    fi
+  else
+    newlink=(${newlink[@]} "$name")
+  fi
+  if [ $install -eq 1 ];then
+    chmod 755 "$curdir/$f"
+    ln -s "$curdir/$f" "$prefix/etc/$name"
+  fi
+done
+echo ""
 echo ""
 if [ $dryrun -eq 1 ];then
   echo "Following files don't exist:"

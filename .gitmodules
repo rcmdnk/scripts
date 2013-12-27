@@ -22,3 +22,6 @@
 [submodule "submodules/stow_reset"]
 	path = submodules/stow_reset
 	url = git@github.com:rcmdnk/stow_reset
+[submodule "submodules/sd_cl"]
+	path = submodules/sd_cl
+	url = git@github.com:rcmdnk/sd_cl
