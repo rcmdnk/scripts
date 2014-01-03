@@ -6,6 +6,7 @@ maxline=20
 
 # gcal list file
 gcallist=~/.gcallist
+tmpfile=$(mktemp 2>/dev/null||mktemp -t tmp)
 
 # List of calenders
 cals="--cal=gmail --cal=Facebook --cal=Time"
@@ -22,15 +23,17 @@ cur_day=""
 cur_day_show=0
 events=("")
 lines=()
-gcalcli --military --nocolor $cals agenda $start $end > ${gcallist}.tmp
+gcalcli --military --nocolor $cals agenda $start $end > "$tmpfile"
 IFS_ORIG=$IFS
 IFS=$'\n'
 while read line;do
   if [ "$line" != "" ];then
     lines=("${lines[@]}" "$line")
   fi
-done < ${gcallist}.tmp
-rm -f ${gcallist}.tmp
+done < "$tmpfile"
+rm -f "$tmpfile"
+
+
 IFS=$IFS_ORIG
 nline=0
 for line in "${lines[@]}";do
@@ -69,8 +72,11 @@ for line in "${lines[@]}";do
   if [ $nline -ge $maxline ];then
     break
   fi
-done > $gcallist
+done > "$tmpfile"
+if [ $(cat $tmpfile|wc -l) -gt 0 ];then
+  mv "$tmpfile" "$gcallist"
+fi
+rm -f "$tmpfile"
 
 # show the list
-#clear
 cat $gcallist

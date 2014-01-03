@@ -9,39 +9,47 @@ gcalDays=~/.gcalDays
 gcalTasks=~/.gcalTasks
 gcalHolidays=~/.gcalHolidays
 gcalCalDays=~/.gcalCalDays
-gcalHead=~/.gcalHead
-touch $gcalDays
-touch $gcalTasks
-touch $gcalHolidays
-touch $gcalCalDays
-touch $gcalHead
+gcalCal=~/.gcalCal
+touch "$gcalDays"
+touch "$gcalTasks"
+touch "$gcalHolidays"
+touch "$gcalCalDays"
+touch "$gcalHead"
 
 # calendar function
 myCal (){
-  cat $gcalHead
+
+  # gcalCal tmp
+  tmpfile=$(mktemp 2>/dev/null||mktemp -t tmp)
+
+  # this month
+  date +"      %b %Y" > "$tmpfile"
+  echo Su Mo Tu We Th Fr Sa >> "$tmpfile"
+
   w=0
   while read -r d;do
     if echo $d|grep -q "'";then
-      printf "$d"
+      printf "$d" >> "$tmpfile"
     else
-      printf "$d "
+      printf "$d " >> "$tmpfile"
     fi
-    w=$(($w+1))
+    w=$((w+1))
     if [ $w -eq 7 ];then
-      echo ""
+      echo "" >> "$tmpfile"
       w=0
     fi
-  done < $gcalCalDays
+  done < "$gcalCalDays"
+
+  if [ $(cat $tmpfile|wc -l) -ge 3 ];then
+    cp "$tmpfile" "$gcalCal"
+  fi
+  rm -f $tmpfile
+  cat "$gcalCal"
+
 }
 
 # fist display
 #myCal
-
-
-# this month
-date +"      %b %Y" > $gcalHead
-echo Su Mo Tu We Th Fr Sa >> $gcalHead
-
 
 # date configuration
 gcalFormat="%a %b %d"
