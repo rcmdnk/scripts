@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 NPROCESSES=10
 echo "  CPU  MEM  CMD"
 ps axr -o %cpu -o %mem -o comm|head -n$((NPROCESSES+1))|tail -n$NPROCESSES| while read line;do

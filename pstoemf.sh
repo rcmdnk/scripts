@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if [ $# -eq 1 ];then
   epsfile=${1%.eps}
   emffile=$epsfile

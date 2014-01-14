@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh')
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
