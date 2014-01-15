@@ -25,3 +25,6 @@
 [submodule "submodules/sd_cl"]
 	path = submodules/sd_cl
 	url = git@github.com:rcmdnk/sd_cl
+[submodule "submodules/sentaku"]
+	path = submodules/sentaku
+	url = git@github.com:rcmdnk/sentaku
