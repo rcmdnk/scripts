@@ -7,9 +7,9 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/escseqcheck"\
           "submodules/gtask/bin/gtask"\
-          "submodules/apt-cyg/apt-cyg"\
           "submodules/sentaku/bin/sentaku"\
           "submodules/sentaku/bin/ddv"\
+          "external/apt-cyg/apt-cyg"\
   )
 sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
   )
