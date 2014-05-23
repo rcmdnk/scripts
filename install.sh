@@ -14,7 +14,6 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
   )
 sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
   )
-prefix="$HOME/usr/"
 
 backup="bak"
 overwrite=1
