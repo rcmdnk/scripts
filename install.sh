@@ -21,6 +21,8 @@ dryrun=0
 newlink=()
 exist=()
 curdir=`pwd -P`
+prefix=$HOME/usr
+
 # help
 HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
 
@@ -73,6 +75,15 @@ if [[ "$OSTYPE" =~ "cygwin" ]];then
     cmd /c mklink $opt "$t_link" "$t_winpath" > /dev/null
   }
 # }}}
+fi
+
+# make a link ~/usr/share/git to ~/Dropbox/08_Settings/Git, for cronjob
+if echo $curdir|grep -q Drop;then
+  link=~/usr/share/git
+  if [ ! -L $link ];then
+    mkdir -p $(dirname $link)
+    ln -s $(dirname $curdir) $link
+  fi
 fi
 
 echo "**********************************************"
