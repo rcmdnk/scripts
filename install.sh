@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh')
+exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'updateGIT.sh')
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
           "submodules/stow_reset/bin/stow_reset"\
@@ -77,12 +77,19 @@ if [[ "$OSTYPE" =~ "cygwin" ]];then
 # }}}
 fi
 
-# make a link ~/usr/share/git to ~/Dropbox/08_Settings/Git, for cronjob
-if echo $curdir|grep -q Drop;then
-  link=~/usr/share/git
-  if [ ! -L $link ];then
-    mkdir -p $(dirname $link)
-    ln -s $(dirname $curdir) $link
+# make a link ~/usr/share/git to /path/to/Git, for cronjob
+gitdirname=$(basename $(dirname $curdir))
+gitdir=$prefix/share/git
+if echo $gitdirname| grep -q -i git;then
+  if ! echo $curdir|grep -q $gitdir;then
+    if [ ! -L $gitdir ] && [ ! -d $gitdir ];then
+      mkdir -p $(dirname $gitdir)
+      ln -s $(dirname $curdir) $gitdir
+    fi
+  fi
+  if [ ! -f $gitdir/updateGIT.sh ];then
+    ln -s $curdir/updateGIT.sh $gitdir/updateGIT.sh
+    chmod 755 $gitdir/updateGIT.sh
   fi
 fi
 
