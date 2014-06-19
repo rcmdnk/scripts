@@ -8,6 +8,7 @@ for dir in dotfiles scripts;do
     cd submodules
     git submodule foreach git update
     git update
+    ./install -b ""
     cd ../
   fi
 done
