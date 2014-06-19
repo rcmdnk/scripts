@@ -18,7 +18,7 @@
 # mail setting
 mailto=""
 if [ -f ~/.mailto ];then
-  mailto=`grep MAILTO ~/.mailto|cut -d= -f2`
+  mailto=`grep "^MAILTO" ~/.mailto|head -n1|cut -d= -f2`
   mailto=`eval echo $mailto`
 fi
 
