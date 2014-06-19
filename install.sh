@@ -210,7 +210,6 @@ for f in "${files[@]}";do
     newlink=(${newlink[@]} "$name")
   fi
   if [ $install -eq 1 ];then
-    chmod 755 "$curdir/$f"
     ln -s "$curdir/$f" "$prefix/etc/$name"
   fi
 done
