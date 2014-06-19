@@ -8,13 +8,13 @@ port=$2
 
 pid=""
 while [ 1 ];do
-  ret=$(ssh -x $host netstat -a|grep $port 2>&1) >& /dev/null
+  ret=$(ssh -x $host netstat -a) >& /dev/null
   if [ $? -ne 0 ];then
     # Could be offline
-    #echo "Cound not resolve hostname $host
+    echo "Cound not resolve hostname $host"
     exit
   fi
-  if echo "$ret"|grep -q "LISTEN";then
+  if echo "$ret"|grep $port|grep -q "LISTEN";then
     exit 0
   fi
   if [ "$pid" != "" ];then
