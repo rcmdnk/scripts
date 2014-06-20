@@ -7,7 +7,7 @@ for dir in dotfiles scripts;do
     cd $dir
     git submodule foreach git update
     git update
-    ./install.sh -b ""
+    ./install.sh -b "" >& /dev/null
     cd ../
   fi
 done
