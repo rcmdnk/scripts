@@ -6,20 +6,19 @@ fi
 host=$1
 port=$2
 
-pid=""
 while [ 1 ];do
   ret=$(ssh -x $host netstat -a) >& /dev/null
   if [ $? -ne 0 ];then
     # Could be offline
-    echo "Cound not resolve hostname $host"
+    #echo "Cound not resolve hostname $host"
     exit
   fi
   if echo "$ret"|grep $port|grep -q "LISTEN";then
     exit 0
   fi
-  if [ "$pid" != "" ];then
-    kill -kill $pid >& /dev/null
+  pids=$(ps -u$USER|grep "ssh -x -N -R ${port}:localhost:22 ${host}"|grep -v grep|awk '{print $2}')
+  if [ "$pids" != "" ];then
+    kill -kill $pids >& /dev/null
   fi
   ssh -x -N -R $port:localhost:22 $host >& /dev/null &
-  pid=$!
 done
