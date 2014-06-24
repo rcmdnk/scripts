@@ -14,7 +14,6 @@ touch "$gcalDays"
 touch "$gcalTasks"
 touch "$gcalHolidays"
 touch "$gcalCalDays"
-touch "$gcalHead"
 
 # calendar function
 myCal (){
