@@ -11,3 +11,6 @@ for dir in dotfiles scripts;do
     cd ../
   fi
 done
+
+# update vim plugins by NeoBundle
+vim  -c "silent NeoBundleUpdate" -c "quit"  >&/dev/null
