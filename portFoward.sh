@@ -7,7 +7,7 @@ host=$1
 port=$2
 
 while [ 1 ];do
-  ret=$(ssh -x $host netstat -a) >& /dev/null
+  ret=$(ssh -x $host netstat -a 2>/dev/null)
   if [ $? -ne 0 ];then
     # Could be offline
     #echo "Cound not resolve hostname $host"
