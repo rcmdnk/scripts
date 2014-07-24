@@ -128,6 +128,10 @@ fi
 
 # get the list of my google calendars
 gcals=(`gcalcli --nocolor list|grep owner|sed -e 's/  owner  //'`)
+#orig_ifs=$IFS
+#IFS=$'\n'
+#gcals=($(gcalcli --nocolor list|awk  'NR>2{for(i=2;i<NF;i++){printf("%s%s",$i, OFS=" ")}print $NF}'))
+#IFS=$orig_ifs
 
 # make cal argument w/o holidays
 cals=""
