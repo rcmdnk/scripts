@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 . ~/.bashrc
 
-# holiday calendar
-calHolidays="Holidays"
+# calendars
+calHolidays=()
+calExclude=()
+
+OPTNUM=0
+while getopts h:e: OPT;do
+  OPTNUM=`expr $OPTNUM + 1`
+  case $OPT in
+    "h" ) calHolidays=("${calHolidays[@]}" "$OPTARG") ;;
+    "e" ) calExclude=("${calExclude[@]}" "$OPTARG") ;;
+  esac
+done
+shift $(($OPTIND - 1))
 
 # date files
 gcalDays=~/.gcalDays
@@ -46,9 +57,6 @@ myCal (){
   cat "$gcalCal"
 
 }
-
-# fist display
-#myCal
 
 # date configuration
 gcalFormat="%a %b %d"
@@ -103,111 +111,128 @@ else
   i=${prevDays}
   while [ $i -gt 0 ];do
     date -v1d -v-${i}d +"$gcalFormat" >> $gcalDays
-    i=$(($i-1))
+    ((i--))
   done
 fi
 i=1
 while [ $i -le $nDaysCur ];do
   date -v${i}d +"$gcalFormat" >> $gcalDays
-  i=$(($i+1))
+  ((i++))
 done
-if [ $nextDays -eq 0 ];then
-  endDateCal=$endDateCur
-elif [ $nextDays -eq 1 ];then
-  endDateCal=`date -v1d -v+1m +"$gcalSEFormat"`
-  date -v1d -v+1m +"$gcalFormat" >> $gcalDays
-else
-  endDateCal=`date -v1d -v+1m -v+${nextDays}d +"$gcalSEFormat"`
-  date -v1d -v+1m +"$gcalFormat" >> $gcalDays
-  i=1
-  while [ $i -lt $nextDays ];do
-    date -v1d -v+1m -v+${i}d +"$gcalFormat" >> $gcalDays
-    i=$(($i+1))
-  done
-fi
-
-# get the list of my google calendars
-gcals=(`gcalcli --nocolor list|grep owner|sed -e 's/  owner  //'`)
-#orig_ifs=$IFS
-#IFS=$'\n'
-#gcals=($(gcalcli --nocolor list|awk  'NR>2{for(i=2;i<NF;i++){printf("%s%s",$i, OFS=" ")}print $NF}'))
-#IFS=$orig_ifs
-
-# make cal argument w/o holidays
-cals=""
-for l in "${gcals[@]}";do
-  if ! echo "$l"| grep -q "$calHolidays";then
-    cals="$cals --cal=$l"
+# endDate for gcalcli must be +1 day
+endDateCal=$(date -v+1m -v1d -v+$((nextDays+1))d +"$gcalSEFormat")
+i=0
+for((i=0; i<$nextDays; i++));do
+  if [ $i -eq 0 ];then
+    date -v+1m -v1d +"$gcalFormat" >> $gcalDays
+  else
+    date -v+1m -v1d -v+${i}d +"$gcalFormat" >> $gcalDays
   fi
+  ((i++))
 done
-
-# check if there are more than 1 calendars
-if [ "$cals" = "" ];then
-  echo "no cals!"
-  exit
-fi
 
 # get days with tasks and holidays
-gcalcli --military --nocolor $cals agenda $startDateCal $endDateCal\
-  |grep -v "^ " |grep -v "^$" > $gcalTasks
-gcalcli --military --nocolor --cal=$calHolidays\
-  agenda $startDateCal $endDateCal\
-  |grep -v "^ " |grep -v "^$"> $gcalHolidays
+orig_ifs=$IFS
+IFS=$'\t\n'
+lines=($(gcalcli --military --nocolor --details=calendar agenda $startDateCal $endDateCal\
+  |grep -v "^$"))
+ret=$?
+IFS=$orig_ifs
 
-# make day list for calendar
-rm -f $gcalCalDays
-w=0
-totalDay=0
-while read d;do
-  # check holidays
-  if grep -q "$d" $gcalHolidays;then hFlag=1;
-  else hFlag=0;fi
-  # check Sunday or Saturday
-  if [ $w -eq 0 ] || [ $w -eq 6 ];then
-    hFlag=1
-  fi
-  #echo "holiday?" $hFlag
-
-  # check previous month or next month
-  notCur=0
-  if [ $totalDay -lt $prevDays ] || [ $totalDay -ge $(($prevDays+$nDaysCur)) ];then
-    notCur=1
-  fi
-  #echo "notCur?" $notCur
-
-  # check tasks
-  task=" "
-  if grep -q "$d" $gcalTasks;then task="'";fi;
-  #echo "task?" $task
-
-  # get only date
-  dOnly=`echo "$d"|cut -d" " -f 3|sed "s/^0/ /g"`
-
-  # check today
-  if [ "$d" = "$today" ];then
-    #echo "today!"
-    att='\e[7;30m'
-    if [ $hFlag -eq 1 ];then
-      att=$att'\e[22;4m'
+if [ $? -eq 0 ];then
+  rm -f $gcalTasks $gcalHolidays
+  touch $gcalTasks $gcalHolidays
+  for line in "${lines[@]}";do
+    if [ "${line:0:1}" = " " ];then
+      l=$(echo "$line")
+    else
+      date=$(echo $line|awk '{for(i=1;i<3;i++){printf("%s ",$i)}print $3}')
+      l=$(echo $line|awk '{for(i=4;i<NF;i++){printf("%s ",$i)}print $NF}')
     fi
-    echo ${att}${dOnly}'\e[0m'"$task" >> $gcalCalDays
-  # other dates
-  else
-    att='\e[1m'
-    if [ $hFlag -eq 1 ];then
-      att=$att'\e[4m'
+    if [[ "${l}" =~ "Calendar" ]];then
+      cal=$(echo $l|awk '{for(i=2;i<NF;i++){printf("%s ",$i)}print $NF}')
+      exclude=0
+      for h in "${calExclude[@]}";do
+        if [[ "$cal" =~ "$h" ]];then
+          exclude=1
+          break
+        fi
+      done
+      if [ $exclude -eq 1 ];then
+        continue
+      fi
+      isholiday=0
+      for h in "${calHolidays[@]}";do
+        if [[ "$cal" =~ "$h" ]];then
+          isholiday=1
+          break
+        fi
+      done
+      if [ $isholiday -eq 1 ];then
+        echo "$date $task" >> $gcalHolidays
+      else
+        echo "$date $task" >> $gcalTasks
+      fi
+    else
+      task=$l
     fi
-    if [ $notCur -eq 1 ];then
-      att=$att'\e[22m'
+  done
+  
+  # make day list for calendar
+  rm -f $gcalCalDays
+  w=0
+  totalDay=0
+  while read d;do
+    # check holidays
+    if grep -q "$d" $gcalHolidays;then hFlag=1;
+    else hFlag=0;fi
+    # check Sunday or Saturday
+    if [ $w -eq 0 ] || [ $w -eq 6 ];then
+      hFlag=1
     fi
-    echo ${att}${dOnly}'\e[0m'"$task" >> $gcalCalDays
-  fi
-  w=$(($w+1))
-  if [ $w -eq 7 ];then
-    w=0
-  fi
-  totalDay=$(($totalDay+1))
-done < $gcalDays
+    #echo "holiday?" $hFlag
+  
+    # check previous month or next month
+    notCur=0
+    if [ $totalDay -lt $prevDays ] || [ $totalDay -ge $(($prevDays+$nDaysCur)) ];then
+      notCur=1
+    fi
+    #echo "notCur?" $notCur
+  
+    # check tasks
+    task=" "
+    if grep -q "$d" $gcalTasks;then task="'";fi;
+    #echo "task?" $task
+  
+    # get only date
+    dOnly=`echo "$d"|cut -d" " -f 3|sed "s/^0/ /g"`
+  
+    # check today
+    if [ "$d" = "$today" ];then
+      #echo "today!"
+      att='\e[7;30m'
+      if [ $hFlag -eq 1 ];then
+        att=$att'\e[22;4m'
+      fi
+      echo ${att}${dOnly}'\e[0m'"$task" >> $gcalCalDays
+    # other dates
+    else
+      att='\e[1m'
+      if [ $hFlag -eq 1 ];then
+        att=$att'\e[4m'
+      fi
+      if [ $notCur -eq 1 ];then
+        att=$att'\e[22m'
+      fi
+      echo ${att}${dOnly}'\e[0m'"$task" >> $gcalCalDays
+    fi
+    w=$(($w+1))
+    if [ $w -eq 7 ];then
+      w=0
+    fi
+    totalDay=$(($totalDay+1))
+  done < $gcalDays
+fi
 
 # redo with new information
 #clear
