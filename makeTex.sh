@@ -118,7 +118,8 @@ bibtex $output
 bibtex $output
 platex $output
 platex $output
-dvipdfm -l $output.dvi
+#dvipdfm -l $output.dvi
+dvipdfmx -l $output.dvi
 
 #l2h summary
 rm -rf $output.log
