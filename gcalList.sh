@@ -23,7 +23,8 @@ cur_day=""
 cur_day_show=0
 events=("")
 lines=()
-gcalcli --military --nocolor "$cals" agenda "$start" "$end" > "$tmpfile"
+gcalcli --military --nocolor $cals agenda "$start" "$end" > "$tmpfile"
+echo gcalcli --military --nocolor "$cals" agenda "$start" "$end"
 IFS_ORIG=$IFS
 IFS=$'\n'
 while read line;do
