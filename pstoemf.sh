@@ -9,4 +9,4 @@ else
   echo "usage: pstoemf epsfile [emffile]"
   exit
 fi
-pstoedit -f emf $epsfile.eps $emffile.emf
+pstoedit -f emf "$epsfile.eps" "$emffile.emf"

@@ -15,7 +15,7 @@ HELP="Usage: $0 [-r] [-f <filename>] [-e <excludename>]
 "
 
 while getopts rf:e:h OPT;do
-  OPTNUM=`expr $OPTNUM + 1`
+  ((OPTNUM++))
   case $OPT in
     "r" ) remaintex=1 ;;
     "f" ) output=$OPTARG ;;
@@ -94,43 +94,43 @@ cat << EOF > ${output}.tex
 \clearpage
 EOF
 
-ls -v *.eps > eps.dat
+ls -v ./*.eps > eps.dat
 while read file;do
   flag=1
   for e in ${exclude[*]};do
-    if echo $file|grep -q $e;then
+    if echo "$file"|grep -q $e;then
       flag=0
       break
     fi
   done
   if [ $flag -eq 0 ];then continue;fi
-  epsname=`echo ${file%.eps}`
-  name=`echo $epsname|sed -e 's/_/\\\_/g'`
-  echo "\somehisto{${epsname}}{${name}}" >> $output.tex
+  epsname=${file%.eps}
+  name=$(echo "$epsname"|sed -e 's/_/\\\_/g')
+  echo "\somehisto{${epsname}}{${name}}" >> "$output.tex"
 done < eps.dat
 rm -f eps.dat
-echo "" >> $outptu.tex
-echo "\end{document}" >> $output.tex
+echo "" >> "$outptu.tex"
+echo "\end{document}" >> "$output.tex"
 
-platex $output
-platex $output
-bibtex $output
-bibtex $output
-platex $output
-platex $output
-#dvipdfm -l $output.dvi
-dvipdfmx -l $output.dvi
+platex "$output"
+platex "$output"
+bibtex "$output"
+bibtex "$output"
+platex "$output"
+platex "$output"
+#dvipdfm -l "$output.dvi"
+dvipdfmx -l "$output.dvi"
 
 #l2h summary
-rm -rf $output.log
-rm -rf $output.lof
-rm -rf $output.dvi
-rm -rf $output.aux
-rm -rf $output.blg
-rm -rf $output.bbl
-rm -rf $output.ps
-rm -rf $output.out
+rm -rf "$output.log"
+rm -rf "$output.lof"
+rm -rf "$output.dvi"
+rm -rf "$output.aux"
+rm -rf "$output.blg"
+rm -rf "$output.bbl"
+rm -rf "$output.ps"
+rm -rf "$output.out"
 if [ $remaintex -eq 0 ];then
-  rm -rf $output.tex
+  rm -rf "$output.tex"
 fi
 

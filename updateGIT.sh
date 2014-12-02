@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 . ~/.bashrc
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 for dir in dotfiles scripts;do
   if [ -d $dir ];then

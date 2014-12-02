@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-vimdiff $6 $7
+vimdiff "$6" "$7"

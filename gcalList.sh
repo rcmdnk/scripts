@@ -15,15 +15,15 @@ cals="--cal=gmail --cal=Facebook --cal=Time"
 # Time    : Calendars for each location (JapanTime, etc...)
 
 # set time
-start=`date +"%m/%d/%y"` #today
-end=`date -v +2m +"%m/%d/%y"` #two months later
+start=$(date +"%m/%d/%y") #today
+end=$(date -v +2m +"%m/%d/%y") #two months later
 
 # get tasks
 cur_day=""
 cur_day_show=0
 events=("")
 lines=()
-gcalcli --military --nocolor $cals agenda $start $end > "$tmpfile"
+gcalcli --military --nocolor "$cals" agenda "$start" "$end" > "$tmpfile"
 IFS_ORIG=$IFS
 IFS=$'\n'
 while read line;do
@@ -73,7 +73,7 @@ for line in "${lines[@]}";do
     break
   fi
 done > "$tmpfile"
-if [ $(cat $tmpfile|wc -l) -gt 0 ];then
+if [ "$(wc -l < "$tmpfile")" -gt 0 ];then
   mv "$tmpfile" "$gcallist"
 fi
 rm -f "$tmpfile"

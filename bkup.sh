@@ -8,8 +8,8 @@ fi
 logfile=$(mktemp 2>/dev/null||mktemp -t tmp)
 
 checkdir() {
-  #echo $1
-  for file in `ls "${1}"`;do
+  files=$(ls -A "${1}")
+  for file in "${files[@]}";do
     #echo -n ${1}/${file}" "
     if [ ! -e "${1}/${file}" ];then
       #echo "does not exist (maybe including space in name)"
@@ -29,8 +29,8 @@ checkdir() {
         mkdir -p "${2}/${file}"
         checkdir "${1}/${file}" "${2}/${file}"
       else
-        SIZE=`du -ks "${1}/${file}" |awk '{print $1}'`
-        if [ $SIZE -gt 1000 ];then
+        SIZE=$(du -ks "${1}/${file}" |awk '{print $1}')
+        if [ "$SIZE" -gt 1000 ];then
           #echo is over 1000kb
           if [ -e "${2}/${file}" ];then
             #echo "there are file in target to link"
@@ -51,4 +51,4 @@ checkdir() {
 }
 
 #echo backup $1 to $2
-checkdir "$1" "$2" >> $logfile 2>&1
+checkdir "$1" "$2" >> "$logfile" 2>&1

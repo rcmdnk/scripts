@@ -7,13 +7,13 @@ calExclude=()
 
 OPTNUM=0
 while getopts h:e: OPT;do
-  OPTNUM=`expr $OPTNUM + 1`
+  OPTNUM=$((OPTNUM + 1))
   case $OPT in
     "h" ) calHolidays=("${calHolidays[@]}" "$OPTARG") ;;
     "e" ) calExclude=("${calExclude[@]}" "$OPTARG") ;;
   esac
 done
-shift $(($OPTIND - 1))
+shift $((OPTIND - 1))
 
 # date files
 gcalDays=~/.gcalDays
@@ -38,10 +38,10 @@ myCal (){
 
   w=0
   while read -r d;do
-    if echo $d|grep -q "'";then
-      printf "$d" >> "$tmpfile"
+    if echo "$d"|grep -q "'";then
+      printf "%s" "$d" >> "$tmpfile"
     else
-      printf "$d " >> "$tmpfile"
+      printf "%s" "$d " >> "$tmpfile"
     fi
     w=$((w+1))
     if [ $w -eq 7 ];then
@@ -50,10 +50,10 @@ myCal (){
     fi
   done < "$gcalCalDays"
 
-  if [ $(cat $tmpfile|wc -l) -ge 3 ];then
+  if [ "$(wc -l < "$tmpfile")" -ge 3 ];then
     cp "$tmpfile" "$gcalCal"
   fi
-  rm -f $tmpfile
+  rm -f "$tmpfile"
   cat "$gcalCal"
 
 }
@@ -61,12 +61,12 @@ myCal (){
 # date configuration
 gcalFormat="%a %b %d"
 gcalSEFormat="%m/%d/%Y"
-today=`date +"$gcalFormat"`
-startDateCur=`date -v1d +"$gcalSEFormat"` #first date of this month
-endDateCur=`date -v1d -v+1m -v-1d +"$gcalSEFormat"` #end date of this month
-endDatePrev=`date -v1d -v-1d +"$gcalSEFormat"` #end date of previous month
-startDayCur=`date -v1d +%a` #first day of this month
-endDayCur=`date -v1d -v+1m -v-1d +%a` #end day of this month
+today=$(date +"$gcalFormat")
+startDateCur=$(date -v1d +"$gcalSEFormat") #first date of this month
+#endDateCur=$(date -v1d -v+1m -v-1d +"$gcalSEFormat") #end date of this month
+#endDatePrev=$(date -v1d -v-1d +"$gcalSEFormat") #end date of previous month
+startDayCur=$(date -v1d +%a) #first day of this month
+endDayCur=$(date -v1d -v+1m -v-1d +%a) #end day of this month
 
 if [ "$startDayCur" = "Sun" ];then
   prevDays=0
@@ -100,14 +100,14 @@ elif [ "$endDayCur" = "Sat" ];then
 fi
 
 # number of days in this month
-nDaysCur=`date -v1d -v+1m -v-1d +%d`
+nDaysCur=$(date -v1d -v+1m -v-1d +%d)
 
 # make day list
 rm -f $gcalDays
 if [ $prevDays -eq 0 ];then
   startDateCal=$startDateCur
 else
-  startDateCal=`date -v1d -v-${prevDays}d +"$gcalSEFormat"`
+  startDateCal=$(date -v1d -v-${prevDays}d +"$gcalSEFormat")
   i=${prevDays}
   while [ $i -gt 0 ];do
     date -v1d -v-${i}d +"$gcalFormat" >> $gcalDays
@@ -115,14 +115,14 @@ else
   done
 fi
 i=1
-while [ $i -le $nDaysCur ];do
+while [ "$i" -le "$nDaysCur" ];do
   date -v${i}d +"$gcalFormat" >> $gcalDays
   ((i++))
 done
 # endDate for gcalcli must be +1 day
 endDateCal=$(date -v+1m -v1d -v+$((nextDays+1))d +"$gcalSEFormat")
 i=0
-for((i=0; i<$nextDays; i++));do
+for((i=0; i<nextDays; i++));do
   if [ $i -eq 0 ];then
     date -v+1m -v1d +"$gcalFormat" >> $gcalDays
   else
@@ -134,9 +134,9 @@ done
 # get days with tasks and holidays
 orig_ifs=$IFS
 IFS=$'\t\n'
-lines=($(gcalcli --military --nocolor --details=calendar agenda $startDateCal $endDateCal\
+lines=($(gcalcli --military --nocolor --details=calendar agenda "$startDateCal" "$endDateCal"\
   |grep -v "^$"))
-ret=$?
+#ret=$?
 IFS=$orig_ifs
 
 if [ $? -eq 0 ];then
@@ -149,11 +149,11 @@ if [ $? -eq 0 ];then
       date=$(echo $line|awk '{for(i=1;i<3;i++){printf("%s ",$i)}print $3}')
       l=$(echo $line|awk '{for(i=4;i<NF;i++){printf("%s ",$i)}print $NF}')
     fi
-    if [[ "${l}" =~ "Calendar" ]];then
-      cal=$(echo $l|awk '{for(i=2;i<NF;i++){printf("%s ",$i)}print $NF}')
+    if [[ "${l}" =~ Calendar ]];then
+      cal=$(echo "$l"|awk '{for(i=2;i<NF;i++){printf("%s ",$i)}print $NF}')
       exclude=0
       for h in "${calExclude[@]}";do
-        if [[ "$cal" =~ "$h" ]];then
+        if [[ "$cal" =~ $h ]];then
           exclude=1
           break
         fi
@@ -163,7 +163,7 @@ if [ $? -eq 0 ];then
       fi
       isholiday=0
       for h in "${calHolidays[@]}";do
-        if [[ "$cal" =~ "$h" ]];then
+        if [[ "$cal" =~ $h ]];then
           isholiday=1
           break
         fi
@@ -177,7 +177,7 @@ if [ $? -eq 0 ];then
       task=$l
     fi
   done
-  
+
   # make day list for calendar
   rm -f $gcalCalDays
   w=0
@@ -191,22 +191,22 @@ if [ $? -eq 0 ];then
       hFlag=1
     fi
     #echo "holiday?" $hFlag
-  
+
     # check previous month or next month
     notCur=0
-    if [ $totalDay -lt $prevDays ] || [ $totalDay -ge $(($prevDays+$nDaysCur)) ];then
+    if [ $totalDay -lt $prevDays ] || [ $totalDay -ge $((prevDays+nDaysCur)) ];then
       notCur=1
     fi
     #echo "notCur?" $notCur
-  
+
     # check tasks
     task=" "
     if grep -q "$d" $gcalTasks;then task="'";fi;
     #echo "task?" $task
-  
+
     # get only date
-    dOnly=`echo "$d"|cut -d" " -f 3|sed "s/^0/ /g"`
-  
+    dOnly=$(echo "$d"|cut -d" " -f 3|sed "s/^0/ /g")
+
     # check today
     if [ "$d" = "$today" ];then
       #echo "today!"
@@ -214,7 +214,7 @@ if [ $? -eq 0 ];then
       if [ $hFlag -eq 1 ];then
         att=$att'\e[22;4m'
       fi
-      echo ${att}${dOnly}'\e[0m'"$task" >> $gcalCalDays
+      echo "${att}${dOnly}"'\e[0m'"$task" >> "$gcalCalDays"
     # other dates
     else
       att='\e[1m'
@@ -224,13 +224,13 @@ if [ $? -eq 0 ];then
       if [ $notCur -eq 1 ];then
         att=$att'\e[22m'
       fi
-      echo ${att}${dOnly}'\e[0m'"$task" >> $gcalCalDays
+      echo "${att}${dOnly}"'\e[0m'"$task" >> "$gcalCalDays"
     fi
-    w=$(($w+1))
+    w=$((w+1))
     if [ $w -eq 7 ];then
       w=0
     fi
-    totalDay=$(($totalDay+1))
+    totalDay=$((totalDay+1))
   done < $gcalDays
 fi
 

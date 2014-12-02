@@ -20,7 +20,7 @@ overwrite=1
 dryrun=0
 newlink=()
 exist=()
-curdir=`pwd -P`
+curdir=$(pwd -P)
 prefix=$HOME/usr
 
 # help
@@ -31,7 +31,7 @@ Make links of scripts (default:in $prefix/bin, $prefix/etc)
 Arguments:
       -b  Set backup postfix (default: make *.bak file)
           Set \"\" if backups are not necessary
-      -e  Set additional exclude file (default: ${exclude[@]})
+      -e  Set additional exclude file (default: ${exclude[*]})
       -p  Set install directory prefix (default: $prefix)
       -n  Don't overwrite if file is already exist
       -d  Dry run, don't install anything
@@ -49,7 +49,7 @@ while getopts b:e:p:ndh OPT;do
   esac
 done
 
-if [[ "$OSTYPE" =~ "cygwin" ]];then
+if [[ "$OSTYPE" =~ cygwin ]];then
   # ln wrapper{{{
   function ln {
     opt="/H"
@@ -64,7 +64,7 @@ if [[ "$OSTYPE" =~ "cygwin" ]];then
     if [ $# -eq 2 ];then
       link="$2"
     elif [ $# -eq 1 ];then
-      link=`basename "$target"`
+      link=$(basename "$target")
     else
       echo "usage: ln [-s] <target> [<link>]"
       echo "       -s for symbolic link, otherwise make hard link"
@@ -72,24 +72,24 @@ if [[ "$OSTYPE" =~ "cygwin" ]];then
     fi
     t_winpath=$(cygpath -w -a "$target")
     t_link=$(cygpath -w -a "$link")
-    cmd /c mklink $opt "$t_link" "$t_winpath" > /dev/null
+    cmd /c mklink "$opt" "$t_link" "$t_winpath" > /dev/null
   }
 # }}}
 fi
 
 # make a link ~/usr/share/git to /path/to/Git, for cronjob
-gitdirname=$(basename $(dirname $curdir))
-gitdir=$prefix/share/git
-if echo $gitdirname| grep -q -i git;then
-  if ! echo $curdir|grep -q $gitdir;then
-    if [ ! -L $gitdir ] && [ ! -d $gitdir ];then
-      mkdir -p $(dirname $gitdir)
-      ln -s $(dirname $curdir) $gitdir
+gitdirname=$(basename "$(dirname "$curdir")")
+gitdir="$prefix/share/git"
+if echo "$gitdirname"| grep -q -i git;then
+  if ! echo "$curdir"|grep -q "$gitdir";then
+    if [ ! -L "$gitdir" ] && [ ! -d "$gitdir" ];then
+      mkdir -p "$(dirname "$gitdir")"
+      ln -s "$(dirname "$curdir")" "$gitdir"
     fi
   fi
-  if [ ! -f $gitdir/updateGIT.sh ];then
-    ln -s $curdir/updateGIT.sh $gitdir/updateGIT.sh
-    chmod 755 $gitdir/updateGIT.sh
+  if [ ! -f "$gitdir/updateGIT.sh" ];then
+    ln -s "$curdir/updateGIT.sh" "$gitdir/updateGIT.sh"
+    chmod 755 "$gitdir/updateGIT.sh"
   fi
 fi
 
@@ -110,12 +110,12 @@ echo "Install X(.sh) to $prefix/bin/X or $prefix/etc/X"
 echo "*************************************************"
 echo
 if [ $dryrun -ne 1 ];then
-  mkdir -p $prefix/bin
-  mkdir -p $prefix/etc
+  mkdir -p "$prefix/bin"
+  mkdir -p "$prefix/etc"
 else
   echo "*** This is dry run, not install anything ***"
 fi
-files=(`ls *.sh *.py *rb 2>/dev/null`)
+files=($(ls ./*.sh ./*.py ./*rb 2>/dev/null))
 for sm_f in "${sm_files[@]}";do
   if [ -f "$sm_f" ];then
     files=("${files[@]}" "$sm_f")
@@ -125,7 +125,7 @@ for sm_f in "${sm_files[@]}";do
 done
 
 for f in "${files[@]}";do
-  for e in ${exclude[@]};do
+  for e in "${exclude[@]}";do
     flag=0
     if [ "$f" = "$e" ];then
       flag=1
@@ -144,7 +144,7 @@ for f in "${files[@]}";do
   if [ $dryrun -eq 1 ];then
     install=0
   fi
-  if [ "`ls "$prefix/bin/$name" 2>/dev/null`" != "" ];then
+  if [ "$(ls "$prefix/bin/$name" 2>/dev/null)" != "" ];then
     exist=(${exist[@]} "$name")
     if [ $dryrun -eq 1 ];then
       echo -n ""
@@ -176,7 +176,7 @@ for sm_f in "${sm_files_etc[@]}";do
 done
 
 for f in "${files[@]}";do
-  for e in ${exclude[@]};do
+  for e in "${exclude[@]}";do
     flag=0
     if [ "$f" = "$e" ];then
       flag=1
@@ -195,7 +195,7 @@ for f in "${files[@]}";do
   if [ $dryrun -eq 1 ];then
     install=0
   fi
-  if [ "`ls "$prefix/etc/$name" 2>/dev/null`" != "" ];then
+  if [ "$(ls "$prefix/etc/$name" 2>/dev/null)" != "" ];then
     exist=(${exist[@]} "$name")
     if [ $dryrun -eq 1 ];then
       echo -n ""
@@ -220,7 +220,7 @@ if [ $dryrun -eq 1 ];then
 else
   echo "Following files were newly installed:"
 fi
-echo "  ${newlink[@]}"
+echo "  ${newlink[*]}"
 echo
 echo -n "Following files existed"
 if [ $dryrun -eq 1 ];then
@@ -232,7 +232,7 @@ elif [ "$backup" != "" ];then
 else
   echo "Following files existed, replaced old one:"
 fi
-echo "  ${exist[@]}"
+echo "  ${exist[*]}"
 echo
 
 # check gcalcli

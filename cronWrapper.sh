@@ -18,20 +18,20 @@
 # mail setting
 mailto=""
 if [ -f ~/.mailto ];then
-  mailto=`grep "^MAILTO" ~/.mailto|head -n1|cut -d= -f2`
-  mailto=`eval echo $mailto`
+  mailto=$(grep "^MAILTO" ~/.mailto|head -n1|cut -d= -f2)
+  mailto=$(eval echo "$mailto")
 fi
 
 crontmp=.cron.$HOSTNAME.$PPID
-$@ >$crontmp 2>&1
-if [ -s $crontmp ];then
-  node=`hostname`
-  exe=`basename $1`
+"$@" >"$crontmp" 2>&1
+if [ -s "$crontmp" ];then
+  #node=$(hostname)
+  exe=$(basename "$1")
   shift
   if [ "$mailto" != "" ];then
-    cat $crontmp | mail -s "$exe $@ at $HOSTNAME CRONINFORMATION" $mailto
+    mail -s "$exe $* at $HOSTNAME CRONINFORMATION" "$mailto" < "$crontmp"
   else
-    cat $crontmp
+    cat "$crontmp"
   fi
 fi
-rm -f $crontmp
+rm -f "$crontmp"
