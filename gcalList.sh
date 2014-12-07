@@ -9,7 +9,7 @@ gcallist=~/.gcallist
 tmpfile=$(mktemp 2>/dev/null||mktemp -t tmp)
 
 # List of calenders
-cals="--cal=gmail --cal=Facebook --cal=Time"
+cals="--cal=gmail --cal=Time"
 # gmail   : Main calendar
 # Facebook: Calendars of Facebook (including birthdays)
 # Time    : Calendars for each location (JapanTime, etc...)
@@ -23,7 +23,9 @@ cur_day=""
 cur_day_show=0
 events=("")
 lines=()
-#echo gcalcli --military --nocolor "$cals" agenda "$start" "$end"
+#echo gcalcli --military --nocolor $cals agenda "$start" "$end"
+#gcalcli --military --nocolor $cals agenda "$start" "$end"
+gcalcli --military --nocolor $cals agenda "$start" "$end" > "$tmpfile"
 IFS_ORIG=$IFS
 IFS=$'\n'
 while read line;do
