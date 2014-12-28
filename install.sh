@@ -115,7 +115,7 @@ if [ $dryrun -ne 1 ];then
 else
   echo "*** This is dry run, not install anything ***"
 fi
-files=($(ls ./*.sh ./*.py ./*rb 2>/dev/null))
+files=($(ls *.sh *.py *rb 2>/dev/null))
 for sm_f in "${sm_files[@]}";do
   if [ -f "$sm_f" ];then
     files=("${files[@]}" "$sm_f")
