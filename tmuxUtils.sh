@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function tmuxStatus {
+function tmuxWindowName {
   IFS_ORIG=$IFS
   IFS=$'\n'
   wins=($(tmux list-windows -F "#I #F"))
@@ -40,6 +40,54 @@ function tmuxStatus {
     status="$status#[bg=colour236] #[bg=colour008]"
     tmux rename-window -t :$iw "${status}"
   done
+}
+
+function tmuxLeft {
+  IFS_ORIG=$IFS
+  IFS=$'\n'
+  wins=($(tmux list-windows -F "#I #F"))
+  IFS=$IFS_ORIG
+  current=0
+  status=""
+  noview=0
+  for line in "${wins[@]}";do
+    iw=$(printf "$line"|cut -d' ' -f1)
+    fw=$(printf "$line"|cut -d' ' -f2)
+    if [ "$fw" = "*" ];then
+      current=1
+    else
+      current=0
+    fi
+    IFS_ORIG=$IFS
+    IFS=$'\n'
+    panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #{pane_current_path}"))
+    IFS=$IFS_ORIG
+    first=1
+    for line in "${panes[@]}";do
+      ip=$(echo "$line"|cut -d' ' -f1|sed 's/%//')
+      fp=$(echo "$line"|cut -d' ' -f2)
+      pp=$(echo "$line"|cut -d' ' -f3)
+      if [ $first -eq 1 ];then
+        first=0
+      else
+        status="$status#[bg=colour238] #[bg=colour008]"
+        noview=$((noview+30))
+      fi
+      if [ $current -eq 1 ] && [ $fp -eq 1 ];then
+        status="$status#[bg=colour255]"
+        noview=$((noview+15))
+      else
+        status="$status#[bg=colour008]"
+        noview=$((noview+15))
+      fi
+      status="$status${ip}:$(basename $pp)"
+      #status="$status${iw}.${ip}:#h $(basename $pp)"
+      #noview=$((noview-15))
+    done
+    status="$status#[bg=colour000]..#[bg=colour008]"
+    noview=$((noview+30))
+  done
+  echo -n ${status: 0: $(($(tput cols)+noview-32))}
 }
 
 function tmuxCreate {
@@ -89,8 +137,61 @@ function tmuxVSplit {
   tmuxStatus
 }
 
+function tmuxOnly {
+  wins=($(tmux list-windows -F "#I"))
+  if [ ${#wins[@]} -eq 1 ];then
+    tmux break-pane
+    tmux swap-window
+  else
+    IFS_ORIG=$IFS
+    IFS=$'\n'
+    panes=($(tmux list-panes -F "#D #{pane_active}"))
+    IFS=$IFS_ORIG
+    for line in "${panes[@]}";do
+      ip=$(echo "$line"|cut -d' ' -f1)
+      fp=$(echo "$line"|cut -d' ' -f2)
+      if [ $fp -ne 1 ];then
+        tmux move-pane -d -s ${ip} -t :+
+      fi
+    done
+    tmuxAlign
+  fi
+  tmuxStatus
+}
+
+function tmuxMove {
+  wins=($(tmux list-windows -F "#I"))
+  if [ ${#wins[@]} -eq 1 ];then
+    tmux break-pane
+    tmux select-window -t:+
+  else
+    IFS_ORIG=$IFS
+    IFS=$'\n'
+    panes=($(tmux list-panes -F "#D #{pane_active}"))
+    IFS=$IFS_ORIG
+    for line in "${panes[@]}";do
+      ip=$(echo "$line"|cut -d' ' -f1)
+      fp=$(echo "$line"|cut -d' ' -f2)
+      if [ $fp -eq 1 ];then
+        tmux move-pane -d -s ${ip} -t :+
+      fi
+    done
+    tmuxAlign
+  fi
+  tmuxStatus
+}
+
+function tmuxStatus {
+  #tmuxWindowName
+  :
+}
+
 if [ "$1" == "status" ];then
   tmuxStatus
+elif [ "$1" == "winname" ];then
+  tmuxWindowName
+elif [ "$1" == "left" ];then
+  tmuxLeft
 elif [ "$1" == "create" ];then
   tmuxCreate
 elif [ "$1" == "align" ];then
@@ -99,4 +200,8 @@ elif [ "$1" == "split" ];then
   tmuxSplit
 elif [ "$1" == "vsplit" ];then
   tmuxVSplit
+elif [ "$1" == "only" ];then
+  tmuxOnly
+elif [ "$1" == "move" ];then
+  tmuxMove
 fi
