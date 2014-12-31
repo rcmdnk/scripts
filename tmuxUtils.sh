@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+function tmuxStatus {
+  printf "\e]2;$(hostname -s)\e\\"
+}
+
 function tmuxWindowName {
   IFS_ORIG=$IFS
   IFS=$'\n'
@@ -60,13 +64,14 @@ function tmuxLeft {
     fi
     IFS_ORIG=$IFS
     IFS=$'\n'
-    panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #{pane_current_path}"))
+    panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #{pane_current_path} #T"))
     IFS=$IFS_ORIG
     first=1
     for line in "${panes[@]}";do
       ip=$(echo "$line"|cut -d' ' -f1|sed 's/%//')
       fp=$(echo "$line"|cut -d' ' -f2)
       pp=$(echo "$line"|cut -d' ' -f3)
+      tp=$(echo "$line"|cut -d' ' -f4)
       if [ $first -eq 1 ];then
         first=0
       else
@@ -80,7 +85,7 @@ function tmuxLeft {
         status="$status#[bg=colour008]"
         noview=$((noview+15))
       fi
-      status="$status${ip}:$(basename $pp)"
+      status="$status${ip}@${tp} $(basename $pp)"
       #status="$status${iw}.${ip}:#h $(basename $pp)"
       #noview=$((noview-15))
     done
@@ -94,12 +99,11 @@ function tmuxCreate {
   wins=($(tmux list-windows -F "#I"))
   if [ ${#wins[@]} -eq 1 ];then
     tmux new-window -d
-    tmux swap-pane -s :+
+    tmux swap-pane -d -s :+
   else
     tmux split-window -d -t :+.bottom
     tmux swap-pane -s :+.bottom
   fi
-  tmuxStatus
 }
 
 function tmuxAlign {
@@ -114,7 +118,6 @@ function tmuxAlign {
       done
     done
   fi
-  tmuxStatus
 }
 
 function tmuxSplit {
@@ -124,7 +127,6 @@ function tmuxSplit {
   else
     tmux join-pane -v -s :+.top
   fi
-  tmuxStatus
 }
 
 function tmuxVSplit {
@@ -134,14 +136,13 @@ function tmuxVSplit {
   else
     tmux join-pane -h -s :+.top
   fi
-  tmuxStatus
 }
 
 function tmuxOnly {
   wins=($(tmux list-windows -F "#I"))
   if [ ${#wins[@]} -eq 1 ];then
     tmux break-pane
-    tmux swap-window
+    tmux swap-window -t:+
   else
     IFS_ORIG=$IFS
     IFS=$'\n'
@@ -156,7 +157,6 @@ function tmuxOnly {
     done
     tmuxAlign
   fi
-  tmuxStatus
 }
 
 function tmuxMove {
@@ -178,12 +178,6 @@ function tmuxMove {
     done
     tmuxAlign
   fi
-  tmuxStatus
-}
-
-function tmuxStatus {
-  #tmuxWindowName
-  :
 }
 
 if [ "$1" == "status" ];then
