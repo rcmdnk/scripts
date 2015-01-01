@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 function tmuxStatus {
-  printf "\e]2;$(hostname -s)\e\\"
+  #printf "\e]2;$(hostname -s)\e\\"
+  printf "\e]2;myhost\e\\"
 }
 
 function tmuxWindowName {
@@ -57,7 +58,7 @@ function tmuxLeft {
   for line in "${wins[@]}";do
     iw=$(printf "$line"|cut -d' ' -f1)
     fw=$(printf "$line"|cut -d' ' -f2)
-    if [ "$fw" = "*" ];then
+    if [[ "$fw" =~ "*" ]];then
       current=1
     else
       current=0
@@ -132,7 +133,7 @@ function tmuxSplit {
 function tmuxVSplit {
   wins=($(tmux list-windows -F "#I"))
   if [ ${#wins[@]} -eq 1 ];then
-    tmux split-pane -h
+    tmux split-window -h
   else
     tmux join-pane -h -s :+.top
   fi
