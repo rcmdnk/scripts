@@ -1,21 +1,20 @@
 #!/usr/bin/env bash
 
 function tmuxStatus {
-  #printf "\e]2;$(hostname -s)\e\\"
-  printf "\e]2;myhost\e\\"
+  printf "\e]2;$(hostname -s)\e\\"
 }
 
 function tmuxWindowName {
   IFS_ORIG=$IFS
   IFS=$'\n'
-  wins=($(tmux list-windows -F "#I #F"))
+  wins=($(tmux list-windows -F "#I #{window_active}"))
   IFS=$IFS_ORIG
   current=0
   noview=0
   for line in "${wins[@]}";do
     iw=$(printf "$line"|cut -d' ' -f1)
     fw=$(printf "$line"|cut -d' ' -f2)
-    if [ "$fw" = "*" ];then
+    if [ "$fw" -eq 1 ];then
       current=1
     else
       current=0
@@ -50,7 +49,7 @@ function tmuxWindowName {
 function tmuxLeft {
   IFS_ORIG=$IFS
   IFS=$'\n'
-  wins=($(tmux list-windows -F "#I #F"))
+  wins=($(tmux list-windows -F "#I #{window_active}"))
   IFS=$IFS_ORIG
   current=0
   status=""
@@ -58,7 +57,7 @@ function tmuxLeft {
   for line in "${wins[@]}";do
     iw=$(printf "$line"|cut -d' ' -f1)
     fw=$(printf "$line"|cut -d' ' -f2)
-    if [[ "$fw" =~ "*" ]];then
+    if [ "$fw" -eq 1 ];then
       current=1
     else
       current=0
@@ -96,6 +95,23 @@ function tmuxLeft {
   echo -n ${status: 0: $(($(tput cols)+noview-32))}
 }
 
+function tmuxAlign {
+  wins=($(tmux list-windows -F "#I"))
+  if [ ${#wins[@]} -lt 2 ];then
+    return
+  fi
+  flag=$(tmux list-windows -F "#{window_active} #I"|grep ^1|sed 's/^1 //')
+  if [ "$flag" -ne 0 ];then
+    tmux swap-window -t:+
+  fi
+  for((i=2;i<${#wins[@]};i++));do
+    panes=($(tmux list-panes -t ${wins[$i]} -F "#P"))
+    for((j=0;j<${#panes[@]};j++));do
+      tmux join-pane -d -s :${wins[$i]}.${panes[$j]} -t :${wins[1]}.bottom
+    done
+  done
+}
+
 function tmuxCreate {
   wins=($(tmux list-windows -F "#I"))
   if [ ${#wins[@]} -eq 1 ];then
@@ -105,20 +121,7 @@ function tmuxCreate {
     tmux split-window -d -t :+.bottom
     tmux swap-pane -s :+.bottom
   fi
-}
-
-function tmuxAlign {
-  wins=($(tmux list-windows -F "#I"))
-  if [ ${#wins[@]} -le 2 ];then
-    return
-  else
-    for((i=2;i<${#wins[@]};i++));do
-      panes=($(tmux list-panes -t ${wins[$i]} -F "#P"))
-      for((j=0;j<${#panes[@]};j++));do
-        tmux join-pane -d -s :${wins[$i]}.${panes[$j]} -t :${wins[1]}.bottom
-      done
-    done
-  fi
+  tmuxAlign
 }
 
 function tmuxSplit {
@@ -143,7 +146,6 @@ function tmuxOnly {
   wins=($(tmux list-windows -F "#I"))
   if [ ${#wins[@]} -eq 1 ];then
     tmux break-pane
-    tmux swap-window -t:+
   else
     IFS_ORIG=$IFS
     IFS=$'\n'
@@ -156,8 +158,8 @@ function tmuxOnly {
         tmux move-pane -d -s ${ip} -t :+
       fi
     done
-    tmuxAlign
   fi
+  tmuxAlign
 }
 
 function tmuxMove {
@@ -181,22 +183,72 @@ function tmuxMove {
   fi
 }
 
-if [ "$1" == "status" ];then
+function tmuxNext {
+  tmux swap-pane -s :+.top
+  tmux rotate-window -U -t :+
+  paneinfo=$(tmux list-panes -F "#{pane_active} #D@#T #{pane_current_path}"|grep ^1|sed 's/^1 %//')
+  tmux display-message "$paneinfo"
+}
+
+function tmuxPrev {
+  tmux swap-pane -s :+.bottom
+  tmux rotate-window -D -t :+
+  paneinfo=$(tmux list-panes -F "#{pane_active} #D@#T #{pane_current_path}"|grep ^1|sed 's/^1 %//')
+  tmux display-message "$paneinfo"
+}
+
+function tmuxClipborad {
+  if [ "$CLX" = "" ];then
+    if [[ "$OSTYPE" =~ linux ]];then
+      if which -s xsel;then
+        CLX="xsel"
+      elif which -s xsel;then
+        CLX="xclip"
+      fi
+    elif [[ "$OSTYPE" =~ cygwin ]];then
+      if which -s putclip;then
+        CLX="putclip"
+      elif which -s xsel;then
+        CLX="xsel"
+      elif which -s xsel;then
+        CLX="xclip"
+      fi
+    elif [[ "$OSTYPE" =~ darwin ]];then
+      if which -s pbcopy;then
+        CLX="pbcopy"
+      fi
+    fi
+  fi
+  if [ "$CLX" != "" ];then
+    tmux save-buffer -| $CLX
+    tmux display-message "clipboard: $(tmux save-buffer -)"
+  else
+    tmux display-message "No clipboard software is found."
+  fi
+}
+
+if [ "$1" = "status" ];then
   tmuxStatus
-elif [ "$1" == "winname" ];then
+elif [ "$1" = "winname" ];then
   tmuxWindowName
-elif [ "$1" == "left" ];then
+elif [ "$1" = "left" ];then
   tmuxLeft
-elif [ "$1" == "create" ];then
+elif [ "$1" = "create" ];then
   tmuxCreate
-elif [ "$1" == "align" ];then
+elif [ "$1" = "align" ];then
   tmuxAlign
-elif [ "$1" == "split" ];then
+elif [ "$1" = "split" ];then
   tmuxSplit
-elif [ "$1" == "vsplit" ];then
+elif [ "$1" = "vsplit" ];then
   tmuxVSplit
-elif [ "$1" == "only" ];then
+elif [ "$1" = "only" ];then
   tmuxOnly
-elif [ "$1" == "move" ];then
+elif [ "$1" = "move" ];then
   tmuxMove
+elif [ "$1" = "next" ];then
+  tmuxNext
+elif [ "$1" = "prev" ];then
+  tmuxPrev
+elif [ "$1" = "clip" ];then
+  tmuxClipborad
 fi
