@@ -162,6 +162,27 @@ function tmuxOnly {
   tmuxAlign
 }
 
+function tmuxFour {
+  tmuxOnly
+  npanes=1
+  wins=($(tmux list-windows -F "#I"))
+  if [ ${#wins[@]} -ne 1 ];then
+    npanes=$((npanes+$(tmux list-panes -t:+|wc -l)))
+  fi
+  while [ $npanes -lt 4 ];do
+    tmuxCreate
+    ((npanes++))
+  done
+  tmuxVSplit
+  tmux select-pane -L
+  tmuxSplit
+  tmux select-pane -U
+  tmux select-pane -R
+  tmuxSplit
+  tmux select-pane -U
+  tmux select-pane -L
+}
+
 function tmuxMove {
   wins=($(tmux list-windows -F "#I"))
   if [ ${#wins[@]} -eq 1 ];then
@@ -243,6 +264,8 @@ elif [ "$1" = "vsplit" ];then
   tmuxVSplit
 elif [ "$1" = "only" ];then
   tmuxOnly
+elif [ "$1" = "four" ];then
+  tmuxFour
 elif [ "$1" = "move" ];then
   tmuxMove
 elif [ "$1" = "next" ];then
