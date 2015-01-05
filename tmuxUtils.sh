@@ -9,16 +9,10 @@ function tmuxWindowName {
   IFS=$'\n'
   wins=($(tmux list-windows -F "#I #{window_active}"))
   IFS=$IFS_ORIG
-  current=0
   noview=0
   for line in "${wins[@]}";do
     iw=$(printf "$line"|cut -d' ' -f1)
     fw=$(printf "$line"|cut -d' ' -f2)
-    if [ "$fw" -eq 1 ];then
-      current=1
-    else
-      current=0
-    fi
     IFS_ORIG=$IFS
     IFS=$'\n'
     panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #{pane_current_path}"))
@@ -34,7 +28,7 @@ function tmuxWindowName {
       else
         status="$status#[bg=colour238] #[bg=colour008]"
       fi
-      if [ $current -eq 1 ] && [ $fp -eq 1 ];then
+      if [ $fw -eq 1 ] && [ $fp -eq 1 ];then
         status="$status#[bg=colour255]"
       else
         status="$status#[bg=colour008]"
@@ -51,17 +45,11 @@ function tmuxLeft {
   IFS=$'\n'
   wins=($(tmux list-windows -F "#I #{window_active}"))
   IFS=$IFS_ORIG
-  current=0
   status=""
   noview=0
   for line in "${wins[@]}";do
     iw=$(printf "$line"|cut -d' ' -f1)
     fw=$(printf "$line"|cut -d' ' -f2)
-    if [ "$fw" -eq 1 ];then
-      current=1
-    else
-      current=0
-    fi
     IFS_ORIG=$IFS
     IFS=$'\n'
     panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #{pane_current_path} #T"))
@@ -78,7 +66,7 @@ function tmuxLeft {
         status="$status#[bg=colour238] #[bg=colour008]"
         noview=$((noview+30))
       fi
-      if [ $current -eq 1 ] && [ $fp -eq 1 ];then
+      if [ $fw -eq 1 ] && [ $fp -eq 1 ];then
         status="$status#[bg=colour255]"
         noview=$((noview+15))
       else
@@ -218,6 +206,41 @@ function tmuxPrev {
   tmux display-message "$paneinfo"
 }
 
+function tmuxChoose {
+  if ! type -a sentaku >& /dev/null;then
+    tmux display-message "Install sentaku (https://github.com/rcmdnk/sentaku) first."
+    return
+  fi
+  tmuxAlign
+  all=()
+  IFS_ORIG=$IFS
+  IFS=$'\n'
+  wins=($(tmux list-windows -F "#I #{window_active}"))
+  IFS=$IFS_ORIG
+  for line in "${wins[@]}";do
+    iw=$(printf "$line"|cut -d' ' -f1)
+    fw=$(printf "$line"|cut -d' ' -f2)
+    IFS_ORIG=$IFS
+    IFS=$'\n'
+    panes=($(tmux list-panes -t $iw -F "#D #P #{pane_active} #{pane_current_path} #T"))
+    IFS=$IFS_ORIG
+    first=1
+    for line in "${panes[@]}";do
+      ip=$(echo "$line"|cut -d' ' -f1|sed 's/%//')
+      Ip=$(echo "$line"|cut -d' ' -f2)
+      fp=$(echo "$line"|cut -d' ' -f3)
+      pp=$(echo "$line"|cut -d' ' -f4)
+      tp=$(echo "$line"|cut -d' ' -f5)
+      all=("${all[@]}" "${iw}.${Ip} $((fp * fw)) $fw $ip@$tp $pp")
+    done
+  done
+  target=$(for l in "${all[@]}";do echo $l;done|sentaku -N -s line)
+  if [ "$target" != "" ];then
+    i=$(echo "$target"|cut -d' ' -f1)
+    tmux swap-pane -d -s :${i}
+  fi
+}
+
 function tmuxClipborad {
   if [ "$CLX" = "" ];then
     if [[ "$OSTYPE" =~ linux ]];then
@@ -272,6 +295,8 @@ elif [ "$1" = "next" ];then
   tmuxNext
 elif [ "$1" = "prev" ];then
   tmuxPrev
+elif [ "$1" = "choose" ];then
+  tmuxChoose
 elif [ "$1" = "clip" ];then
   tmuxClipborad
 fi
