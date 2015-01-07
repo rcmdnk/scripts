@@ -40,7 +40,7 @@ function tmuxWindowName {
   done
 }
 
-function tmuxLeft {
+function tmuxLeftStatus {
   IFS_ORIG=$IFS
   IFS=$'\n'
   wins=($(tmux list-windows -F "#I #{window_active}"))
@@ -52,14 +52,14 @@ function tmuxLeft {
     fw=$(printf "$line"|cut -d' ' -f2)
     IFS_ORIG=$IFS
     IFS=$'\n'
-    panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #{pane_current_path} #T"))
+    panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #T"))
     IFS=$IFS_ORIG
     first=1
     for line in "${panes[@]}";do
       ip=$(echo "$line"|cut -d' ' -f1|sed 's/%//')
       fp=$(echo "$line"|cut -d' ' -f2)
-      pp=$(echo "$line"|cut -d' ' -f3)
-      tp=$(echo "$line"|cut -d' ' -f4)
+      tp=$(echo "$line"|cut -d' ' -f3)
+      pp=$(echo "$line"|cut -d' ' -f4)
       if [ $first -eq 1 ];then
         first=0
       else
@@ -192,18 +192,41 @@ function tmuxMove {
   fi
 }
 
+function tmuxPaneInfo {
+  paneinfo=$(tmux list-panes -F "#{pane_active} #D@#T"|grep ^1|sed 's/^1 %//')
+  tmux display-message "$paneinfo"
+}
+
 function tmuxNext {
   tmux swap-pane -s :+.top
   tmux rotate-window -U -t :+
-  paneinfo=$(tmux list-panes -F "#{pane_active} #D@#T #{pane_current_path}"|grep ^1|sed 's/^1 %//')
-  tmux display-message "$paneinfo"
+  tmuxPaneInfo
 }
 
 function tmuxPrev {
   tmux swap-pane -s :+.bottom
   tmux rotate-window -D -t :+
-  paneinfo=$(tmux list-panes -F "#{pane_active} #D@#T #{pane_current_path}"|grep ^1|sed 's/^1 %//')
-  tmux display-message "$paneinfo"
+  tmuxPaneInfo
+}
+
+function tmuxLeft {
+  tmux select-pane -L
+  tmuxPaneInfo
+}
+
+function tmuxDown {
+  tmux select-pane -D
+  tmuxPaneInfo
+}
+
+function tmuxUp {
+  tmux select-pane -U
+  tmuxPaneInfo
+}
+
+function tmuxRight {
+  tmux select-pane -R
+  tmuxPaneInfo
 }
 
 function tmuxChoose {
@@ -275,8 +298,8 @@ if [ "$1" = "status" ];then
   tmuxStatus
 elif [ "$1" = "winname" ];then
   tmuxWindowName
-elif [ "$1" = "left" ];then
-  tmuxLeft
+elif [ "$1" = "leftstatus" ];then
+  tmuxLeftStatus
 elif [ "$1" = "create" ];then
   tmuxCreate
 elif [ "$1" = "align" ];then
@@ -295,6 +318,14 @@ elif [ "$1" = "next" ];then
   tmuxNext
 elif [ "$1" = "prev" ];then
   tmuxPrev
+elif [ "$1" = "left" ];then
+  tmuxLeft
+elif [ "$1" = "down" ];then
+  tmuxDown
+elif [ "$1" = "up" ];then
+  tmuxUp
+elif [ "$1" = "right" ];then
+  tmuxRight
 elif [ "$1" = "choose" ];then
   tmuxChoose
 elif [ "$1" = "clip" ];then
