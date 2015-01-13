@@ -10,8 +10,10 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/sentaku/bin/sentaku"\
           "submodules/sentaku/bin/ddv"\
           "submodules/kk/bin/kk"\
-          "external/apt-cyg/apt-cyg"\
   )
+if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
+  sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
+fi
 sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
   )
 
@@ -72,7 +74,7 @@ if [[ "$OSTYPE" =~ cygwin ]];then
     fi
     t_winpath=$(cygpath -w -a "$target")
     t_link=$(cygpath -w -a "$link")
-    cmd /c mklink "$opt" "$t_link" "$t_winpath" > /dev/null
+    cmd /c mklink $opt "$t_link" "$t_winpath" > /dev/null
   }
 # }}}
 fi
