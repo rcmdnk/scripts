@@ -13,6 +13,12 @@ cals="--cal=gmail --cal=Time"
 # gmail   : Main calendar
 # Facebook: Calendars of Facebook (including birthdays)
 # Time    : Calendars for each location (JapanTime, etc...)
+if [ -f ~/.gcallistcals ];then
+  cals=""
+  while read c;do
+    cals="$cals --cal=$c"
+  done < ~/.gcallistcals
+fi
 
 # set time
 start=$(date +"%m/%d/%y") #today
