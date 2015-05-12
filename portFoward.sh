@@ -16,9 +16,10 @@ while :;do
   if echo "$ret"|grep "$port"|grep -q "LISTEN";then
     exit 0
   fi
-  pids=$(pgrep -u"$USER" -f "ssh -x -N -R ${port}:localhost:22 ${host}")
+  cmd="ssh -S none -x -N -R ${port}:localhost:22 ${host}"
+  pids=$(pgrep -u"$USER" -f "$cmd")
   if [ "$pids" != "" ];then
     kill -kill "$pids" >& /dev/null
   fi
-  ssh -x -N -R $port:localhost:22 "$host" >& /dev/null &
+  eval $cmd >& /dev/null &
 done
