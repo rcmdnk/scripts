@@ -11,15 +11,19 @@ while :;do
   if [ $? -ne 0 ];then
     # Could be offline
     #echo "Cound not resolve hostname $host"
-    exit
+    exit 0
   fi
   if echo "$ret"|grep "$port"|grep -q "LISTEN";then
+    #echo "Already running"
     exit 0
   fi
   cmd="ssh -S none -x -N -R ${port}:localhost:22 ${host}"
-  pids=$(pgrep -u"$USER" -f "$cmd")
+  pids=($(pgrep -u"$USER" -f "$cmd"))
   if [ "$pids" != "" ];then
-    kill -kill "$pids" >& /dev/null
+    #echo "kill -kill ${pids[@]}"
+    kill -kill "${pids[@]}" >& /dev/null
   fi
-  eval $cmd >& /dev/null &
+  #echo $cmd
+  eval "$cmd" >& /dev/null &
+  sleep 1
 done
