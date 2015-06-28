@@ -3,7 +3,7 @@ scripts
 
 **scripts for linux/mac/windows(cygwin)**
 
-# Installation
+## Installation
 
 Below commands will make links to scripts in $HOME/usr/bin directory
 If there is a file, it makes backup file (.bak)
@@ -13,7 +13,7 @@ If there is a file, it makes backup file (.bak)
     cd windows
     ./install.sh
 
-# License
+## License
 
 The MIT License (MIT)
 
