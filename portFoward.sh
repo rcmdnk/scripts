@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 if [ $# -lt 2 ];then
-  echo "usage: port_forward <host> <port>"
+  echo "usage: port_forward <host> <port> [<host only on which to be run>]"
   exit 1
 fi
 host=$1
 port=$2
+host_run=$3
 
 while :;do
   ret=$(ssh -x "$host" netstat -a 2>/dev/null)
