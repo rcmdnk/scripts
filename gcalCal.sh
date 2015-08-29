@@ -39,9 +39,9 @@ myCal (){
   w=0
   while read -r d;do
     if echo "$d"|grep -q "'";then
-      printf "$d" >> "$tmpfile"
+      printf "%s" "$d" >> "$tmpfile"
     else
-      printf "$d " >> "$tmpfile"
+      printf "%s" "$d " >> "$tmpfile"
     fi
     w=$((w+1))
     if [ $w -eq 7 ];then
@@ -114,21 +114,17 @@ else
     ((i--))
   done
 fi
-i=1
-while [ "$i" -le "$nDaysCur" ];do
+for((i=1; i<=nDaysCur; i++));do
   date -v${i}d +"$gcalFormat" >> $gcalDays
-  ((i++))
 done
 # endDate for gcalcli must be +1 day
 endDateCal=$(date -v+1m -v1d -v+$((nextDays+1))d +"$gcalSEFormat")
-i=0
 for((i=0; i<nextDays; i++));do
   if [ $i -eq 0 ];then
     date -v+1m -v1d +"$gcalFormat" >> $gcalDays
   else
     date -v+1m -v1d -v+${i}d +"$gcalFormat" >> $gcalDays
   fi
-  ((i++))
 done
 
 # get days with tasks and holidays
@@ -146,8 +142,8 @@ if [ $? -eq 0 ];then
     if [ "${line:0:1}" = " " ];then
       l=$(echo "$line")
     else
-      date=$(echo $line|awk '{for(i=1;i<3;i++){printf("%s ",$i)}print $3}')
-      l=$(echo $line|awk '{for(i=4;i<NF;i++){printf("%s ",$i)}print $NF}')
+      date=$(echo "$line"|awk '{for(i=1;i<3;i++){printf("%s ",$i)}print $3}')
+      l=$(echo "$line"|awk '{for(i=4;i<NF;i++){printf("%s ",$i)}print $NF}')
     fi
     if [[ "${l}" =~ Calendar ]];then
       cal=$(echo "$l"|awk '{for(i=2;i<NF;i++){printf("%s ",$i)}print $NF}')
