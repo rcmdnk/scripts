@@ -39,9 +39,9 @@ myCal (){
   w=0
   while read -r d;do
     if echo "$d"|grep -q "'";then
-      printf "%s" "$d" >> "$tmpfile"
+      printf "%b" "$d" >> "$tmpfile"
     else
-      printf "%s" "$d " >> "$tmpfile"
+      printf "%b" "$d " >> "$tmpfile"
     fi
     w=$((w+1))
     if [ $w -eq 7 ];then
