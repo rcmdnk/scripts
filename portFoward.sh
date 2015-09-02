@@ -5,7 +5,6 @@ if [ $# -lt 2 ];then
 fi
 host=$1
 port=$2
-host_run=$3
 
 while :;do
   ret=$(ssh -x "$host" netstat -a 2>/dev/null)
@@ -19,8 +18,11 @@ while :;do
     exit 0
   fi
   cmd="ssh -S none -x -N -R ${port}:localhost:22 ${host}"
+  if [ $? -ne 0 ];then
+    exit 1
+  fi
   pids=($(pgrep -u"$USER" -f "$cmd"))
-  if [ "$pids" != "" ];then
+  if [ "${#pids[@]}" -ne 0 ];then
     #echo "kill -kill ${pids[@]}"
     kill -kill "${pids[@]}" >& /dev/null
   fi
