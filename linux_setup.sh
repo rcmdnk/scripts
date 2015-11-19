@@ -135,6 +135,10 @@ if [ "$FORCE_GIT" -eq 1 ] || ! type -a git >& /dev/null;then
   ## git {{{
   echo "### Install git ###"
   if [ $ONLY_CHECK -eq 0 ];then
+    find "$STOWDIR/" -name "git*" -maxdepth 1|while read -r d;do
+      mycd "$STOWDIR"
+      stow -D "$d"
+    done
     mycd "$TMPDOWNLOAD"
     wget -O master.tar.gz https://github.com/git/git/archive/master.tar.gz
     tar xzf master.tar.gz
@@ -177,6 +181,10 @@ if [ "$FORCE_SCREEN" -eq 1 ] || ! type -a screen >& /dev/null;then
 
   echo "### Install screen ###"
   if [ $ONLY_CHECK -eq 0 ];then
+    find "$STOWDIR/" -name "screen*" -maxdepth 1|while read -r d;do
+      mycd "$STOWDIR"
+      stow -D "$d"
+    done
     mycd "$TMPDOWNLOAD"
     git clone git://git.sv.gnu.org/screen.git
     mycd screen
@@ -238,6 +246,10 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
   if [ "$FORCE_PYTHON" -eq 1 ] || ! type -a python >& /dev/null;then
     echo "### Install python ###"
     if [ $ONLY_CHECK -eq 0 ];then
+      find "$STOWDIR/" -name "python*" -maxdepth 1|while read -r d;do
+        mycd "$STOWDIR"
+        stow -D "$d"
+      done
       mycd "$TMPDOWNLOAD"
       versions=$(wget https://www.python.org/ftp/python/ -O - \
         2>/dev/null|grep ">2\."|cut -d">" -f2|cut -d"/" -f1)
@@ -286,6 +298,10 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
 
   ## vim {{{
   echo "### Install vim ###"
+  find "$STOWDIR/" -name "vim*" -maxdepth 1|while read -r d;do
+    mycd "$STOWDIR"
+    stow -D "$d"
+  done
   if [ $ONLY_CHECK -eq 0 ];then
     mycd "$TMPDOWNLOAD"
     git clone https://github.com/vim/vim
