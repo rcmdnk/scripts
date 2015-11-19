@@ -53,7 +53,7 @@ function targz_configure_install {
 }
 
 function get_from_gnuorg {
-  v=automake-$(wget "http://ftp.gnu.org/gnu/$1/?C=M;O=A" -O -  2>/dev/null\
+  v=${1}-$(wget "http://ftp.gnu.org/gnu/$1/?C=M;O=A" -O -  2>/dev/null\
     |grep "${1}-"|grep tar.gz|grep -v tar.gz.sig|grep -v latest|tail -n1\
     |awk -v p="$1" '{split($0, tmp, p"-")}{split(tmp[2], tmp2, ".tar.gz")}
           {print tmp2[1]}')
