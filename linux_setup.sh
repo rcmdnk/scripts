@@ -193,7 +193,7 @@ if [ "$FORCE_SCREEN" -eq 1 ] || ! type -a screen >& /dev/null;then
     patch -p1 < screen-utf8-nfd.patch
     patch -p1 < screen-utf8-osc.diff
     mycd src
-    v=screeen-$(grep Version ChangeLog |head -n1|cut -d' ' -f2)
+    v=screen-$(grep Version ChangeLog |head -n1|cut -d' ' -f2)
     ./autogen.sh
     CFLAGS="-L$DESTINATION/lib" LDFLAGS="-L$DESTINATION/lib" ./configure \
       --prefix="$STOWDIR/$v"  --enable-colors256
@@ -305,7 +305,7 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
     mycd "$TMPDOWNLOAD"
     git clone https://github.com/vim/vim
     mycd vim
-    v=vim-$(tail -n1 .hgtags|cut -d' ' -f2)
+    v=vim-$(git tag|grep -v a|grep -v b)
     ./configure LDFLAGS="-L$DESTINATION/lib/" --prefix="$STOWDIR/$v" \
       --with-lua-prefix="$DESTINATION" --with-local-dir="$DESTINATION" \
       --enable-luainterp=yes --enable-perlinterp=yes --enable-pythoninterp=yes \
