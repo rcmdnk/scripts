@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'updateGIT.sh')
+exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'updateGIT.sh' \
+  'linux_setup.sh')
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
           "submodules/stow_reset/bin/stow_reset"\
