@@ -27,7 +27,7 @@ function find_lib {
     return 3
   fi
   for d in $(echo "$LD_LIBRARY_PATH"|tr : " ");do
-    if [ -f "$d/$1" ];then
+    if [ -f "$d/$1".a ] || [ -f "$d/$1".so ];then
       return 0
     fi
   done
@@ -93,7 +93,7 @@ if [ "$FORCE_GIT" -eq 1 ] || ! type -a git >& /dev/null;then
   ## }}}
 
   ## libcurl, for https protocol of git
-  if ! find_lib libcurl.a >&/dev/null;then
+  if ! find_lib libcurl >&/dev/null;then
     echo "### Install curl ###"
     if [ $ONLY_CHECK -eq 0 ];then
       mycd "$TMPDOWNLOAD"
@@ -107,7 +107,7 @@ if [ "$FORCE_GIT" -eq 1 ] || ! type -a git >& /dev/null;then
   fi
 
   ## libexpat, for https protocol of git push
-  if ! find_lib libexpat.a >&/dev/null;then
+  if ! find_lib libexpat >&/dev/null;then
     echo "### Install expat ###"
     if [ $ONLY_CHECK -eq 0 ];then
       mycd "$TMPDOWNLOAD"
@@ -154,7 +154,7 @@ if [ "$FORCE_SCREEN" -eq 1 ] || ! type -a screen >& /dev/null;then
   ## }}}
 
   ## libncurses {{{
-  if ! find_lib libncurses.a >&/dev/null;then
+  if ! find_lib libncurses >&/dev/null;then
     echo "### Install ncurses ###"
     if [ $ONLY_CHECK -eq 0 ];then
       mycd "$TMPDOWNLOAD"
@@ -187,7 +187,7 @@ fi
 # vim related {{{
 if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
   ## libbz2, for Python to install Mercurial {{{
-  if ! find_lib libbz2.a >&/dev/null;then
+  if ! find_lib libbz2 >&/dev/null;then
     echo "### Install bzip2 ###"
     if [ $ONLY_CHECK -eq 0 ];then
       mycd "$TMPDOWNLOAD"
@@ -208,7 +208,7 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
   ## }}}
 
   ## readline {{{
-  if ! find_lib libreadline.a >&/dev/null;then
+  if ! find_lib libreadline >&/dev/null;then
     echo "### Install readline ###"
     if [ $ONLY_CHECK -eq 0 ];then
       mycd "$TMPDOWNLOAD"
@@ -244,7 +244,7 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
   ## }}}
 
   ## libtermcap for Lua {{{
-  if ! find_lib libtermcap.a >&/dev/null;then
+  if ! find_lib libtermcap >&/dev/null;then
     echo "### Install termcap ###"
     if [ $ONLY_CHECK -eq 0 ];then
       mycd "$TMPDOWNLOAD"
@@ -255,7 +255,7 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
   ## }}}
 
   ## Lua {{{
-  if ! find_lib liblua.a >&/dev/null;then
+  if ! find_lib liblua >&/dev/null;then
     echo "### Install Lua ###"
     if [ $ONLY_CHECK -eq 0 ];then
       mycd "$TMPDOWNLOAD"
