@@ -121,8 +121,8 @@ if [ "$FORCE_GIT" -eq 1 ] || ! type -a git >& /dev/null;then
   fi
   ## }}}
 
-  ## Git {{{
-  echo "### Install Git ###"
+  ## git {{{
+  echo "### Install git ###"
   if [ $ONLY_CHECK -eq 0 ];then
     mycd "$TMPDOWNLOAD"
     wget -O master.zip https://github.com/git/git/archive/master.zip
@@ -184,7 +184,7 @@ if [ "$FORCE_SCREEN" -eq 1 ] || ! type -a screen >& /dev/null;then
 fi
 # }}}
 
-# Vim related {{{
+# vim related {{{
 if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
   ## libbz2, for Python to install Mercurial {{{
   if ! find_lib libbz2.a >&/dev/null;then
@@ -273,8 +273,8 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
   fi
   ## }}}
 
-  ## Vim {{{
-  echo "### Install Vim ###"
+  ## vim {{{
+  echo "### Install vim ###"
   if [ $ONLY_CHECK -eq 0 ];then
     mycd "$TMPDOWNLOAD"
     git clone https://github.com/vim/vim
