@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 ONLY_CHECK=0
-STOW="stow --ignore='share/info/dir'"
 DESTINATION=~/usr/local
 STOWDIR="$DESTINATION/stow"
 FORCE_GIT=1
@@ -39,7 +38,7 @@ function make_install {
     make "$2"
     make install
     mycd "$STOWDIR"
-    "$STOW"  "$1"
+    stow --ignore='share/info/dir' "$1"
 }
 
 function configure_install {
@@ -221,7 +220,7 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
       make -f Makefile-libbz2_so
       make install PREFIX="$STOWDIR/$v"
       mycd "$STOWDIR"
-      "$STOW" "$v"
+      stow --ignore='share/info/dir' "$v"
     fi
   fi
   ## }}}
@@ -291,7 +290,7 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
         MYCFLAGS=" -I$DESTINATION/include"
       make install INSTALL_TOP="$STOWDIR/$v"
       mycd "$STOWDIR"
-      "$STOW" "$v"
+      stow --ignore='share/info/dir' "$v"
     fi
   fi
   ## }}}
