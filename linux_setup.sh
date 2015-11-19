@@ -305,7 +305,7 @@ if [ "$FORCE_VIM" -eq 1 ] || ! type -a vim >& /dev/null;then
     mycd "$TMPDOWNLOAD"
     git clone https://github.com/vim/vim
     mycd vim
-    v=vim-$(git tag|grep -v a|grep -v b)
+    v=vim-$(git tag|grep -v a|grep -v b|tail -n1)
     ./configure LDFLAGS="-L$DESTINATION/lib/" --prefix="$STOWDIR/$v" \
       --with-lua-prefix="$DESTINATION" --with-local-dir="$DESTINATION" \
       --enable-luainterp=yes --enable-perlinterp=yes --enable-pythoninterp=yes \
