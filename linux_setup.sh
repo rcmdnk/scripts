@@ -121,6 +121,16 @@ if [ "$FORCE_GIT" -eq 1 ] || ! type -a git >& /dev/null;then
   fi
   ## }}}
 
+  ## gettext, to install msgfmt
+  if ! type -a msgfmt >& /dev/null;then
+    echo "### Install gettext ###"
+    if [ $ONLY_CHECK -eq 0 ];then
+      mycd "$TMPDOWNLOAD"
+      v=$(get_from_gnuorg gettext)
+      targz_configure_install "$v"
+    fi
+  fi
+
   ## git {{{
   echo "### Install git ###"
   if [ $ONLY_CHECK -eq 0 ];then
