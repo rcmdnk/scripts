@@ -115,7 +115,7 @@ if [ "$FORCE_GIT" -eq 1 ] || ! type -a git >& /dev/null;then
         2>/dev/null|grep title|grep tar.gz|grep "expat-"|head -n1\
         |awk '{split($0, tmp, "expat-")}{split(tmp[2], tmp2, ".tar.gz")}
               {print tmp2[1]}')
-      wget "http://curl.haxx.se/download/${v}.tar.gz"
+      wget "http://sourceforge.net/projects/expat/files/${v}.tar.gz"
       targz_configure_install "$v"
     fi
   fi
