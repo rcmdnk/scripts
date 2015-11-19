@@ -125,8 +125,8 @@ if [ "$FORCE_GIT" -eq 1 ] || ! type -a git >& /dev/null;then
   echo "### Install git ###"
   if [ $ONLY_CHECK -eq 0 ];then
     mycd "$TMPDOWNLOAD"
-    wget -O master.zip https://github.com/git/git/archive/master.zip
-    unzip master.zip
+    wget -O master.tar.gz https://github.com/git/git/archive/master.tar.gz
+    tar xzf master.tar.gz
     mycd git-master
     make configure
     v=git-$(grep 'PACKAGE_VERSION=' configure|cut -d"'" -f2|sed s/.GIT//)
