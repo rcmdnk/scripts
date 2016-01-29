@@ -92,9 +92,11 @@ function tmuxAlign {
   if [ "$flag" -ne 0 ];then
     tmux swap-window -t:+
   fi
-  for((i=2;i<${#wins[@]};i++));do
+  local i
+  local j
+  for i in $(seq 2 $((${#wins[@]}-1)));do
     panes=($(tmux list-panes -t ${wins[$i]} -F "#P"))
-    for((j=0;j<${#panes[@]};j++));do
+    for j in $(seq 0 $((${#panes[@]}-1)));do
       tmux join-pane -d -s :${wins[$i]}.${panes[$j]} -t :${wins[1]}.bottom
     done
   done

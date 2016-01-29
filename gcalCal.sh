@@ -114,12 +114,12 @@ else
     ((i--))
   done
 fi
-for((i=1; i<=nDaysCur; i++));do
+for i in $(seq 1 $nDaysCur);do
   date -v${i}d +"$gcalFormat" >> $gcalDays
 done
 # endDate for gcalcli must be +1 day
 endDateCal=$(date -v+1m -v1d -v+$((nextDays+1))d +"$gcalSEFormat")
-for((i=0; i<nextDays; i++));do
+for i in $(seq 0 $((nextDays-1)));do
   if [ $i -eq 0 ];then
     date -v+1m -v1d +"$gcalFormat" >> $gcalDays
   else
