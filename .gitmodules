@@ -25,9 +25,6 @@
 [submodule "submodules/sentaku"]
 	path = submodules/sentaku
 	url = git@github.com:rcmdnk/sentaku
-[submodule "external/apt-cyg"]
-	path = external/apt-cyg
-	url = git@github.com:transcode-open/apt-cyg.git
 [submodule "submodules/kk"]
 	path = submodules/kk
 	url = git@github.com:rcmdnk/kk.git
