@@ -28,3 +28,6 @@
 [submodule "submodules/kk"]
 	path = submodules/kk
 	url = git@github.com:rcmdnk/kk.git
+[submodule "external/apt-cyg"]
+	path = external/apt-cyg
+	url = git@github.com:kou1okada/apt-cyg.git
