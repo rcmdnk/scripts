@@ -6,6 +6,10 @@ fi
 host=$1
 port=$2
 
+if ps -A|grep $(basename $0)|grep $host|grep -q $port;then
+  exit 0
+fi
+
 while :;do
   ret=$(ssh -x "$host" netstat -a 2>/dev/null)
   if [ $? -ne 0 ];then
