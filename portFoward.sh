@@ -6,11 +6,9 @@ fi
 host=$1
 port=$2
 
-if ps -A|grep $(basename $0)|grep $host|grep -q $port;then
-  exit 0
-fi
-
-while :;do
+maxtry=10
+i=0
+while [ $i -lt $maxtry ];do
   ret=$(ssh -x "$host" netstat -a 2>/dev/null)
   if [ $? -ne 0 ];then
     # Could be offline
@@ -22,9 +20,6 @@ while :;do
     exit 0
   fi
   cmd="ssh -S none -x -N -R ${port}:localhost:22 ${host}"
-  if [ $? -ne 0 ];then
-    exit 1
-  fi
   pids=($(pgrep -u"$USER" -f "$cmd"))
   if [ "${#pids[@]}" -ne 0 ];then
     #echo "kill -kill ${pids[@]}"
@@ -32,5 +27,6 @@ while :;do
   fi
   #echo $cmd
   eval "$cmd" >& /dev/null &
+  ((i++))
   sleep 1
 done
