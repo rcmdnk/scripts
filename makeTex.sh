@@ -66,7 +66,7 @@ cat << EOF > ${output}.tex
 }
 
 \newcommand{\somehisto}[2]{
-%\subsection{$#1$}
+%\subsection{#1}
 \makehisto{#1}{#2}
 \clearpage
 }
@@ -75,7 +75,7 @@ cat << EOF > ${output}.tex
   \begin{minipage}{0.50\hsize}
     \begin{center}
       \includegraphics[width=1\hsize]{#1.eps}
-      \caption{$#1$}
+      \caption{#1}
     \end{center}
   \end{minipage}
 }
