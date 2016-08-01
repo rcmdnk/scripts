@@ -9,7 +9,7 @@ port=$2
 maxtry=10
 i=0
 while [ $i -lt $maxtry ];do
-  ret=$(ssh -x "$host" netstat -a 2>/dev/null)
+  ret=$(ssh -x "$host" netstat -a>/dev/null)
   if [ $? -ne 0 ];then
     # Could be offline
     #echo "Cound not resolve hostname $host"
