@@ -26,7 +26,7 @@ while [ $i -lt $maxtry ];do
     kill -kill "${pids[@]}" >& /dev/null
   fi
   #echo $cmd
-  eval "$cmd" >& /dev/null &
+  eval "$cmd" >& /dev/null & 2>/dev/null
   ((i++))
   sleep 1
 done
