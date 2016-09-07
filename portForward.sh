@@ -6,10 +6,10 @@ fi
 host=$1
 port=$2
 
-maxtry=10
+maxtry=1
 i=0
 while [ $i -lt $maxtry ];do
-  ret=$(ssh -x "$host" netstat -a>/dev/null)
+  ret=$(ssh -x "$host" netstat -a 2>/dev/null)
   if [ $? -ne 0 ];then
     # Could be offline
     #echo "Cound not resolve hostname $host"
@@ -25,7 +25,6 @@ while [ $i -lt $maxtry ];do
     #echo "kill -kill ${pids[@]}"
     kill -kill "${pids[@]}" >& /dev/null
   fi
-  #echo $cmd
   eval "$cmd" >& /dev/null & 2>/dev/null
   ((i++))
   sleep 1
