@@ -19,13 +19,13 @@ while [ $i -lt $maxtry ];do
     #echo "Already running"
     exit 0
   fi
-  cmd="ssh -S none -x -N -R ${port}:localhost:22 ${host}"
+  cmd="ssh -S none -x -f -N -R ${port}:localhost:22 ${host}"
   pids=($(pgrep -u"$USER" -f "$cmd"))
   if [ "${#pids[@]}" -ne 0 ];then
     #echo "kill -kill ${pids[@]}"
     kill -kill "${pids[@]}" >& /dev/null
   fi
-  eval "$cmd" >& /dev/null & 2>/dev/null
+  eval "$cmd"
   ((i++))
   sleep 1
 done
