@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
+
 . ~/.bashrc
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 function execute_check () {
-  output=$($* 2>&1)
+  output=$("$@" 2>&1)
   if [ $? != 0 ];then
-    echo "Error at the directory: $pwd"
+    echo "Error at the directory: $(pwd)"
     echo "---"
     echo "\$ $*"
     echo "$output"
@@ -14,25 +15,24 @@ function execute_check () {
 
 for dir in dotfiles scripts;do
   if [ -d $dir ];then
-    cd $dir
-    #git submodule -q foreach --recursive git update
+    cd $dir || exit 1
     if [ -d external ];then
       for d in external/*;do
-        cd $d
+        cd "$d" || exit 1
         execute_check git pull
-        cd -
+        cd - || exit 1
       done
     fi
     if [ -d submodules ];then
       for d in submodules/*;do
-        cd $d
+        cd "$d" || exit 1
         execute_check git update
-        cd -
+        cd - || exit 1
       done
     fi
     execute_check git update
     execute_check ./install.sh -b
-    cd ../
+    cd ../ || exit 1
   fi
 done
 
