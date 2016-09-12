@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-. ~/.bashrc
 
 # max lines
 maxline=20
