@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-. ~/.bashrc
+source ~/.bashrc
+
 cd "$(dirname "$0")" || exit 1
 
 function execute_check () {
   output=$("$@" 2>&1)
+  echo $(pwd)
+  echo "$output"
   if [ $? != 0 ];then
     echo "Error at the directory: $(pwd)"
     echo "---"
@@ -31,7 +34,7 @@ for dir in dotfiles scripts;do
       done
     fi
     execute_check git update
-    execute_check ./install.sh -b
+    execute_check ./install.sh -b ""
     cd ../ || exit 1
   fi
 done
