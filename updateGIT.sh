@@ -6,8 +6,6 @@ cd "$(dirname "$0")" || exit 1
 
 function execute_check () {
   output=$("$@" 2>&1)
-  echo $(pwd)
-  echo "$output"
   if [ $? != 0 ];then
     echo "Error at the directory: $(pwd)"
     echo "---"
