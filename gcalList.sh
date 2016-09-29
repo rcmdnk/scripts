@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+. ~/.bashrc
 
 # max lines
 maxline=20
@@ -14,7 +15,7 @@ cals="--cal=gmail --cal=Time"
 # Time    : Calendars for each location (JapanTime, etc...)
 if [ -f ~/.gcallistcals ];then
   cals=""
-  while read c;do
+  while read -r c;do
     cals="$cals --cal=$c"
   done < ~/.gcallistcals
 fi
@@ -28,12 +29,10 @@ cur_day=""
 cur_day_show=0
 events=("")
 lines=()
-#echo gcalcli --military --nocolor $cals agenda "$start" "$end"
-#gcalcli --military --nocolor $cals agenda "$start" "$end"
-gcalcli --military --nocolor $cals agenda "$start" "$end" > "$tmpfile"
+gcalcli --military --nocolor ${cals} agenda $start $end > "$tmpfile"
 IFS_ORIG=$IFS
 IFS=$'\n'
-while read line;do
+while read -r line;do
   if [ "$line" != "" ];then
     lines=("${lines[@]}" "$line")
   fi
@@ -66,7 +65,7 @@ for line in "${lines[@]}";do
   fi
   events=("${events[@]}" "$e")
   if [ $cur_day_show -eq 0 ];then
-    echo ${cur_day}":"
+    echo "${cur_day}:"
     cur_day_show=1
   fi
   if [ "$t" = "     " ];then
