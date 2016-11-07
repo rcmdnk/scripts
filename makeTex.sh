@@ -120,7 +120,7 @@ platex "$output"
 
 if type -a dvipidfmx >& /dev/null;then
   dvipdfmx -l "$output.dvi"
-else:
+else
   dvipdfm -l "$output.dvi"
 fi
 
