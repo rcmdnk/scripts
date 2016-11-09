@@ -125,15 +125,15 @@ else
 fi
 
 #l2h summary
-#rm -rf "$output.log"
-#rm -rf "$output.lof"
-#rm -rf "$output.dvi"
-#rm -rf "$output.aux"
-#rm -rf "$output.blg"
-#rm -rf "$output.bbl"
-#rm -rf "$output.ps"
-#rm -rf "$output.out"
-#if [ $remaintex -eq 0 ];then
-#  rm -rf "$output.tex"
-#fi
+rm -rf "$output.log"
+rm -rf "$output.lof"
+rm -rf "$output.dvi"
+rm -rf "$output.aux"
+rm -rf "$output.blg"
+rm -rf "$output.bbl"
+rm -rf "$output.ps"
+rm -rf "$output.out"
+if [ $remaintex -eq 0 ];then
+  rm -rf "$output.tex"
+fi
 
