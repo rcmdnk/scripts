@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function tmuxStatus {
-  printf "\e]2;$(hostname -s)\e\\"
+  printf "\e]2;%s\e\\" "$(hostname -s)"
 }
 
 function tmuxWindowName {
@@ -10,30 +10,30 @@ function tmuxWindowName {
   wins=($(tmux list-windows -F "#I #{window_active}"))
   IFS=$IFS_ORIG
   noview=0
-  for line in "${wins[@]}";do
-    iw=$(printf "$line"|cut -d' ' -f1)
-    fw=$(printf "$line"|cut -d' ' -f2)
+  for w in "${wins[@]}";do
+    iw=$(printf "$w"|cut -d' ' -f1)
+    fw=$(printf "$w"|cut -d' ' -f2)
     IFS_ORIG=$IFS
     IFS=$'\n'
-    panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #{pane_current_path}"))
+    panes=($(tmux list-panes -t "$iw" -F "#D #{pane_active} #{pane_current_path}"))
     IFS=$IFS_ORIG
     first=1
     status=""
-    for line in "${panes[@]}";do
-      ip=$(echo "$line"|cut -d' ' -f1|sed 's/%//')
-      fp=$(echo "$line"|cut -d' ' -f2)
-      pp=$(echo "$line"|cut -d' ' -f3)
+    for p in "${panes[@]}";do
+      ip=$(echo "$p"|cut -d' ' -f1|sed 's/%//')
+      fp=$(echo "$p"|cut -d' ' -f2)
+      pp=$(echo "$p"|cut -d' ' -f3)
       if [ $first -eq 1 ];then
         first=0
       else
         status="$status#[bg=colour238] #[bg=colour008]"
       fi
-      if [ $fw -eq 1 ] && [ $fp -eq 1 ];then
+      if [ "$fw" -eq 1 ] && [ "$fp" -eq 1 ];then
         status="$status#[bg=colour255]"
       else
         status="$status#[bg=colour008]"
       fi
-      status="$status${ip}:$(hostname -s) $(basename $pp)"
+      status="$status${ip}:$(hostname -s) $(basename "$pp")"
     done
     status="$status#[bg=colour236] #[bg=colour008]"
     tmux rename-window -t :$iw "${status}"
@@ -47,40 +47,40 @@ function tmuxLeftStatus {
   IFS=$IFS_ORIG
   status=""
   noview=0
-  for line in "${wins[@]}";do
-    iw=$(printf "$line"|cut -d' ' -f1)
-    fw=$(printf "$line"|cut -d' ' -f2)
+  for w in "${wins[@]}";do
+    iw=$(printf "$w"|cut -d' ' -f1)
+    fw=$(printf "$w"|cut -d' ' -f2)
     IFS_ORIG=$IFS
     IFS=$'\n'
-    panes=($(tmux list-panes -t $iw -F "#D #{pane_active} #T"))
+    panes=($(tmux list-panes -t "$iw" -F "#D #{pane_active} #T"))
     IFS=$IFS_ORIG
     first=1
-    for line in "${panes[@]}";do
-      ip=$(echo "$line"|cut -d' ' -f1|sed 's/%//')
-      fp=$(echo "$line"|cut -d' ' -f2)
-      tp=$(echo "$line"|cut -d' ' -f3)
-      pp=$(echo "$line"|cut -d' ' -f4)
+    for p in "${panes[@]}";do
+      ip=$(echo "$p"|cut -d' ' -f1|sed 's/%//')
+      fp=$(echo "$p"|cut -d' ' -f2)
+      tp=$(echo "$p"|cut -d' ' -f3)
+      pp=$(echo "$p"|cut -d' ' -f4)
       if [ $first -eq 1 ];then
         first=0
       else
         status="$status#[bg=colour238] #[bg=colour008]"
         noview=$((noview+30))
       fi
-      if [ $fw -eq 1 ] && [ $fp -eq 1 ];then
+      if [ "$fw" -eq 1 ] && [ "$fp" -eq 1 ];then
         status="$status#[bg=colour255]"
         noview=$((noview+15))
       else
         status="$status#[bg=colour008]"
         noview=$((noview+15))
       fi
-      status="$status${ip}@${tp} $(basename $pp)"
+      status="$status${ip}@${tp} $(basename "$pp")"
       #status="$status${iw}.${ip}:#h $(basename $pp)"
       #noview=$((noview-15))
     done
     status="$status#[bg=colour000]..#[bg=colour008]"
     noview=$((noview+30))
   done
-  echo -n ${status: 0: $(($(tput cols)+noview-32))}
+  echo -n "${status: 0: $(($(tput cols)+noview-32))}"
 }
 
 function tmuxAlign {
@@ -95,7 +95,7 @@ function tmuxAlign {
   local i
   local j
   for i in $(seq 2 $((${#wins[@]}-1)));do
-    panes=($(tmux list-panes -t ${wins[$i]} -F "#P"))
+    panes=($(tmux list-panes -t "${wins[$i]}" -F "#P"))
     for j in $(seq 0 $((${#panes[@]}-1)));do
       tmux join-pane -d -s :${wins[$i]}.${panes[$j]} -t :${wins[1]}.bottom
     done
@@ -141,11 +141,11 @@ function tmuxOnly {
     IFS=$'\n'
     panes=($(tmux list-panes -F "#D #{pane_active}"))
     IFS=$IFS_ORIG
-    for line in "${panes[@]}";do
-      ip=$(echo "$line"|cut -d' ' -f1)
-      fp=$(echo "$line"|cut -d' ' -f2)
-      if [ $fp -ne 1 ];then
-        tmux move-pane -d -s ${ip} -t :+
+    for p in "${panes[@]}";do
+      ip=$(echo "$p"|cut -d' ' -f1)
+      fp=$(echo "$p"|cut -d' ' -f2)
+      if [ "$fp" -ne 1 ];then
+        tmux move-pane -d -s "${ip}" -t :+
       fi
     done
   fi
@@ -183,11 +183,11 @@ function tmuxMove {
     IFS=$'\n'
     panes=($(tmux list-panes -F "#D #{pane_active}"))
     IFS=$IFS_ORIG
-    for line in "${panes[@]}";do
-      ip=$(echo "$line"|cut -d' ' -f1)
-      fp=$(echo "$line"|cut -d' ' -f2)
-      if [ $fp -eq 1 ];then
-        tmux move-pane -d -s ${ip} -t :+
+    for p in "${panes[@]}";do
+      ip=$(echo "$p"|cut -d' ' -f1)
+      fp=$(echo "$p"|cut -d' ' -f2)
+      if [ "$fp" -eq 1 ];then
+        tmux move-pane -d -s "${ip}" -t :+
       fi
     done
     tmuxAlign
@@ -242,24 +242,24 @@ function tmuxChoose {
   IFS=$'\n'
   wins=($(tmux list-windows -F "#I #{window_active}"))
   IFS=$IFS_ORIG
-  for line in "${wins[@]}";do
-    iw=$(printf "$line"|cut -d' ' -f1)
-    fw=$(printf "$line"|cut -d' ' -f2)
+  for w in "${wins[@]}";do
+    iw=$(printf "$w"|cut -d' ' -f1)
+    fw=$(printf "$w"|cut -d' ' -f2)
     IFS_ORIG=$IFS
     IFS=$'\n'
-    panes=($(tmux list-panes -t $iw -F "#D #P #{pane_active} #{pane_current_path} #T"))
+    panes=($(tmux list-panes -t "$iw" -F "#D #P #{pane_active} #{pane_current_path} #T"))
     IFS=$IFS_ORIG
     first=1
-    for line in "${panes[@]}";do
-      ip=$(echo "$line"|cut -d' ' -f1|sed 's/%//')
-      Ip=$(echo "$line"|cut -d' ' -f2)
-      fp=$(echo "$line"|cut -d' ' -f3)
-      pp=$(echo "$line"|cut -d' ' -f4)
-      tp=$(echo "$line"|cut -d' ' -f5)
+    for p in "${panes[@]}";do
+      ip=$(echo "$p"|cut -d' ' -f1|sed 's/%//')
+      Ip=$(echo "$p"|cut -d' ' -f2)
+      fp=$(echo "$p"|cut -d' ' -f3)
+      pp=$(echo "$p"|cut -d' ' -f4)
+      tp=$(echo "$p"|cut -d' ' -f5)
       all=("${all[@]}" "${iw}.${Ip} $((fp * fw)) $fw $ip@$tp $pp")
     done
   done
-  target=$(for l in "${all[@]}";do echo $l;done|sentaku -N -s line)
+  target=$(for l in "${all[@]}";do echo "$l";done|sentaku -N -s line)
   if [ "$target" != "" ];then
     i=$(echo "$target"|cut -d' ' -f1)
     tmux swap-pane -d -s :${i}

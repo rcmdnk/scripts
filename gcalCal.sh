@@ -114,16 +114,16 @@ else
     ((i--))
   done
 fi
-for i in $(seq 1 $nDaysCur);do
-  date -v${i}d +"$gcalFormat" >> $gcalDays
+for i in $(seq 1 "$nDaysCur");do
+  date -v"${i}"d +"$gcalFormat" >> "$gcalDays"
 done
 # endDate for gcalcli must be +1 day
 endDateCal=$(date -v+1m -v1d -v+$((nextDays+1))d +"$gcalSEFormat")
 for i in $(seq 0 $((nextDays-1)));do
-  if [ $i -eq 0 ];then
-    date -v+1m -v1d +"$gcalFormat" >> $gcalDays
+  if [ "$i" -eq 0 ];then
+    date -v+1m -v1d +"$gcalFormat" >> "$gcalDays"
   else
-    date -v+1m -v1d -v+${i}d +"$gcalFormat" >> $gcalDays
+    date -v+1m -v1d -v+"${i}"d +"$gcalFormat" >> "$gcalDays"
   fi
 done
 
@@ -132,15 +132,15 @@ orig_ifs=$IFS
 IFS=$'\t\n'
 lines=($(gcalcli --military --nocolor --details=calendar agenda "$startDateCal" "$endDateCal"\
   |grep -v "^$"))
-#ret=$?
+ret=$?
 IFS=$orig_ifs
 
-if [ $? -eq 0 ];then
+if [ $ret -eq 0 ];then
   rm -f $gcalTasks $gcalHolidays
   touch $gcalTasks $gcalHolidays
   for line in "${lines[@]}";do
     if [ "${line:0:1}" = " " ];then
-      l=$(echo "$line")
+      l=$($line)
     else
       date=$(echo "$line"|awk '{for(i=1;i<3;i++){printf("%s ",$i)}print $3}')
       l=$(echo "$line"|awk '{for(i=4;i<NF;i++){printf("%s ",$i)}print $NF}')
@@ -178,7 +178,7 @@ if [ $? -eq 0 ];then
   rm -f $gcalCalDays
   w=0
   totalDay=0
-  while read d;do
+  while read -r d;do
     # check holidays
     if grep -q "$d" $gcalHolidays;then hFlag=1;
     else hFlag=0;fi

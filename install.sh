@@ -138,7 +138,7 @@ for f in "${files[@]}";do
   if [ $flag = 1 ];then
     continue
   fi
-  name=$(basename $f)
+  name=$(basename "$f")
   name=${name%.sh}
   name=${name%.py}
   name=${name%.rb}
@@ -189,7 +189,7 @@ for f in "${files[@]}";do
   if [ $flag = 1 ];then
     continue
   fi
-  name=$(basename $f)
+  name=$(basename "$f")
   name=${name%.sh}
   name=${name%.py}
   name=${name%.rb}

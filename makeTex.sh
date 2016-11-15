@@ -24,7 +24,7 @@ while getopts rf:e:h OPT;do
   esac
 done
 
-cat << EOF > ${output}.tex
+cat << EOF > "${output}.tex"
 \documentclass[landscape]{article}
 %\documentclass{article}
 \usepackage[dvipdfm]{color,graphicx}
@@ -94,21 +94,21 @@ cat << EOF > ${output}.tex
 EOF
 
 ls -v ./*.eps > eps.dat
-while read file;do
+while read -r file;do
   flag=1
   for e in ${exclude[*]};do
-    if echo "$file"|grep -q $e;then
+    if echo "$file"|grep -q "$e";then
       flag=0
       break
     fi
   done
   if [ $flag -eq 0 ];then continue;fi
   epsname=${file%.eps}
-  name=$(echo "$epsname"|sed -e 's/_/\\\_/g')
+  name=${epsname//_/\\\_}
   echo "\somehisto{${epsname}}{${name}}" >> "$output.tex"
 done < eps.dat
 rm -f eps.dat
-echo "" >> "$outptu.tex"
+echo "" >> "$output.tex"
 echo "\end{document}" >> "$output.tex"
 
 platex "$output"

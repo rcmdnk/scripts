@@ -5,8 +5,7 @@ source ~/.bashrc
 cd "$(dirname "$0")" || exit 1
 
 function execute_check () {
-  output=$("$@" 2>&1)
-  if [ $? != 0 ];then
+  if ! output=$("$@" 2>&1);then
     echo "Error at the directory: $(pwd)"
     echo "---"
     echo "\$ $*"
@@ -37,5 +36,5 @@ for dir in dotfiles scripts;do
   fi
 done
 
-# update vim plugins by NeoBundle
+# update vim plugins by dein
 execute_check vim  -c "silent call dein#update()" -c "quit"
