@@ -31,3 +31,6 @@
 [submodule "external/apt-cyg"]
 	path = external/apt-cyg
 	url = git@github.com:transcode-open/apt-cyg.git
+[submodule "submodules/shell-explorer"]
+	path = submodules/shell-explorer
+	url = git@github.com:rcmdnk/shell-explorer
