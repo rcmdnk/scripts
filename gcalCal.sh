@@ -104,28 +104,22 @@ nDaysCur=$(date -v1d -v+1m -v-1d +%d)
 
 # make day list
 rm -f $gcalDays
-if [ $prevDays -eq 0 ];then
-  startDateCal=$startDateCur
-else
-  startDateCal=$(date -v1d -v-${prevDays}d +"$gcalSEFormat")
-  i=${prevDays}
-  while [ $i -gt 0 ];do
-    date -v1d -v-${i}d +"$gcalFormat" >> $gcalDays
-    ((i--))
-  done
-fi
+startDateCal=$(date -v1d -v-${prevDays}d +"$gcalSEFormat")
+i=${prevDays}
+while [ $i -gt 0 ];do
+  date -v1d -v-${i}d +"$gcalFormat" >> $gcalDays
+  ((i--))
+done
 for i in $(seq 1 "$nDaysCur");do
   date -v"${i}"d +"$gcalFormat" >> "$gcalDays"
 done
-# endDate for gcalcli must be +1 day
+# endDate for gcalcli is +1 day (startDate <= days < endDate)
 endDateCal=$(date -v+1m -v1d -v+$((nextDays+1))d +"$gcalSEFormat")
-for i in $(seq 0 $((nextDays-1)));do
-  if [ "$i" -eq 0 ];then
-    date -v+1m -v1d +"$gcalFormat" >> "$gcalDays"
-  else
+if [ "$nextDays" -gt 0 ];then
+  for i in $(seq 1 $nextDays);do
     date -v+1m -v1d -v+"${i}"d +"$gcalFormat" >> "$gcalDays"
-  fi
-done
+  done
+fi
 
 # get days with tasks and holidays
 orig_ifs=$IFS
