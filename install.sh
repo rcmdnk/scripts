@@ -17,6 +17,7 @@ if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
   sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
 fi
 sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
+              "submodules/shell-logger/etc/shell-logger.sh"\
   )
 
 backup="bak"
