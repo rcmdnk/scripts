@@ -36,4 +36,4 @@
 	url = git@github.com:rcmdnk/shell-explorer
 [submodule "submodules/shell-logger"]
 	path = submodules/shell-logger
-	url = git://github.com/rcmdnk/shell-logger.git
+	url = git@github.com:rcmdnk/shell-logger.git
