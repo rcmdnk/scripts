@@ -34,3 +34,6 @@
 [submodule "submodules/shell-logger"]
 	path = submodules/shell-logger
 	url = git@github.com:rcmdnk/shell-logger.git
+[submodule "external/apt-cyg"]
+	path = external/apt-cyg
+	url = git@github.com:kou1okada/apt-cyg.git
