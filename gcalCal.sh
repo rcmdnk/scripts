@@ -113,19 +113,17 @@ done
 for i in $(seq 1 "$nDaysCur");do
   date -v"${i}"d +"$gcalFormat" >> "$gcalDays"
 done
-# endDate for gcalcli is +1 day (startDate <= days < endDate)
-endDateCal=$(date -v+1m -v1d -v+$((nextDays+1))d +"$gcalSEFormat")
+endDateCal=$(date -v+1m -v1d -v+$((nextDays))d +"$gcalSEFormat")
 if [ "$nextDays" -gt 0 ];then
   for i in $(seq 1 $nextDays);do
-    date -v+1m -v1d -v+"${i}"d +"$gcalFormat" >> "$gcalDays"
+    date -v+1m -v1d -v+"$((i-1))"d +"$gcalFormat" >> "$gcalDays"
   done
 fi
 
 # get days with tasks and holidays
 orig_ifs=$IFS
 IFS=$'\t\n'
-lines=($(gcalcli --military --nocolor --details=calendar agenda "$startDateCal" "$endDateCal"\
-  |grep -v "^$"))
+lines=($(gcalcli --military --nocolor --details=calendar agenda "$startDateCal" "$endDateCal"|grep -v "^$"))
 ret=$?
 IFS=$orig_ifs
 
