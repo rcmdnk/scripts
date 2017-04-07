@@ -37,3 +37,6 @@
 [submodule "external/apt-cyg"]
 	path = external/apt-cyg
 	url = git@github.com:kou1okada/apt-cyg.git
+[submodule "submodules/open_newtab"]
+	path = submodules/open_newtab
+	url = git@github.com:rcmdnk/open_newtab.git
