@@ -23,6 +23,7 @@ sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
 
 backup="bak"
 overwrite=1
+relative=0
 dryrun=0
 newlink=()
 exist=()
@@ -39,15 +40,17 @@ Arguments:
           Set \"\" if backups are not necessary
       -e  Set additional exclude file (default: ${exclude[*]})
       -p  Set install directory prefix (default: $prefix)
+      -r  Use relative path (default: absolute path)
       -n  Don't overwrite if file is already exist
       -d  Dry run, don't install anything
       -h  Print Help (this message) and exit
 "
-while getopts b:e:p:ndh OPT;do
+while getopts b:e:p:rndh OPT;do
   case $OPT in
     "b" ) backup=$OPTARG ;;
     "e" ) exclude=(${exclude[@]} "$OPTARG") ;;
     "p" ) prefix="$OPTARG" ;;
+    "r" ) relative=1 ;;
     "n" ) overwrite=0 ;;
     "d" ) dryrun=1 ;;
     "h" ) echo "$HELP" 1>&2; exit ;;
@@ -84,6 +87,9 @@ if [[ "$OSTYPE" =~ cygwin ]];then
 fi
 
 # make a link ~/usr/share/git to /path/to/Git, for cronjob
+if [ $relative -eq 1 ];then
+  curdir=$(pwd)
+fi
 gitdirname=$(basename "$(dirname "$curdir")")
 gitdir="$prefix/share/git"
 if echo "$gitdirname"| grep -q -i git;then
