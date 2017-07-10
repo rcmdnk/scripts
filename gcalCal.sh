@@ -132,7 +132,7 @@ if [ $ret -eq 0 ];then
   touch $gcalTasks $gcalHolidays
   for line in "${lines[@]}";do
     if [ "${line:0:1}" = " " ];then
-      l=$($line)
+      l=$(echo $line)
     else
       date=$(echo "$line"|awk '{for(i=1;i<3;i++){printf("%s ",$i)}print $3}')
       l=$(echo "$line"|awk '{for(i=4;i<NF;i++){printf("%s ",$i)}print $NF}')
