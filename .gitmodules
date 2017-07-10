@@ -10,9 +10,6 @@
 [submodule "submodules/gtask"]
 	path = submodules/gtask
 	url = git@github.com:rcmdnk/gtask.git
-[submodule "external/gcalcli"]
-	path = external/gcalcli
-	url = git@github.com:insanum/gcalcli.git
 [submodule "submodules/multi_clipboard"]
 	path = submodules/multi_clipboard
 	url = git@github.com:rcmdnk/multi_clipboard.git

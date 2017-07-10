@@ -29,6 +29,7 @@ cur_day=""
 cur_day_show=0
 events=("")
 lines=()
+echo gcalcli --military --nocolor ${cals} agenda "$start" "$end"
 gcalcli --military --nocolor ${cals} agenda "$start" "$end" > "$tmpfile"
 IFS_ORIG=$IFS
 IFS=$'\n'
