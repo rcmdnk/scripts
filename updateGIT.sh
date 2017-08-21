@@ -5,15 +5,12 @@ source ~/.bashrc
 cd "$(dirname "$0")" || exit 1
 
 function execute_check () {
-  pwd
-  echo "$@"
-  "$@"
-  #if ! output=$("$@" 2>&1);then
-  #  echo "Error at the directory: $(pwd)"
-  #  echo "---"
-  #  echo "\$ $*"
-  #  echo "$output"
-  #fi
+  if ! output=$("$@" 2>&1);then
+    echo "Error at the directory: $(pwd)"
+    echo "---"
+    echo "\$ $*"
+    echo "$output"
+  fi
 }
 
 for dir in dotfiles scripts;do
