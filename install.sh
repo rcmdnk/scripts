@@ -21,7 +21,7 @@ sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
               "submodules/shell-logger/etc/shell-logger.sh"\
   )
 
-backup="bak"
+backup=""
 overwrite=1
 relative=0
 dryrun=0
@@ -36,8 +36,7 @@ HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <instal
 Make links of scripts (default:in $prefix/bin, $prefix/etc)
 
 Arguments:
-      -b  Set backup postfix (default: make *.bak file)
-          Set \"\" if backups are not necessary
+      -b  Set backup postfix, like \"bak\" (default: \"\": no back up is made)
       -e  Set additional exclude file (default: ${exclude[*]})
       -p  Set install directory prefix (default: $prefix)
       -r  Use relative path (default: absolute path)
