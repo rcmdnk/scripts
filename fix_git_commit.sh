@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 if [ "$#" -lt 3 ];then
   echo "usage: $0 <fix_word> <correct_name> <correct_email>"
