@@ -34,6 +34,6 @@
 [submodule "external/apt-cyg"]
 	path = external/apt-cyg
 	url = git@github.com:kou1okada/apt-cyg.git
-[submodule "external/gcalcli"]
-	path = external/gcalcli
-	url = git@github.com:rcmdnk/gcalcli
+[submodule "submodules/gcalcli"]
+	path = submodules/gcalcli
+	url = git@github.com:rcmdnk/gcalcli.git

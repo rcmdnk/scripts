@@ -12,7 +12,7 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/sentaku/bin/ddv"\
           "submodules/kk/bin/kk"\
           "submodules/shell-explorer/bin/se"\
-          "external/gcalcli/gcalcli"\
+          "submodules/gcalcli/gcalcli"\
   )
 if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
   sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
