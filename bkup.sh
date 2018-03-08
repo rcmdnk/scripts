@@ -5,7 +5,7 @@ if [ $# -ne 2 ];then
   exit
 fi
 
-logfile=$(mktemp 2>/dev/null||mktemp -t tmp)
+logfile=$(mktemp)
 
 checkdir() {
   files=$(ls -A "${1}")

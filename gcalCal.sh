@@ -30,7 +30,7 @@ touch "$gcalCalDays"
 myCal (){
 
   # gcalCal tmp
-  tmpfile=$(mktemp 2>/dev/null||mktemp -t tmp)
+  tmpfile=$(mktemp)
 
   # this month
   date +"      %b %Y" > "$tmpfile"

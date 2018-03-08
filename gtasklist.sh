@@ -6,7 +6,7 @@
 fgtasklist=~/.gtasklist
 
 # get tasks
-tmpfile=$(mktemp 2>/dev/null||mktemp -t tmp)
+tmpfile=$(mktemp)
 gtask -l 00_Inbox > "$tmpfile"
 ret=$?
 if [ $ret -eq 0 ];then

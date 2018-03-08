@@ -6,7 +6,7 @@ maxline=20
 
 # gcal list file
 gcallist=~/.gcallist
-tmpfile=$(mktemp 2>/dev/null||mktemp -t tmp)
+tmpfile=$(mktemp)
 
 # List of calenders
 cals="--calendar=gmail --calendar=Time"
