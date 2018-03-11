@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+
+weblio () {
+  if ! type w3m >& /dev/null;then
+    echo "Please install w3m"
+    return 1
+  fi
+  if [ "$#" -eq 0 ];then
+    echo "usage: $0 [option] <word>"
+    echo "options: -m (show meanings), -e (show examples)"
+    echo "If no option is given, show the result page with w3m."
+  fi
+  local flag=""
+  if [ "$#" -gt 1 ];then
+    if [ "$1" = "-m" ];then
+      flag="meaning"
+      shift
+    elif [ "$1" = "-e" ];then
+      flag="example"
+      shift
+    fi
+  fi
+  if [ -z "$flag" ];then
+    w3m "http://ejje.weblio.jp/content/$1"
+    return $?
+  fi
+  local page=$(w3m "http://ejje.weblio.jp/content/$1")
+  if [ "$flag" = "meaning" ];then
+    local start=($(printf "$page"|grep -n "主な意"|cut -d: -f1))
+    local end=($(printf "$page"|grep -n "イディオムやフレーズ"|cut -d: -f1))
+    if [ -z "${start[0]}" ] || [ -z "${end[0]}" ];then
+      echo "No result found (always no result for Japanese)."
+      return 1
+    fi
+    printf "$page"|sed -n $((start[0]+3)),$((end[0]))p
+  elif [ "$flag" = "example" ];then
+    local start=($(printf "$page"|grep -n "を含む例文一覧"|cut -d: -f1))
+    local end=($(printf "$page"|grep -n "例文の一覧を見る自分の例文帳を見る"|cut -d: -f1))
+    if [ -z "${start[0]}" ] || [ -z "${end[0]}" ];then
+      echo "No result found (always no result for Japanese)."
+      return 1
+    fi
+    printf "$page"|sed -n $((start[0]+6)),$((end[0]-2))p|sed "s/ 例文帳に追加//g"
+  fi
+}
+
+alc () {
+  if ! type w3m >& /dev/null;then
+    echo "Please install w3m"
+    return 1
+  fi
+  if [ "$#" -eq 0 ];then
+    echo "usage: $0 [option] <word>"
+    echo "options: -m (show meanings), -e (show examples)"
+    echo "If no option is given, show the result page with w3m."
+  fi
+  local flag=""
+  if [ "$#" -gt 1 ];then
+    if [ "$1" = "-m" ];then
+      flag="meaning"
+      shift
+    elif [ "$1" = "-e" ];then
+      flag="example"
+      shift
+    fi
+  fi
+  if [ -z "$flag" ];then
+    w3m "http://eow.alc.co.jp/search?q=$1"
+    return $?
+  fi
+  local page=$(w3m "http://eow.alc.co.jp/search?q=$1")
+  if printf "$page"|grep -q "該当する項目は見つかりませんでした。";then
+    printf "$page"|grep "該当する項目は見つかりませんでした。"
+    return 2
+  fi
+  local next_lines=($(printf "$page"|grep -n "次へ"|cut -d: -f1))
+  local start=(${next_lines[0]})
+  local end=(${next_lines[1]})
+  if [ -z "${start[0]}" ];then
+    local start=($(printf "$page"|grep -n "英辞郎データ提供元 EDP のサイトへ"|cut -d: -f1))
+    if [ -z "${start[0]}" ];then
+      echo "No result found."
+      return 3
+    fi
+  fi
+  if [ "$flag" = "meaning" ];then
+    local lines2=($(printf "$page"|grep -n "単語帳"|cut -d: -f1))
+    if [ -z "${lines2[0]}" ];then
+      echo "No result found."
+      return 4
+    fi
+    printf "$page"|sed -n $((start[0]+2)),$((lines2[0]-1))p
+  elif [ "$flag" = "example" ];then
+    if [ -z "${end[0]}" ];then
+      printf "$page"|grep -n "単語帳"|tail -n1|cut -d: -f1
+      local end=($(printf "$page"|grep -n "単語帳"|tail -n1|cut -d: -f1))
+    fi
+    if [ -z "${end[0]}" ];then
+      echo "No result found."
+      return 5
+    fi
+    printf "$page"|sed -n $((start[0]+2)),$((end[0]-1))p
+  fi
+}
+
+usage="usage: dic [-w (weblio)] [-a (alc, default)] [-e (show example, default)] [-m (show meanings)] <words>"
+method=alc
+option="-e"
+while getopts waemh OPT;do
+  case $OPT in
+    "w" ) method=weblio;;
+    "a" ) method=alc;;
+    "e" ) option="-e";;
+    "m" ) option="-m";;
+    "h" ) echo "$usage";exit 0;;
+    * ) echo "$usage"; exit 1;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ $# -eq 0 ];then
+  echo "$usage"; exit 1
+fi
+
+$method $option "$@"|${PAGER:-less}

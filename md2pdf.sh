@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+if [[ "$OSTYPE" =~ darwin ]];then
+  if ! type iconv >& /dev/null;then
+    echo "Please install iconv"
+    exit 1
+  fi
+fi
+if ! type pandoc >& /dev/null;then
+  echo "Please install pandoc"
+  exit 1
+fi
+
+usage="usage mdtopdf [-s (make slides)] [-t <theme>] [<output.pdf>] <input.md>"
+if [ $# -eq 0 ];then
+  echo "$usage"
+  exit 1
+fi
+input=""
+output=""
+format="latex"
+
+while getopts st:h OPT;do
+  case $OPT in
+    "s" ) format=beamer;;
+    "t" ) theme="$OPTARG";;
+    "h" ) echo "$usage";exit 0;;
+    * ) echo "$usage"; exit 1;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ -n "$theme" ];then
+  theme="-V theme:$theme"
+fi
+
+for v in "$@";do
+  if [[ "$v" =~ \.md ]];then
+    input=$v
+  elif [[ "$v" =~ \.pdf ]];then
+    output=$v
+  else
+    echo "$usage"
+    exit 1
+  fi
+done
+
+if [ -z "$input" ];then
+  echo "$usage"
+  exit 1
+fi
+
+output=${output:-${input%.md}.pdf}
+if [[ "$OSTYPE" =~ darwin ]];then
+  cmd="iconv -t UTF-8 $input | \
+    pandoc -t $format -f markdown -o $output $theme"
+else
+  cmd="pandoc -t $format $theme $input -o $output"
+fi
+
+eval "$cmd"
