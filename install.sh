@@ -31,7 +31,7 @@ curdir=$(pwd -P)
 prefix=$HOME/usr
 
 # help
-HELP="Usage: $0 [-nd] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
+HELP="Usage: $0 [-ndsh] [-b <backup file postfix>] [-e <exclude file>] [-i <install dir>]
 
 Make links of scripts (default:in $prefix/bin, $prefix/etc)
 
@@ -42,16 +42,18 @@ Arguments:
       -r  Use relative path (default: absolute path)
       -n  Don't overwrite if file is already exist
       -d  Dry run, don't install anything
+      -s  Use 'pwd' instead of 'pwd -P' to make a symbolic link
       -h  Print Help (this message) and exit
 "
-while getopts b:e:p:rndh OPT;do
+while getopts b:e:p:rndsh OPT;do
   case $OPT in
     "b" ) backup=$OPTARG ;;
-    "e" ) exclude=(${exclude[@]} "$OPTARG") ;;
+    "e" ) exclude=("${exclude[@]}" "$OPTARG") ;;
     "p" ) prefix="$OPTARG" ;;
     "r" ) relative=1 ;;
     "n" ) overwrite=0 ;;
     "d" ) dryrun=1 ;;
+    "s" ) curdir=$(pwd) ;;
     "h" ) echo "$HELP" 1>&2; exit ;;
     * ) echo "$HELP" 1>&2; exit 1;;
   esac
