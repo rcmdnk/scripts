@@ -2,10 +2,23 @@
 
 source ~/.bashrc
 
+debug=0
+if [ "$1" = "-d" ];then
+  debug=1
+fi
+
 cd "$(dirname "$0")" || exit 1
 
 function execute_check () {
-  if ! output=$("$@" 2>&1);then
+  if [ "$debug" -eq 1 ];then
+    echo
+    echo "#################################################################"
+    echo "# $(pwd)"
+    echo "# $ $*"
+    echo "#################################################################"
+    echo
+    "$@"
+  elif ! output=$("$@" 2>&1);then
     echo "Error at the directory: $(pwd)"
     echo "---"
     echo "\$ $*"
