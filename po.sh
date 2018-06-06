@@ -33,18 +33,28 @@ PO_DATE="06/Jun/2018"
 # }}}
 
 # Help
-HELP="Usage: $(basename "$0") [-ukh] <host1> [<host2> [<host3>...]]
+HELP="Usage: $(basename "$0") [-lih] <host1> [<host2> [<host3>...]]
 
 Arguments:
   -l <user> Set user
   -i <key>  Set ssh key
   -h        Print Help (this message) and exit
 
-hostX can be given with any ssh options, e.g.:
+hostX can be given with any ssh options.
 
-    $ $(basename "$0") user1@example1.com \"-i ~/.ssh/my_key example2.com\"
+e.g.)
 
-If '-l' or '-i' is given, it will be applied for all hosts.
+    $ $(basename "$0") -- user1@example1.com \"-i ~/.ssh/my_key example2.com\"
+
+Need '--' if you want to give options in the host definitions.
+
+If '-l' or '-i' is given to $(basename "$0"), it will be applied for all hosts.
+
+    $ $(basename "$0") -l user exmaple1 exmaple2
+
+is same as
+
+    $ $(basename "$0") -- \"-l user exmaple1\" \"-l user exmaple2\"
 "
 
 # Default values
@@ -66,7 +76,7 @@ if [ $# -eq 0 ];then
   echo "$HELP"; exit 1;
 fi
 
-hosts=($@)
+hosts=("$@")
 ssh_opt=""
 
 if [ -n "$user" ];then
