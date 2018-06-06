@@ -37,3 +37,6 @@
 [submodule "submodules/gcalcli"]
 	path = submodules/gcalcli
 	url = git@github.com:rcmdnk/gcalcli.git
+[submodule "submodules/ParallelOperation"]
+	path = submodules/ParallelOperation
+	url = git@github.com:rcmdnk/ParallelOperation.git
