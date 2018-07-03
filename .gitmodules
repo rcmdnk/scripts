@@ -40,3 +40,6 @@
 [submodule "submodules/ParallelOperation"]
 	path = submodules/ParallelOperation
 	url = git@github.com:rcmdnk/ParallelOperation.git
+[submodule "submodules/gcp-tools"]
+	path = submodules/gcp-tools
+	url = git@github.com:rcmdnk/gcp-tools.git

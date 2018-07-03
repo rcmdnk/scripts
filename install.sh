@@ -14,6 +14,11 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/shell-explorer/bin/se"\
           "submodules/gcalcli/gcalcli"\
           "submodules/ParallelOperation/bin/po"\
+          "submodules/gcp-tools/bin/gce_util"\
+          "submodules/gcp-tools/bin/gce_ssh"\
+          "submodules/gcp-tools/bin/gce_start"\
+          "submodules/gcp-tools/bin/gce_stop"\
+          "submodules/gcp-tools/bin/gce_delete"\
   )
 if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
   sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
