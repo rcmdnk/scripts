@@ -19,6 +19,7 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/gcp-tools/bin/gce_start"\
           "submodules/gcp-tools/bin/gce_stop"\
           "submodules/gcp-tools/bin/gce_delete"\
+          "submodules/gcp-tools/bin/gce_list"\
           "submodules/gmail_filter_manager/bin/gfm_extract"\
           "submodules/gmail_filter_manager/bin/gfm_make"\
   )
