@@ -63,14 +63,14 @@ while getopts b:e:p:rndsh OPT;do
     "n" ) overwrite=0 ;;
     "d" ) dryrun=1 ;;
     "s" ) curdir=$(pwd) ;;
-    "h" ) echo "$HELP" 1>&2; exit ;;
+    "h" ) echo "$HELP" 1>&2; exit;;
     * ) echo "$HELP" 1>&2; exit 1;;
   esac
 done
 
 if [[ "$OSTYPE" =~ cygwin ]];then
   # ln wrapper{{{
-  function ln {
+  ln () {
     opt="/H"
     if [ "$1" = "-s" ];then
       opt=""
@@ -92,11 +92,10 @@ if [[ "$OSTYPE" =~ cygwin ]];then
     t_winpath=$(cygpath -w -a "$target")
     t_link=$(cygpath -w -a "$link")
     cmd /c mklink $opt "$t_link" "$t_winpath" > /dev/null
-  }
-# }}}
+  } # }}}
 fi
 
-# make a link ~/usr/share/git to /path/to/Git, for cronjob
+# make a link $prefix/share/git to /path/to/Git, for cronjob
 if [ $relative -eq 1 ];then
   curdir=$(pwd)
 fi
@@ -257,9 +256,9 @@ fi
 echo "  ${exist[*]}"
 echo
 
-# check gcalcli
-if ! type gcalcli >& /dev/null;then
-  echo "If you need gcalcli (for gcalCal or gcalList), do:"
-  echo "   $ cd external/gcalcli"
-  echo "   $ pip install ."
-fi
+## check gcalcli
+#if ! type gcalcli >& /dev/null;then
+#  echo "If you need gcalcli (for gcalCal or gcalList), do:"
+#  echo "   $ cd external/gcalcli"
+#  echo "   $ pip install ."
+#fi
