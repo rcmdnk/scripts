@@ -20,6 +20,6 @@ else
   platex "$name"
   #pdvips "$name" -o "$name".ps
   #ps2pdf "$name".ps "$name".pdf
-  dvipdfm "$name".dvi
+  dvipdfmx "$name".dvi
   #rm -f "$name".dvi "$name".log "$name".aux "$name".ps
 fi
