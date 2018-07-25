@@ -43,3 +43,6 @@
 [submodule "submodules/gmail_filter_manager"]
 	path = submodules/gmail_filter_manager
 	url = git@github.com:rcmdnk/gmail_filter_manager
+[submodule "submodules/gcalcli"]
+	path = submodules/gcalcli
+	url = git@github.com:rcmdnk/gcalcli.git

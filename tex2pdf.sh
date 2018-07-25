@@ -21,5 +21,5 @@ else
   #pdvips "$name" -o "$name".ps
   #ps2pdf "$name".ps "$name".pdf
   dvipdfmx "$name".dvi
-  #rm -f "$name".dvi "$name".log "$name".aux "$name".ps
+  rm -f "$name"{.dvi,.log,.aux,.ps,.bbl,.blg}
 fi
