@@ -22,6 +22,7 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/gcp-tools/bin/gce_list"\
           "submodules/gmail_filter_manager/bin/gfm_extract"\
           "submodules/gmail_filter_manager/bin/gfm_make"\
+          "external/github-markdown-toc/gh-md-toc"\
   )
 if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
   sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")

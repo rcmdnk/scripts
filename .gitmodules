@@ -46,3 +46,6 @@
 [submodule "submodules/gcalcli"]
 	path = submodules/gcalcli
 	url = git@github.com:rcmdnk/gcalcli.git
+[submodule "external/github-markdown-toc"]
+	path = external/github-markdown-toc
+	url = git@github.com:ekalinin/github-markdown-toc
