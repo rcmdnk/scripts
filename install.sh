@@ -14,12 +14,12 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/shell-explorer/bin/se"\
           "submodules/gcalcli/gcalcli"\
           "submodules/ParallelOperation/bin/po"\
-          "submodules/gcp-tools/bin/gce_util"\
-          "submodules/gcp-tools/bin/gce_ssh"\
-          "submodules/gcp-tools/bin/gce_start"\
-          "submodules/gcp-tools/bin/gce_stop"\
-          "submodules/gcp-tools/bin/gce_delete"\
-          "submodules/gcp-tools/bin/gce_list"\
+          "external/gcp-tools/bin/gce-util"\
+          "external/gcp-tools/bin/gce-ssh"\
+          "external/gcp-tools/bin/gce-start"\
+          "external/gcp-tools/bin/gce-stop"\
+          "external/gcp-tools/bin/gce-delete"\
+          "external/gcp-tools/bin/gce-list"\
           "submodules/gmail_filter_manager/bin/gfm_extract"\
           "submodules/gmail_filter_manager/bin/gfm_make"\
           "external/github-markdown-toc/gh-md-toc"\
