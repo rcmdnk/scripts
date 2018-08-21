@@ -20,6 +20,7 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "external/gcp-tools/bin/gce-stop"\
           "external/gcp-tools/bin/gce-delete"\
           "external/gcp-tools/bin/gce-list"\
+          "external/gcp-tools/bin/gce"\
           "submodules/gmail_filter_manager/bin/gfm_extract"\
           "submodules/gmail_filter_manager/bin/gfm_make"\
           "external/github-markdown-toc/gh-md-toc"\
