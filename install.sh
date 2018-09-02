@@ -6,6 +6,7 @@ sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/stow_reset/bin/stow_reset"\
           "submodules/multi_clipboard/bin/multi_clipboard"\
           "submodules/escape_sequence/bin/colcheck"\
+          "submodules/escape_sequence/bin/256colors"\
           "submodules/escape_sequence/bin/escseqcheck"\
           "submodules/gtask/bin/gtask"\
           "submodules/sentaku/bin/sentaku"\
