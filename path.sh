@@ -9,4 +9,4 @@ fi
 fullpath="$(cd "$(dirname "$1")";pwd)/$(basename "$1")"
 echo $fullpath
 
-[[ "$TERM" =~ screen ]] && [[ -n "$STY" ]] && multi_clipboard -s "$fullpath"
+[[ "$TERM" =~ screen ]] && [[ -n "$STY" ]] && type multi_clipboard >&/dev/null && multi_clipboard -s "$fullpath"
