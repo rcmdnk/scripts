@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# Find the original file for the symbolic link
 if [[ "$#" -ne 1 ]];then
   echo "Usage: linkcheck file/directory" >&2
   return 1
