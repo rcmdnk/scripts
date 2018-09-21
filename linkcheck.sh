@@ -3,11 +3,12 @@
 # Find the original file for the symbolic link
 if [[ "$#" -ne 1 ]];then
   echo "Usage: linkcheck file/directory" >&2
-  return 1
+  exit 1
 fi
 
 link="$1"
 prelink="$1"
+curdir=$PWD
 while :;do
   if [[ -L "$link" ]];then
     echo "$link ->"

@@ -110,17 +110,17 @@ if echo "$gitdirname"| grep -q -i git;then
   fi
 fi
 
-echo "**********************************************"
-echo "Update submodules"
-echo "**********************************************"
-echo
-if which git >&/dev/null;then
-  git submodule update --init
-else
-  echo "git is not installed, please install git or get following submodules directly:"
-  grep url .gitmodules
-fi
-echo
+#echo "**********************************************"
+#echo "Update submodules"
+#echo "**********************************************"
+#echo
+#if which git >&/dev/null;then
+#  git submodule update --init
+#else
+#  echo "git is not installed, please install git or get following submodules directly:"
+#  grep url .gitmodules
+#fi
+#echo
 
 echo "*************************************************"
 echo "Install X(.sh) to $prefix/bin/X or $prefix/etc/X"
@@ -173,14 +173,13 @@ for f in "${files[@]}";do
       rm "$prefix/bin/$name"
     fi
   else
-    newlink=(${newlink[@]} "$name")
+    newlink=("${newlink[@]}" "$name")
   fi
   if [ $install -eq 1 ];then
     chmod 755 "$curdir/$f"
     ln -s "$curdir/$f" "$prefix/bin/$name"
   fi
 done
-
 
 # etc
 files=()
@@ -230,6 +229,21 @@ for f in "${files[@]}";do
     ln -s "$curdir/$f" "$prefix/etc/$name"
   fi
 done
+
+# Check dead link
+deadlink=()
+for f in "$prefix/bin/"* "$prefix/etc/"*;do
+  if  [ ! -L "$f" ];then
+    continue
+  fi
+  if [ ! -e "$f" ];then
+    if [ $dryrun -ne 1 ];then
+      rm -f "$f"
+    fi
+    deadlink=("${deadlink[@]}" "$(basename "$f")")
+  fi
+done
+
 echo ""
 echo ""
 if [ $dryrun -eq 1 ];then
@@ -250,6 +264,15 @@ else
   echo "Following files existed, replaced old one:"
 fi
 echo "  ${exist[*]}"
+if [ "${#deadlink[@]}" -gt 0 ];then
+  echo "Followings are dead link"
+  if [ $dryrun -eq 1 ];then
+    echo ":"
+  else
+    echo ", removed:"
+  fi
+  echo "  ${deadlink[*]}"
+fi
 echo
 
 ## check gcalcli
