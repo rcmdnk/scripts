@@ -132,7 +132,22 @@ if [ $dryrun -ne 1 ];then
 else
   echo "*** This is dry run, not install anything ***"
 fi
-files=($(ls *.sh *.py *rb 2>/dev/null))
+files=()
+for f in *;do
+  if [ -f "$f" ];then
+    for e in "${exclude[@]}";do
+      flag=0
+      if [ "$f" = "$e" ];then
+        flag=1
+        break
+      fi
+    done
+    if [ $flag = 1 ];then
+      continue
+    fi
+    files=("${files[@]}" "$f")
+  fi
+done
 for sm_f in "${sm_files[@]}";do
   if [ -f "$sm_f" ];then
     files=("${files[@]}" "$sm_f")
@@ -142,16 +157,6 @@ for sm_f in "${sm_files[@]}";do
 done
 
 for f in "${files[@]}";do
-  for e in "${exclude[@]}";do
-    flag=0
-    if [ "$f" = "$e" ];then
-      flag=1
-      break
-    fi
-  done
-  if [ $flag = 1 ];then
-    continue
-  fi
   name=$(basename "$f")
   name=${name%.sh}
   name=${name%.py}
