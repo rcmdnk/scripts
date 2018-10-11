@@ -25,7 +25,9 @@ if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
 fi
 sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
               "submodules/shell-logger/etc/shell-logger.sh"\
-  )
+)
+sm_files_share=("submodules/stow-get/share/stow-get"\
+)
 
 backup=""
 overwrite=1
@@ -233,6 +235,52 @@ for f in "${files[@]}";do
   fi
   if [ $install -eq 1 ];then
     ln -s "$curdir/$f" "$prefix/etc/$name"
+  fi
+done
+
+# share
+files=()
+for sm_f in "${sm_files_share[@]}";do
+  if [ -e "$sm_f" ];then
+    files=("${files[@]}" "$sm_f")
+  else
+    echo "WARNING: $sm_f is not found"
+  fi
+done
+
+for f in "${files[@]}";do
+  for e in "${exclude[@]}";do
+    flag=0
+    if [ "$f" = "$e" ];then
+      flag=1
+      break
+    fi
+  done
+  if [ $flag = 1 ];then
+    continue
+  fi
+  name=$(basename "$f")
+
+  install=1
+  if [ $dryrun -eq 1 ];then
+    install=0
+  fi
+  if [ "$(ls "$prefix/share/$name" 2>/dev/null)" != "" ];then
+    exist=(${exist[@]} "$name")
+    if [ $dryrun -eq 1 ];then
+      echo -n ""
+    elif [ $overwrite -eq 0 ];then
+      install=0
+    elif [ "$backup" != "" ];then
+      mv "$prefix/share/$name" "$prefix/share/${name}.$backup"
+    else
+      rm "$prefix/share/$name"
+    fi
+  else
+    newlink=(${newlink[@]} "$name")
+  fi
+  if [ $install -eq 1 ];then
+    ln -s "$curdir/$f" "$prefix/share/$name"
   fi
 done
 
