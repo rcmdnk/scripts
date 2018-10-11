@@ -4,6 +4,7 @@ exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'updateGIT.sh' \
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
           "submodules/stow_reset/bin/stow_reset"\
+          "submodules/stow-get/bin/stow-get"\
           "submodules/multi_clipboard/bin/multi_clipboard"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/256colors"\
