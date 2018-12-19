@@ -157,7 +157,7 @@ function tmuxFour {
   npanes=1
   wins=($(tmux list-windows -F "#I"))
   if [ ${#wins[@]} -ne 1 ];then
-    npanes=$((npanes+$(tmux list-panes -t:+|wc -l)))
+    npanes=$((npanes+$(tmux list-panes -t:+|grep -c ^)))
   fi
   while [ $npanes -lt 4 ];do
     tmuxCreate

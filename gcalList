@@ -78,7 +78,7 @@ for line in "${lines[@]}";do
     break
   fi
 done > "$tmpfile"
-if [ "$(wc -l < "$tmpfile")" -gt 0 ];then
+if [ "$(grep -c ^ < "$tmpfile")" -gt 0 ];then
   mv "$tmpfile" "$gcallist"
 fi
 rm -f "$tmpfile"

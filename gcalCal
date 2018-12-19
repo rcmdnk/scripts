@@ -50,7 +50,7 @@ myCal (){
     fi
   done < "$gcalCalDays"
 
-  if [ "$(wc -l < "$tmpfile")" -ge 3 ];then
+  if [ "$(grep -c ^ < "$tmpfile")" -ge 3 ];then
     cp "$tmpfile" "$gcalCal"
   fi
   rm -f "$tmpfile"
