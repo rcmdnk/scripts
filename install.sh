@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-exclude=('.' '..' 'LICENSE' 'README.md' 'install.sh' 'updateGIT.sh' \
-  'linux_setup.sh')
+exclude=()
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
           "submodules/stow_reset/bin/stow_reset"\
@@ -24,14 +23,13 @@ if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
   sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
 fi
 sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
-              "submodules/shell-logger/etc/shell-logger.sh"\
+              "submodules/shell-logger/etc/shell-logger"\
 )
 sm_files_share=("submodules/stow-get/share/stow-get"\
 )
 
 backup=""
 overwrite=1
-relative=0
 dryrun=0
 newlink=()
 exist=()
@@ -47,18 +45,16 @@ Arguments:
       -b  Set backup postfix, like \"bak\" (default: \"\": no back up is made)
       -e  Set additional exclude file (default: ${exclude[*]})
       -p  Set install directory prefix (default: $prefix)
-      -r  Use relative path (default: absolute path)
       -n  Don't overwrite if file is already exist
       -d  Dry run, don't install anything
       -s  Use 'pwd' instead of 'pwd -P' to make a symbolic link
       -h  Print Help (this message) and exit
 "
-while getopts b:e:p:rndsh OPT;do
+while getopts b:e:p:ndsh OPT;do
   case $OPT in
     "b" ) backup=$OPTARG ;;
     "e" ) exclude=("${exclude[@]}" "$OPTARG") ;;
     "p" ) prefix="$OPTARG" ;;
-    "r" ) relative=1 ;;
     "n" ) overwrite=0 ;;
     "d" ) dryrun=1 ;;
     "s" ) curdir=$(pwd) ;;
@@ -95,9 +91,6 @@ if [[ "$OSTYPE" =~ cygwin ]];then
 fi
 
 # make a link $prefix/share/git to /path/to/Git, for cronjob
-if [ $relative -eq 1 ];then
-  curdir=$(pwd)
-fi
 gitdirname=$(basename "$(dirname "$curdir")")
 gitdir="$prefix/share/git"
 if echo "$gitdirname"| grep -q -i git;then
@@ -125,162 +118,80 @@ fi
 #fi
 #echo
 
-echo "*************************************************"
-echo "Install X(.sh) to $prefix/bin/X or $prefix/etc/X"
-echo "*************************************************"
-echo
-if [ $dryrun -ne 1 ];then
-  mkdir -p "$prefix/bin"
-  mkdir -p "$prefix/etc"
-else
-  echo "*** This is dry run, not install anything ***"
-fi
-files=()
-for f in *;do
-  if [ -f "$f" ];then
-    for e in "${exclude[@]}";do
-      flag=0
-      if [ "$f" = "$e" ];then
-        flag=1
-        break
-      fi
-    done
-    if [ $flag = 1 ];then
-      continue
-    fi
-    files=("${files[@]}" "$f")
+make_link () {
+  if [ $# -lt 2 ];then
+    echo "ERROR: Use make_link <orig> <dest>"
   fi
-done
-for sm_f in "${sm_files[@]}";do
-  if [ -f "$sm_f" ];then
-    files=("${files[@]}" "$sm_f")
-  else
-    echo "WARNING: $sm_f is not found"
+  local orig=$1
+  local dest=$2
+  local name=$(basename "$orig")
+  if echo " ${exclude[*]} "|grep -q " $name ";then
+    return
   fi
-done
-
-for f in "${files[@]}";do
-  name=$(basename "$f")
-  name=${name%.sh}
-  name=${name%.py}
-  name=${name%.rb}
-
-  install=1
+  local install=1
   if [ $dryrun -eq 1 ];then
     install=0
   fi
-  if [ "$(ls "$prefix/bin/$name" 2>/dev/null)" != "" ];then
-    exist=(${exist[@]} "$name")
+  if [ "$(ls "$dest" 2>/dev/null)" != "" ];then
+    exist=("${exist[@]}" "$name")
     if [ $dryrun -eq 1 ];then
       echo -n ""
     elif [ $overwrite -eq 0 ];then
       install=0
     elif [ "$backup" != "" ];then
-      mv "$prefix/bin/$name" "$prefix/bin/${name}.$backup"
+      mv "$dest" "${dest}.$backup"
     else
-      rm "$prefix/bin/$name"
+      rm "$dest"
     fi
   else
     newlink=("${newlink[@]}" "$name")
   fi
   if [ $install -eq 1 ];then
-    chmod 755 "$curdir/$f"
-    ln -s "$curdir/$f" "$prefix/bin/$name"
+    mkdir -p "$(dirname "$dest")"
+    ln -s "$orig" "$dest"
   fi
+}
+
+echo "*************************************************"
+echo "Install X(.sh) to $prefix/bin/X, $prefix/etc/X or $prefix/share/X"
+echo "*************************************************"
+echo
+if [ $dryrun -eq 1 ];then
+  echo "*** This is dry run, not install anything ***"
+fi
+for d in bin etc;do
+  cd "$curdir"
+  for f in $(find "$d"/* 2>/dev/null);do
+    if [ ! -f "$f" ];then
+      continue
+    fi
+    orig="$curdir/$f"
+    dest="$prefix/$f"
+    make_link "$orig" "$dest"
+  done
 done
 
-# etc
-files=()
-for sm_f in "${sm_files_etc[@]}";do
-  if [ -f "$sm_f" ];then
-    files=("${files[@]}" "$sm_f")
+for sm_f in "${sm_files[@]}";do
+  if [ -e "$sm_f" ];then
+    make_link "$curdir/$sm_f" "$prefix/bin/$(basename "$sm_f")"
   else
     echo "WARNING: $sm_f is not found"
   fi
 done
 
-for f in "${files[@]}";do
-  for e in "${exclude[@]}";do
-    flag=0
-    if [ "$f" = "$e" ];then
-      flag=1
-      break
-    fi
-  done
-  if [ $flag = 1 ];then
-    continue
-  fi
-  name=$(basename "$f")
-  name=${name%.sh}
-  name=${name%.py}
-  name=${name%.rb}
-
-  install=1
-  if [ $dryrun -eq 1 ];then
-    install=0
-  fi
-  if [ "$(ls "$prefix/etc/$name" 2>/dev/null)" != "" ];then
-    exist=(${exist[@]} "$name")
-    if [ $dryrun -eq 1 ];then
-      echo -n ""
-    elif [ $overwrite -eq 0 ];then
-      install=0
-    elif [ "$backup" != "" ];then
-      mv "$prefix/etc/$name" "$prefix/etc/${name}.$backup"
-    else
-      rm "$prefix/etc/$name"
-    fi
+for sm_f in "${sm_files_etc[@]}";do
+  if [ -e "$sm_f" ];then
+    make_link "$curdir/$sm_f" "$prefix/etc/$(basename "$sm_f")"
   else
-    newlink=(${newlink[@]} "$name")
-  fi
-  if [ $install -eq 1 ];then
-    ln -s "$curdir/$f" "$prefix/etc/$name"
+    echo "WARNING: $sm_f is not found"
   fi
 done
 
-# share
-files=()
 for sm_f in "${sm_files_share[@]}";do
   if [ -e "$sm_f" ];then
-    files=("${files[@]}" "$sm_f")
+    make_link "$curdir/$sm_f" "$prefix/share/$(basename "$sm_f")"
   else
     echo "WARNING: $sm_f is not found"
-  fi
-done
-
-for f in "${files[@]}";do
-  for e in "${exclude[@]}";do
-    flag=0
-    if [ "$f" = "$e" ];then
-      flag=1
-      break
-    fi
-  done
-  if [ $flag = 1 ];then
-    continue
-  fi
-  name=$(basename "$f")
-
-  install=1
-  if [ $dryrun -eq 1 ];then
-    install=0
-  fi
-  if [ "$(ls "$prefix/share/$name" 2>/dev/null)" != "" ];then
-    exist=(${exist[@]} "$name")
-    if [ $dryrun -eq 1 ];then
-      echo -n ""
-    elif [ $overwrite -eq 0 ];then
-      install=0
-    elif [ "$backup" != "" ];then
-      mv "$prefix/share/$name" "$prefix/share/${name}.$backup"
-    else
-      rm "$prefix/share/$name"
-    fi
-  else
-    newlink=(${newlink[@]} "$name")
-  fi
-  if [ $install -eq 1 ];then
-    ln -s "$curdir/$f" "$prefix/share/$name"
   fi
 done
 
