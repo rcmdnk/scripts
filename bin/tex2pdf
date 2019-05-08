@@ -8,7 +8,6 @@ else
   if [ -z "$name" ];then
     name=$1
   fi
-  echo "$name.aux"
   rm -f "$name.aux"
   rm -f "$name.bbl"
   rm -f "$name.blg"
@@ -22,4 +21,6 @@ else
   #ps2pdf "$name".ps "$name".pdf
   dvipdfmx "$name".dvi
   rm -f "$name"{.dvi,.log,.aux,.ps,.bbl,.blg}
+
+#  pdflatex "$name".tex
 fi
