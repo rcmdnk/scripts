@@ -2,8 +2,6 @@
 exclude=()
 sm_files=("submodules/evernote_mail/bin/evernote_mail"\
           "submodules/trash/bin/trash"\
-          "submodules/stow_reset/bin/stow_reset"\
-          "submodules/stow-get/bin/stow-get"\
           "submodules/multi_clipboard/bin/multi_clipboard"\
           "submodules/escape_sequence/bin/colcheck"\
           "submodules/escape_sequence/bin/256colors"\
@@ -25,8 +23,7 @@ fi
 sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
               "submodules/shell-logger/etc/shell-logger"\
 )
-sm_files_share=("submodules/stow-get/share/stow-get"\
-)
+sm_files_share=()
 
 backup=""
 overwrite=1
@@ -62,33 +59,6 @@ while getopts b:e:p:ndsh OPT;do
     * ) echo "$HELP" 1>&2; exit 1;;
   esac
 done
-
-if [[ "$OSTYPE" =~ cygwin ]];then
-  # ln wrapper{{{
-  ln () {
-    opt="/H"
-    if [ "$1" = "-s" ];then
-      opt=""
-      shift
-    fi
-    target="$1"
-    if [ -d "$target" ];then
-      opt="/D $opt"
-    fi
-    if [ $# -eq 2 ];then
-      link="$2"
-    elif [ $# -eq 1 ];then
-      link=$(basename "$target")
-    else
-      echo "usage: ln [-s] <target> [<link>]"
-      echo "       -s for symbolic link, otherwise make hard link"
-      return
-    fi
-    t_winpath=$(cygpath -w -a "$target")
-    t_link=$(cygpath -w -a "$link")
-    cmd /c mklink $opt "$t_link" "$t_winpath" > /dev/null
-  } # }}}
-fi
 
 # make a link $prefix/share/git to /path/to/Git, for cronjob
 gitdirname=$(basename "$(dirname "$curdir")")

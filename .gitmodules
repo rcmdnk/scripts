@@ -13,9 +13,6 @@
 [submodule "submodules/multi_clipboard"]
 	path = submodules/multi_clipboard
 	url = git@github.com:rcmdnk/multi_clipboard.git
-[submodule "submodules/stow_reset"]
-	path = submodules/stow_reset
-	url = git@github.com:rcmdnk/stow_reset
 [submodule "submodules/sd_cl"]
 	path = submodules/sd_cl
 	url = git@github.com:rcmdnk/sd_cl
@@ -46,6 +43,3 @@
 [submodule "external/github-markdown-toc"]
 	path = external/github-markdown-toc
 	url = git@github.com:ekalinin/github-markdown-toc
-[submodule "submodules/stow-get"]
-	path = submodules/stow-get
-	url = git@github.com:rcmdnk/stow-get
