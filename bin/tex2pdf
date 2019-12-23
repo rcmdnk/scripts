@@ -8,19 +8,21 @@ else
   if [ -z "$name" ];then
     name=$1
   fi
-  rm -f "$name.aux"
-  rm -f "$name.bbl"
-  rm -f "$name.blg"
-  platex "$name"
-  platex "$name"
-  bibtex "$name"
-  bibtex "$name"
-  platex "$name"
-  platex "$name"
-  #pdvips "$name" -o "$name".ps
-  #ps2pdf "$name".ps "$name".pdf
-  dvipdfmx "$name".dvi
-  rm -f "$name"{.dvi,.log,.aux,.ps,.bbl,.blg}
-
-#  pdflatex "$name".tex
+  if type pdflatex >&/dev/null;then
+    pdflatex "$name".tex
+  else
+    rm -f "$name.aux"
+    rm -f "$name.bbl"
+    rm -f "$name.blg"
+    platex "$name"
+    platex "$name"
+    bibtex "$name"
+    bibtex "$name"
+    platex "$name"
+    platex "$name"
+    #pdvips "$name" -o "$name".ps
+    #ps2pdf "$name".ps "$name".pdf
+    dvipdfmx "$name".dvi
+    rm -f "$name"{.dvi,.log,.aux,.ps,.bbl,.blg}
+  fi
 fi
