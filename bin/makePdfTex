@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # parameters
-remaintex=0
+remaintex=1
 output=summary
-exclude=()
+exclude=($output)
 
 # help
 HELP="Usage: $0 [-r] [-f <filename>] [-e <excludename>]
@@ -27,8 +27,9 @@ done
 cat << EOF > "${output}.tex"
 \documentclass[landscape]{article}
 %\documentclass{article}
-\usepackage[dvipdfm]{color,graphicx}
-\usepackage[dvipdfm,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
+\usepackage[]{color,graphicx}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
+\usepackage{underscore}
 %\usepackage{html}
 \setlength{\topskip}{0mm}
 \setlength{\footskip}{0mm}
@@ -104,7 +105,7 @@ while read -r file;do
   done
   if [ $flag -eq 0 ];then continue;fi
   pdfname=${file%.pdf}
-  name=${pdfname//_/\\\_}
+  name=$(echo ${pdfname//_/}|sed 's|^./||')
   echo "\somehisto{${pdfname}}{${name}}" >> "$output.tex"
 done < pdf.dat
 rm -f pdf.dat
@@ -112,7 +113,8 @@ echo "" >> "$output.tex"
 echo "\end{document}" >> "$output.tex"
 
 if type pdflatex >&/dev/null;then
-  pdflatex "$name".tex
+  echo pdflatex "$output".tex
+  pdflatex "$output".tex
 else
   platex "$output"
   platex "$output"
