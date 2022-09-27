@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # parameters
-remaintex=0
+remaintex=1
 output=summary
 exclude=()
 
@@ -29,6 +29,7 @@ cat << EOF > "${output}.tex"
 %\documentclass{article}
 \usepackage[dvipdfm]{color,graphicx}
 \usepackage[dvipdfm,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
+\usepackage{underscore}
 %\usepackage{html}
 \setlength{\topskip}{0mm}
 \setlength{\footskip}{0mm}
@@ -104,24 +105,29 @@ while read -r file;do
   done
   if [ $flag -eq 0 ];then continue;fi
   epsname=${file%.eps}
-  name=${epsname//_/\\\_}
+  name=$(echo ${epsname//_/}|sed 's|^./||')
   echo "\somehisto{${epsname}}{${name}}" >> "$output.tex"
 done < eps.dat
 rm -f eps.dat
 echo "" >> "$output.tex"
 echo "\end{document}" >> "$output.tex"
 
-platex "$output"
-platex "$output"
-bibtex "$output"
-bibtex "$output"
-platex "$output"
-platex "$output"
-
-if type -a dvipidfmx >& /dev/null;then
-  dvipdfmx -l "$output.dvi"
+if type pdflatex >&/dev/null;then
+  echo pdflatex "$output".tex
+  pdflatex "$output".tex
+  pdflatex "$output".tex
 else
-  dvipdfm -l "$output.dvi"
+  platex "$output"
+  platex "$output"
+  bibtex "$output"
+  bibtex "$output"
+  platex "$output"
+  platex "$output"
+  if type -a dvipidfmx >& /dev/null;then
+    dvipdfmx -l "$output.dvi"
+  else
+    dvipdfm -l "$output.dvi"
+  fi
 fi
 
 #l2h summary

@@ -115,6 +115,7 @@ echo "\end{document}" >> "$output.tex"
 if type pdflatex >&/dev/null;then
   echo pdflatex "$output".tex
   pdflatex "$output".tex
+  pdflatex "$output".tex
 else
   platex "$output"
   platex "$output"

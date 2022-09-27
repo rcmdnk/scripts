@@ -10,6 +10,7 @@ else
   fi
   if type pdflatex >&/dev/null;then
     pdflatex "$name".tex
+    pdflatex "$name".tex
   else
     rm -f "$name.aux"
     rm -f "$name.bbl"
