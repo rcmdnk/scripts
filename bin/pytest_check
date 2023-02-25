@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+
+source=$1
+test_file=$2
+
+
+source_funcs=$(grep "def " "$source"|awk '{print $2}'|grep -v "^_"|cut -d "(" -f1)
+test_funcs=$(grep "def test_" "$test_file"|awk '{print $2}'|cut -d "(" -f1|cut -d "_" -f2-)
+
+for f in ${source_funcs};do
+  if ! echo "$test_funcs" | grep -q "^${f}$";then
+    echo "$f"
+  fi
+done
+
+
