@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+if ! type cg >/dev/null 2>&1; then
+  echo "cg command not found. Please install cg command."
+  echo "    $ pip install chatgpt-prompt-wrapper"
+  exit 1
+fi
+
 if [ "$1" = "-a" ];then
   git add -u
 fi
