@@ -6,13 +6,15 @@ if ! type cg >/dev/null 2>&1; then
   exit 1
 fi
 
-if [ "$1" = "-a" ];then
+if echo " $* " | grep -q " -a ";then
   git add -u
 fi
 
-git hook run --ignore-missing pre-commit
-if [ $? -ne 0 ]; then
-  exit 1
+if ! echo " $* " | grep -q -e " -n " -e " --no-verify ";then
+  git hook run --ignore-missing pre-commit
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
 fi
 
 prompt="
@@ -47,4 +49,4 @@ message="$(cg ask "$prompt")
 # Ref: https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716
 "
 
-git commit --no-verify -e -m "$message"
+git commit --no-verify -e -m "$message" "$@"
