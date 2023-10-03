@@ -58,8 +58,8 @@ cat << EOF > "${output}.tex"
   \begin{center}
 %    \includegraphics[angle=90,width=0.8\hsize]{#1.pdf}
 %    \includegraphics{#1.pdf}
-%    \includegraphics[width=0.7\hsize]{#1.pdf}
-    \includegraphics[height=0.7\vsize]{#1.pdf}
+    \includegraphics[width=0.7\hsize]{#1.pdf}
+%    \includegraphics[height=0.7\vsize]{#1.pdf}
     \caption{#2}
   \end{center}
 \end{figure}
