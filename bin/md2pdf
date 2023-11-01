@@ -22,10 +22,10 @@ format="latex"
 
 while getopts st:h OPT;do
   case $OPT in
-    "s" ) format=beamer;;
-    "t" ) theme="$OPTARG";;
-    "h" ) echo "$usage";exit 0;;
-    * ) echo "$usage"; exit 1;;
+    s ) format=beamer;;
+    t ) theme="$OPTARG";;
+    h ) echo "$usage";exit 0;;
+    \? ) echo "$usage"; exit 1;;
   esac
 done
 shift $((OPTIND - 1))

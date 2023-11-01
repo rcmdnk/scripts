@@ -16,11 +16,11 @@ HELP="Usage: $0 [-r] [-f <filename>] [-e <excludename>]
 while getopts rf:e:h OPT;do
   ((OPTNUM++))
   case $OPT in
-    "r" ) remaintex=1 ;;
-    "f" ) output=$OPTARG ;;
-    "e" ) exclude=(${exclude[*]} $OPTARG) ;;
-    "h" ) echo "$HELP" 1>&2; exit ;;
-    * ) echo "unknown option: $OPT" 1>&2;echo "$HELP" 1>&2; exit ;;
+    r ) remaintex=1 ;;
+    f ) output=$OPTARG ;;
+    e ) exclude=(${exclude[*]} $OPTARG) ;;
+    h ) echo "$HELP" 1>&2; exit ;;
+    \? ) echo "$HELP" 1>&2; exit ;;
   esac
 done
 

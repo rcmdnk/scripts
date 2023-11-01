@@ -9,8 +9,8 @@ OPTNUM=0
 while getopts h:e: OPT;do
   OPTNUM=$((OPTNUM + 1))
   case $OPT in
-    "h" ) calHolidays=("${calHolidays[@]}" "$OPTARG") ;;
-    "e" ) calExclude=("${calExclude[@]}" "$OPTARG") ;;
+    h ) calHolidays=("${calHolidays[@]}" "$OPTARG") ;;
+    e ) calExclude=("${calExclude[@]}" "$OPTARG") ;;
   esac
 done
 shift $((OPTIND - 1))

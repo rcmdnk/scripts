@@ -108,12 +108,12 @@ method=alc
 option="-e"
 while getopts waemh OPT;do
   case $OPT in
-    "w" ) method=weblio;;
-    "a" ) method=alc;;
-    "e" ) option="-e";;
-    "m" ) option="-m";;
-    "h" ) echo "$usage";exit 0;;
-    * ) echo "$usage"; exit 1;;
+    w ) method=weblio;;
+    a ) method=alc;;
+    e ) option="-e";;
+    m ) option="-m";;
+    h ) echo "$usage";exit 0;;
+    \? ) echo "$usage"; exit 1;;
   esac
 done
 shift $((OPTIND - 1))
