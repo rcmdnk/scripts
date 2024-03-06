@@ -2,21 +2,24 @@
 
 # parameters
 remaintex=1
+vertical=0
 output=summary
 exclude=($output)
 
 # help
-HELP="Usage: $0 [-r] [-f <filename>] [-e <excludename>]
+HELP="Usage: $0 [-rrv] [-f <filename>] [-e <excludename>]
    -r  remain tex file
+   -v  vertical mode
    -f  set output file name (default: $output)
    -e  exclude word (can use multiple time)
    -h  print this help
 "
 
-while getopts rf:e:h OPT;do
+while getopts rvf:e:h OPT;do
   ((OPTNUM++))
   case $OPT in
     r ) remaintex=1 ;;
+    v ) vertical=1 ;;
     f ) output=$OPTARG ;;
     e ) exclude=(${exclude[*]} $OPTARG) ;;
     h ) echo "$HELP" 1>&2; exit ;;
@@ -24,8 +27,14 @@ while getopts rf:e:h OPT;do
   esac
 done
 
+if [ $vertical -eq 0 ];then
+  landscape="landscape"
+else
+  landscape=""
+fi
+
 cat << EOF > "${output}.tex"
-\documentclass[landscape]{article}
+\documentclass[$landscape]{article}
 %\documentclass{article}
 \usepackage[]{color,graphicx}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
@@ -59,15 +68,28 @@ cat << EOF > "${output}.tex"
 %    \includegraphics[angle=90,width=0.8\hsize]{#1.pdf}
 %    \includegraphics{#1.pdf}
     \includegraphics[width=0.7\hsize]{#1.pdf}
-%    \includegraphics[height=0.7\vsize]{#1.pdf}
     \caption{#2}
   \end{center}
 \end{figure}
 }
 
+\newcommand{\makehistov}[2]{
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[height=0.9\vsize]{#1.pdf}
+    \caption{#2}
+  \end{center}
+\end{figure}
+}
 \newcommand{\somehisto}[2]{
 %\subsection{#1}
 \makehisto{#1}{#2}
+\clearpage
+}
+
+\newcommand{\somehistov}[2]{
+%\subsection{#1}
+\makehistov{#1}{#2}
 \clearpage
 }
 
@@ -106,7 +128,11 @@ while read -r file;do
   if [ $flag -eq 0 ];then continue;fi
   pdfname=${file%.pdf}
   name=$(echo ${pdfname//_/}|sed 's|^./||')
-  echo "\somehisto{${pdfname}}{${name}}" >> "$output.tex"
+  if [ $vertical -eq 0 ];then
+    echo "\somehisto{${pdfname}}{${name}}" >> "$output.tex"
+  else
+    echo "\somehistov{${pdfname}}{${name}}" >> "$output.tex"
+  fi
 done < pdf.dat
 rm -f pdf.dat
 echo "" >> "$output.tex"
