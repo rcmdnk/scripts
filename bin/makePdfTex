@@ -116,7 +116,7 @@ cat << EOF > "${output}.tex"
 \clearpage
 EOF
 
-ls -v ./*.pdf > pdf.dat
+ls ./*.pdf | sort -V > pdf.dat
 while read -r file;do
   flag=1
   for e in ${exclude[*]};do
