@@ -1,0 +1,179 @@
+#!/usr/bin/env bash
+
+# Need inkscape for pdflatex
+
+# parameters
+remaintex=1
+remaininkscape=0
+vertical=0
+output=summary
+exclude=($output)
+
+# help
+HELP="Usage: $0 [-rrv] [-f <filename>] [-e <excludename>]
+   -r  remain tex file
+   -v  vertical mode
+   -f  set output file name (default: $output)
+   -e  exclude word (can use multiple time)
+   -h  print this help
+"
+
+while getopts rvf:e:h OPT;do
+  ((OPTNUM++))
+  case $OPT in
+    r ) remaintex=1 ;;
+    v ) vertical=1 ;;
+    f ) output=$OPTARG ;;
+    e ) exclude=(${exclude[*]} $OPTARG) ;;
+    h ) echo "$HELP" 1>&2; exit ;;
+    \? ) echo "$HELP" 1>&2; exit ;;
+  esac
+done
+
+if [ $vertical -eq 0 ];then
+  landscape="landscape"
+else
+  landscape=""
+fi
+
+cat << EOF > "${output}.tex"
+\documentclass[$landscape]{article}
+%\documentclass{article}
+\usepackage[]{color,graphicx}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
+\usepackage{underscore}
+\usepackage{svg}
+%\usepackage{html}
+\setlength{\topskip}{0mm}
+\setlength{\footskip}{0mm}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\oddsidemargin}{0mm}
+\addtolength{\oddsidemargin}{-1truein}
+\addtolength{\oddsidemargin}{12mm}
+%\setlength{\textheight}{\paperheight}
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-24mm}
+\def\textfraction{.001}
+
+%\setcounter{topnumber}{10}
+%\def\topfraction{0.}
+%\setcounter{bottomnumber}{10}
+%\def\bottomfraction{0.}
+%\setcounter{totalnumber}{10}
+%\def\textfraction{0.0}
+
+%\def\floatpagefraction{0.0}
+
+\newcommand{\makehisto}[2]{
+\begin{figure}[htbp]
+  \begin{center}
+%    \includesvg[angle=90,width=0.8\hsize]{#1.svg}
+%    \includesvg{#1.svg}
+    \includesvg[width=0.7\hsize]{#1.svg}
+    \caption{#2}
+  \end{center}
+\end{figure}
+}
+
+\newcommand{\makehistov}[2]{
+\begin{figure}[htbp]
+  \begin{center}
+    \includesvg[height=0.9\vsize]{#1.svg}
+    \caption{#2}
+  \end{center}
+\end{figure}
+}
+\newcommand{\somehisto}[2]{
+%\subsection{#1}
+\makehisto{#1}{#2}
+\clearpage
+}
+
+\newcommand{\somehistov}[2]{
+%\subsection{#1}
+\makehistov{#1}{#2}
+\clearpage
+}
+
+\newcommand{\minihisto}[1]{
+  \begin{minipage}{0.50\hsize}
+    \begin{center}
+      \includesvg[width=1\hsize]{#1.svg}
+      \caption{#1}
+    \end{center}
+  \end{minipage}
+}
+
+\newcommand{\twohisto}[2]{
+\begin{figure}[htb]
+\minihisto{#1}
+\minihisto{#2}
+\end{figure}
+}
+
+\begin{document}
+%\setcounter{page}{0}
+\today \\\\
+\listoffigures
+\clearpage
+EOF
+
+ls ./*.svg | sort -V > svg.dat
+while read -r file;do
+  flag=1
+  for e in ${exclude[*]};do
+    if echo "$file"|grep -q "$e";then
+      flag=0
+      break
+    fi
+  done
+  if [ $flag -eq 0 ];then continue;fi
+  svgname=${file%.svg}
+  name=$(echo ${svgname//_/}|sed 's|^./||')
+  if [ $vertical -eq 0 ];then
+    echo "\somehisto{${svgname}}{${name}}" >> "$output.tex"
+  else
+    echo "\somehistov{${svgname}}{${name}}" >> "$output.tex"
+  fi
+done < svg.dat
+rm -f svg.dat
+echo "" >> "$output.tex"
+echo "\end{document}" >> "$output.tex"
+
+if type aaa >&/dev/null;then
+  :
+  #echo pdflatex --shell-escape "$output".tex
+  #pdflatex --shell-escape "$output".tex
+  #pdflatex --shell-escape "$output".tex
+else
+  platex --shell-escape "$output"
+  platex --shell-escape "$output"
+  bibtex "$output"
+  bibtex "$output"
+  platex --shell-escape "$output"
+  platex --shell-escape "$output"
+  if type -a dvipidfmx >& /dev/null;then
+    dvipdfmx -l "$output.dvi"
+  else
+    dvipdfm -l "$output.dvi"
+  fi
+fi
+
+#l2h summary
+rm -rf "$output.log"
+rm -rf "$output.lof"
+rm -rf "$output.dvi"
+rm -rf "$output.aux"
+rm -rf "$output.blg"
+rm -rf "$output.bbl"
+rm -rf "$output.ps"
+rm -rf "$output.out"
+if [ $remaintex -eq 0 ];then
+  rm -rf "$output.tex"
+fi
+if [ $remaininkscape -eq 0 ];then
+  rm -rf svg-inkscape
+fi
+
