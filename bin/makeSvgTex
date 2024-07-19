@@ -142,11 +142,10 @@ rm -f svg.dat
 echo "" >> "$output.tex"
 echo "\end{document}" >> "$output.tex"
 
-if type aaa >&/dev/null;then
-  :
-  #echo pdflatex --shell-escape "$output".tex
-  #pdflatex --shell-escape "$output".tex
-  #pdflatex --shell-escape "$output".tex
+if type pdflatex >&/dev/null;then
+  echo pdflatex --shell-escape "$output".tex
+  pdflatex --shell-escape "$output".tex
+  pdflatex --shell-escape "$output".tex
 else
   platex --shell-escape "$output"
   platex --shell-escape "$output"
