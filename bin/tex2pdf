@@ -9,14 +9,14 @@ else
     name=$1
   fi
   if type pdflatex >&/dev/null;then
-    pdflatex "$name".tex
-    pdflatex "$name".tex
+    pdflatex --shell-escape "$name".tex
+    pdflatex --shell-escape "$name".tex
   else
     rm -f "$name.aux"
     rm -f "$name.bbl"
     rm -f "$name.blg"
-    platex "$name"
-    platex "$name"
+    platex --shell-escape "$name"
+    platex --shell-escape "$name"
     bibtex "$name"
     bibtex "$name"
     platex "$name"

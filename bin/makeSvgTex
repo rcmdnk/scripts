@@ -40,6 +40,8 @@ cat << EOF > "${output}.tex"
 \documentclass[$landscape]{article}
 %\documentclass{article}
 \usepackage[]{color,graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
 \usepackage{underscore}
 \usepackage{svg}
@@ -69,10 +71,9 @@ cat << EOF > "${output}.tex"
 \newcommand{\makehisto}[2]{
 \begin{figure}[htbp]
   \begin{center}
-%    \includesvg[angle=90,width=0.8\hsize]{#1.svg}
-%    \includesvg{#1.svg}
-    \includesvg[width=0.7\hsize]{#1.svg}
-    \caption{#2}
+%    \includesvg[inkscapelatex=false, angle=90,width=0.8\hsize]{\detokenize{#1.svg}}
+    \includesvg[inkscapelatex=false, width=0.7\hsize]{\detokenize{#1.svg}}
+    \caption{\detokenize{#2}}
   \end{center}
 \end{figure}
 }
@@ -80,8 +81,8 @@ cat << EOF > "${output}.tex"
 \newcommand{\makehistov}[2]{
 \begin{figure}[htbp]
   \begin{center}
-    \includesvg[height=0.9\vsize]{#1.svg}
-    \caption{#2}
+    \includesvg[inkscapelatex=false, height=0.9\vsize]{\detokenize{#1.svg}}
+    \caption{\detokenize{#2}}
   \end{center}
 \end{figure}
 }
@@ -100,8 +101,8 @@ cat << EOF > "${output}.tex"
 \newcommand{\minihisto}[1]{
   \begin{minipage}{0.50\hsize}
     \begin{center}
-      \includesvg[width=1\hsize]{#1.svg}
-      \caption{#1}
+      \includesvg[inkscapelatex=false, width=1\hsize]{\detokenize{#1.svg}}
+      \caption{\detokenize{#1}}
     \end{center}
   \end{minipage}
 }
@@ -120,7 +121,7 @@ cat << EOF > "${output}.tex"
 \clearpage
 EOF
 
-ls ./*.svg | sort -V > svg.dat
+ls *.svg | sort -V > svg.dat
 while read -r file;do
   flag=1
   for e in ${exclude[*]};do
@@ -130,12 +131,11 @@ while read -r file;do
     fi
   done
   if [ $flag -eq 0 ];then continue;fi
-  svgname=${file%.svg}
-  name=$(echo ${svgname//_/}|sed 's|^./||')
+  name=${file%.svg}
   if [ $vertical -eq 0 ];then
-    echo "\somehisto{${svgname}}{${name}}" >> "$output.tex"
+    echo "\somehisto{${name}}{${name}}" >> "$output.tex"
   else
-    echo "\somehistov{${svgname}}{${name}}" >> "$output.tex"
+    echo "\somehistov{${name}}{${name}}" >> "$output.tex"
   fi
 done < svg.dat
 rm -f svg.dat

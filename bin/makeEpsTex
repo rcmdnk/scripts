@@ -2,21 +2,24 @@
 
 # parameters
 remaintex=1
+vertical=0
 output=summary
-exclude=()
+exclude=($output)
 
 # help
-HELP="Usage: $0 [-r] [-f <filename>] [-e <excludename>]
+HELP="Usage: $0 [-rrv] [-f <filename>] [-e <excludename>]
    -r  remain tex file
+   -v  vertical mode
    -f  set output file name (default: $output)
    -e  exclude word (can use multiple time)
    -h  print this help
 "
 
-while getopts rf:e:h OPT;do
+while getopts rvf:e:h OPT;do
   ((OPTNUM++))
   case $OPT in
     r ) remaintex=1 ;;
+    v ) vertical=1 ;;
     f ) output=$OPTARG ;;
     e ) exclude=(${exclude[*]} $OPTARG) ;;
     h ) echo "$HELP" 1>&2; exit ;;
@@ -24,10 +27,18 @@ while getopts rf:e:h OPT;do
   esac
 done
 
+if [ $vertical -eq 0 ];then
+  landscape="landscape"
+else
+  landscape=""
+fi
+
 cat << EOF > "${output}.tex"
-\documentclass[landscape]{article}
+\documentclass[$landscape]{article}
 %\documentclass{article}
 \usepackage[dvipdfm]{color,graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage[dvipdfm,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
 \usepackage{underscore}
 %\usepackage{html}
@@ -57,17 +68,29 @@ cat << EOF > "${output}.tex"
 \begin{figure}[htbp]
   \begin{center}
 %    \includegraphics[angle=90,width=0.8\hsize]{#1.eps}
-%    \includegraphics{#1.eps}
-%    \includegraphics[width=0.7\hsize]{#1.eps}
     \includegraphics[height=0.7\vsize]{#1.eps}
-    \caption{#2}
+    \caption{\detokenize{#2}}
   \end{center}
 \end{figure}
 }
 
+\newcommand{\makehistov}[2]{
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[height=0.9\vsize]{#1.eps}
+    \caption{\detokenize{#2}}
+  \end{center}
+\end{figure}
+}
 \newcommand{\somehisto}[2]{
 %\subsection{#1}
 \makehisto{#1}{#2}
+\clearpage
+}
+
+\newcommand{\somehistov}[2]{
+%\subsection{#1}
+\makehistov{#1}{#2}
 \clearpage
 }
 
@@ -75,7 +98,7 @@ cat << EOF > "${output}.tex"
   \begin{minipage}{0.50\hsize}
     \begin{center}
       \includegraphics[width=1\hsize]{#1.eps}
-      \caption{#1}
+      \caption{\detokenize{#1}}
     \end{center}
   \end{minipage}
 }
@@ -94,7 +117,7 @@ cat << EOF > "${output}.tex"
 \clearpage
 EOF
 
-ls -v ./*.eps > eps.dat
+ls *.eps | sort -V > eps.dat
 while read -r file;do
   flag=1
   for e in ${exclude[*]};do
@@ -104,9 +127,12 @@ while read -r file;do
     fi
   done
   if [ $flag -eq 0 ];then continue;fi
-  epsname=${file%.eps}
-  name=$(echo ${epsname//_/}|sed 's|^./||')
-  echo "\somehisto{${epsname}}{${name}}" >> "$output.tex"
+  name=${file%.pdf}
+  if [ $vertical -eq 0 ];then
+    echo "\somehisto{${name}}{${name}}" >> "$output.tex"
+  else
+    echo "\somehistov{${name}}{${name}}" >> "$output.tex"
+  fi
 done < eps.dat
 rm -f eps.dat
 echo "" >> "$output.tex"
