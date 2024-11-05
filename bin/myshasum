@@ -16,11 +16,11 @@ d=$(mktemp -d)
 trap 'rm -rf $d' HUP INT QUIT ABRT SEGV TERM EXIT
 for f in "$@";do
   if [[ "$f" =~ http* ]];then
-    cd "$d"
-    log=$(wget --no-check-certificate "$f" 2>&1)
+    cd "$d" || exit $?
+    log=$(curl -kLO "$f" 2>&1)
     ret=$?
     if [ $ret -ne 0 ];then
-      echo "failed: wget --no-check-certificate $f"
+      echo "failed: curl -kLO $f"
       echo ""
       echo "$log"
       exit $ret
