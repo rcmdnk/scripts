@@ -42,6 +42,8 @@ cat << EOF > "${output}.tex"
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
 \usepackage{underscore}
 %\usepackage{html}
+\usepackage[paper=landscape, margin=0cm]{geometry}
+\raggedright
 \setlength{\topskip}{0mm}
 \setlength{\footskip}{0mm}
 \setlength{\headheight}{0mm}
@@ -68,7 +70,8 @@ cat << EOF > "${output}.tex"
 \begin{figure}[htbp]
   \begin{center}
 %    \includegraphics[angle=90,width=0.8\hsize]{#1.pdf}
-    \includegraphics[width=0.7\hsize]{#1.pdf}
+%    \includegraphics[width=0.7\hsize]{#1.pdf}
+    \includegraphics[width=0.9\vsize]{#1.pdf}
     \caption{\detokenize{#2}}
   \end{center}
 \end{figure}
