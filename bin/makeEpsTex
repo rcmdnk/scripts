@@ -29,20 +29,22 @@ done
 
 if [ $vertical -eq 0 ];then
   landscape="landscape"
+  paper='landscape'
 else
   landscape=""
+  paper='portrait'
 fi
 
 cat << EOF > "${output}.tex"
 \documentclass[$landscape]{article}
 %\documentclass{article}
+\usepackage[paper=$paper, margin=0cm]{geometry}
 \usepackage[dvipdfm]{color,graphicx}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[dvipdfm,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
 \usepackage{underscore}
 %\usepackage{html}
-\usepackage[paper=landscape, margin=0cm]{geometry}
 \raggedright
 \setlength{\topskip}{0mm}
 \setlength{\footskip}{0mm}
