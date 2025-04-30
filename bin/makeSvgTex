@@ -77,7 +77,7 @@ cat << EOF > "${output}.tex"
   \begin{center}
 %    \includesvg[inkscapelatex=false, angle=90,width=0.8\hsize]{\detokenize{#1.svg}}
 %    \includesvg[inkscapelatex=false, width=0.7\hsize]{\detokenize{#1.svg}}
-    \includesvg[inkscapelatex=false, width=0.9\vsize]{\detokenize{#1.svg}}
+    \includesvg[inkscapelatex=false, width=0.7\vsize]{\detokenize{#1.svg}}
     \caption{\detokenize{#2}}
   \end{center}
 \end{figure}
@@ -86,7 +86,7 @@ cat << EOF > "${output}.tex"
 \newcommand{\makehistov}[2]{
 \begin{figure}[htbp]
   \begin{center}
-    \includesvg[inkscapelatex=false, height=0.9\vsize]{\detokenize{#1.svg}}
+    \includesvg[inkscapelatex=false, height=0.7\vsize]{\detokenize{#1.svg}}
     \caption{\detokenize{#2}}
   \end{center}
 \end{figure}
