@@ -22,6 +22,15 @@
 [submodule "submodules/shell-logger"]
 	path = submodules/shell-logger
 	url = git@github.com:rcmdnk/shell-logger.git
-[submodule "submodules/gmail_filter_manager"]
-	path = submodules/gmail_filter_manager
-	url = git@github.com:rcmdnk/gmail_filter_manager
+[submodule "external/apt-cyg"]
+	path = external/apt-cyg
+	url = git@github.com:kou1okada/apt-cyg.git
+[submodule "submodules/ec2"]
+	path = submodules/ec2
+	url = git@github.com:rcmdnk/ec2
+[submodule "submodules/git-gpt-commit"]
+	path = submodules/git-gpt-commit
+	url = git@github.com:rcmdnk/git-gpt-commit
+[submodule "submodules/homebrew-file"]
+	path = submodules/homebrew-file
+	url = git@github.com:rcmdnk/homebrew-file

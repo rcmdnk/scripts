@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
 exclude=()
-sm_files=("submodules/evernote_mail/bin/evernote_mail"\
-          "submodules/trash/bin/trash"\
-          "submodules/multi_clipboard/bin/multi_clipboard"\
-          "submodules/escape_sequence/bin/colcheck"\
-          "submodules/escape_sequence/bin/256colors"\
-          "submodules/escape_sequence/bin/escseqcheck"\
-          "submodules/gtask/bin/gtask"\
-          "submodules/sentaku/bin/sentaku"\
-          "submodules/sentaku/bin/ddv"\
-          "submodules/kk/bin/kk"\
-          "submodules/shell-explorer/bin/se"\
-          "submodules/gcalcli/gcalcli"\
-          "submodules/ParallelOperation/bin/po"\
-          "submodules/gmail_filter_manager/bin/gfm_extract"\
-          "submodules/gmail_filter_manager/bin/gfm_make"\
-          "external/github-markdown-toc/gh-md-toc"\
-  )
+sm_files=( \
+  "submodules/escape_sequence/bin/256colors" \
+  "submodules/escape_sequence/bin/colcheck" \
+  "submodules/escape_sequence/bin/escseqcheck" \
+  "submodules/kk/bin/kk" \
+  "submodules/multi_clipboard/bin/multi_clipboard" \
+  "submodules/sentaku/bin/ddv" \
+  "submodules/sentaku/bin/sentaku" \
+  "submodules/shell-explorer/bin/se" \
+  "submodules/trash/bin/trash" \
+  "submodules/ec2/bin/ec2" \
+  "submodules/homebrew-file/bin/brew-file" \
+  "submodules/git-gpt-commit/bin/git-gpt-commit" \
+)
 if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
   sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
 fi
-sm_files_etc=("submodules/sd_cl/etc/sd_cl"\
-              "submodules/shell-logger/etc/shell-logger"\
+sm_files_etc=( \
+  "submodules/ec2/etc/bash_completion.d/ec2" \
+  "submodules/sd_cl/etc/sd_cl" \
+  "submodules/shell-logger/etc/shell-logger" \
 )
-sm_files_share=()
+sm_files_share=(
+  "submodules/ec2/share/zsh/site-functions/_ec2" \
+)
+
 
 backup=""
 overwrite=1
@@ -59,22 +61,6 @@ while getopts b:e:p:ndsh OPT;do
     * ) echo "$HELP" 1>&2; exit 1;;
   esac
 done
-
-# make a link $prefix/share/git to /path/to/Git, for cronjob
-gitdirname=$(basename "$(dirname "$curdir")")
-gitdir="$prefix/share/git"
-if echo "$gitdirname"| grep -q -i git;then
-  if ! echo "$curdir"|grep -q "$gitdir";then
-    if [ ! -L "$gitdir" ] && [ ! -d "$gitdir" ];then
-      mkdir -p "$(dirname "$gitdir")"
-      ln -s "$(dirname "$curdir")" "$gitdir"
-    fi
-  fi
-  if [ ! -f "$gitdir/updateGIT.sh" ];then
-    ln -s "$curdir/updateGIT.sh" "$gitdir/updateGIT.sh"
-    chmod 755 "$gitdir/updateGIT.sh"
-  fi
-fi
 
 #echo "**********************************************"
 #echo "Update submodules"
@@ -209,10 +195,3 @@ if [ "${#deadlink[@]}" -gt 0 ];then
   echo "  ${deadlink[*]}"
 fi
 echo
-
-## check gcalcli
-#if ! type gcalcli >& /dev/null;then
-#  echo "If you need gcalcli (for gcalCal or gcalList), do:"
-#  echo "   $ cd external/gcalcli"
-#  echo "   $ pip install ."
-#fi
