@@ -2,33 +2,35 @@
 exclude=()
 sm_files=( \
   "submodules/ec2/bin/ec2" \
+  "submodules/ec2/etc/bash_completion.d/ec2" \
+  "submodules/ec2/share/zsh/site-functions/_ec2" \
   "submodules/escape_sequence/bin/256colors" \
   "submodules/escape_sequence/bin/colcheck" \
   "submodules/escape_sequence/bin/escseqcheck" \
   "submodules/git-gpt-commit/bin/git-gpt-commit" \
   "submodules/homebrew-file/bin/brew-file" \
-  "submodules/kk/bin/kk" \
-  "submodules/multi_clipboard/bin/multi_clipboard" \
-  "submodules/sentaku/bin/ddv" \
-  "submodules/sentaku/bin/sentaku" \
-  "submodules/shell-explorer/bin/se" \
-  "submodules/trash/bin/trash" \
-)
-if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
-  sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
-fi
-sm_files_etc=( \
-  "submodules/ec2/etc/bash_completion.d/ec2" \
   "submodules/homebrew-file/etc/bash_completion.d/brew-file" \
   "submodules/homebrew-file/etc/brew-wrap" \
   "submodules/homebrew-file/etc/brew-wrap.fish" \
+  "submodules/homebrew-file/share/zsh/site-functions/_brew-file" \
+  "submodules/kk/bin/kk" \
+  "submodules/multi_clipboard/bin/multi_clipboard" \
   "submodules/sd_cl/etc/sd_cl" \
+  "submodules/sentaku/bin/ddv" \
+  "submodules/sentaku/bin/sentaku" \
+  "submodules/shell-explorer/bin/se" \
   "submodules/shell-logger/etc/shell-logger" \
+  "submodules/trash/bin/trash" \
+)
+sm_files_bin=( \
+)
+sm_files_etc=( \
 )
 sm_files_share=(
-  "submodules/ec2/share/zsh/site-functions/_ec2" \
-  "submodules/homebrew-file/share/zsh/site-functions/_brew-file" \
 )
+if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
+  sm_files_bin=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
+fi
 
 
 backup=""
@@ -120,7 +122,7 @@ if [ $dryrun -eq 1 ];then
   echo "*** This is dry run, not install anything ***"
 fi
 for d in bin etc;do
-  cd "$curdir"
+  cd "$curdir" || exit
   for f in $(find "$d"/* 2>/dev/null);do
     if [ ! -f "$f" ];then
       continue
@@ -132,6 +134,15 @@ for d in bin etc;do
 done
 
 for sm_f in "${sm_files[@]}";do
+  if [ -e "$sm_f" ];then
+    f="$(echo "$sm_f"|cut -d "/" -f3-)"
+    make_link "$curdir/$sm_f" "$prefix/$f"
+  else
+    echo "WARNING: $sm_f is not found"
+  fi
+done
+
+for sm_f in "${sm_files_bin[@]}";do
   if [ -e "$sm_f" ];then
     make_link "$curdir/$sm_f" "$prefix/bin/$(basename "$sm_f")"
   else
