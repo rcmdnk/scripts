@@ -1,29 +1,33 @@
 #!/usr/bin/env bash
 exclude=()
 sm_files=( \
+  "submodules/ec2/bin/ec2" \
   "submodules/escape_sequence/bin/256colors" \
   "submodules/escape_sequence/bin/colcheck" \
   "submodules/escape_sequence/bin/escseqcheck" \
+  "submodules/git-gpt-commit/bin/git-gpt-commit" \
+  "submodules/homebrew-file/bin/brew-file" \
   "submodules/kk/bin/kk" \
   "submodules/multi_clipboard/bin/multi_clipboard" \
   "submodules/sentaku/bin/ddv" \
   "submodules/sentaku/bin/sentaku" \
   "submodules/shell-explorer/bin/se" \
   "submodules/trash/bin/trash" \
-  "submodules/ec2/bin/ec2" \
-  "submodules/homebrew-file/bin/brew-file" \
-  "submodules/git-gpt-commit/bin/git-gpt-commit" \
 )
 if [[ "$OSTYPE" =~ cygwin ]] && ! type -a busybox >& /dev/null;then
   sm_files=("${sm_files[@]}" "external/apt-cyg/apt-cyg")
 fi
 sm_files_etc=( \
   "submodules/ec2/etc/bash_completion.d/ec2" \
+  "submodules/homebrew-file/etc/bash_completion.d/brew-file" \
+  "submodules/homebrew-file/etc/brew-wrap" \
+  "submodules/homebrew-file/etc/brew-wrap.fish" \
   "submodules/sd_cl/etc/sd_cl" \
   "submodules/shell-logger/etc/shell-logger" \
 )
 sm_files_share=(
   "submodules/ec2/share/zsh/site-functions/_ec2" \
+  "submodules/homebrew-file/share/zsh/site-functions/_brew-file" \
 )
 
 
