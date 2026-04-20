@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-system_usage=$(system_profiler SPStorageDataType | awk 'function save(mp,cap,free){if(mp=="/System/Volumes/Data"){sel=mp;C=cap;F=free}else if(mp=="/"&&sel==""){sel=mp;C=cap;F=free}} $1=="Free:"{x=$0;gsub(/[^0-9]/,"",x);free=x} $1=="Capacity:"{x=$0;gsub(/[^0-9]/,"",x);cap=x} $1=="Mount"&&$2=="Point:"{save($3,cap,free);cap=free=""} END{used=C-F;gib=1024*1024*1024;printf "Used: %.1f / %.1f GiB (%.1f%%), Free: %.1f GiB [%s]\n",used/gib,C/gib,used/C*100,F/gib,sel}')
+system_usage=$(/usr/sbin/system_profiler SPStorageDataType | awk 'function save(mp,cap,free){if(mp=="/System/Volumes/Data"){sel=mp;C=cap;F=free}else if(mp=="/"&&sel==""){sel=mp;C=cap;F=free}} $1=="Free:"{x=$0;gsub(/[^0-9]/,"",x);free=x} $1=="Capacity:"{x=$0;gsub(/[^0-9]/,"",x);cap=x} $1=="Mount"&&$2=="Point:"{save($3,cap,free);cap=free=""} END{used=C-F;gib=1024*1024*1024;printf "Used: %.1f / %.1f GiB (%.1f%%), Free: %.1f GiB [%s]\n",used/gib,C/gib,used/C*100,F/gib,sel}')
 usage_percent=$(echo "$system_usage" | awk -F'[()%]' '{print $2}')
 if python3 -c "import sys; sys.exit(0) if $usage_percent > 80 else sys.exit(1)"; then
   echo "Warning: System storage usage is at $usage_percent%."
