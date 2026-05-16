@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 # Need inkscape for pdflatex
+if ! type inkscape >&/dev/null;then
+  echo "Error: inkscape is required for this script to work." 1>&2
+fi
 
 # parameters
 remaintex=1
@@ -146,6 +149,22 @@ done < svg.dat
 rm -f svg.dat
 echo "" >> "$output.tex"
 echo "\end{document}" >> "$output.tex"
+
+# Pre-convert SVG to PDF in parallel (cached in svg-inkscape/).
+# The svg LaTeX package looks for <base>_svg-raw.pdf under svg-inkscape/ when
+# inkscapelatex=false, so we generate those files up front in parallel and
+# pdflatex will reuse them instead of invoking inkscape serially.
+n_cpu=$(nproc 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
+mkdir -p svg-inkscape
+echo "Pre-converting SVG to PDF in parallel using $n_cpu CPUs..."
+ls *.svg | xargs -P "$n_cpu" -I {} bash -c '
+  src="$1"
+  base="${src%.svg}"
+  out="svg-inkscape/${base}_svg-raw.pdf"
+  if [ ! -f "$out" ] || [ "$src" -nt "$out" ]; then
+    inkscape --export-type=pdf --export-filename="$out" "$src" >/dev/null 2>&1
+  fi
+' _ {}
 
 if type pdflatex >&/dev/null;then
   echo pdflatex --shell-escape "$output".tex
