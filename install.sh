@@ -94,7 +94,7 @@ make_link () {
   if [ $dryrun -eq 1 ];then
     install=0
   fi
-  if [ "$(ls "$dest" 2>/dev/null)" != "" ];then
+  if [ -e "$dest" ] || [ -L "$dest" ];then
     exist=("${exist[@]}" "$name")
     if [ $dryrun -eq 1 ];then
       echo -n ""
