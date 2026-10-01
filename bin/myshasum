@@ -15,17 +15,18 @@ fi
 d=$(mktemp -d)
 trap 'rm -rf $d' HUP INT QUIT ABRT SEGV TERM EXIT
 for f in "$@";do
-  if [[ "$f" =~ http* ]];then
-    cd "$d" || exit $?
-    log=$(curl -kLO "$f" 2>&1)
+  if [[ "$f" =~ ^https?:// ]];then
+    name=$(basename "$f")
+    log=$(curl -fsSkL -o "$d/$name" "$f" 2>&1)
     ret=$?
     if [ $ret -ne 0 ];then
-      echo "failed: curl -kLO $f"
+      echo "failed: curl -fsSkL $f"
       echo ""
       echo "$log"
       exit $ret
     fi
-    f=$(basename "$f")
+    (cd "$d" && shasum -a "$alg" "$name")
+  else
+    shasum -a "$alg" "$f"
   fi
-  shasum -a "$alg" "$f"
 done
