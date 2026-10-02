@@ -1,0 +1,241 @@
+#!/usr/bin/env bash
+
+# Make a summary PDF of figures (eps/pdf/svg) in the current directory.
+
+# parameters
+type=pdf
+remaintex=1
+remaininkscape=0
+vertical=0
+output=summary
+exclude=()
+
+# help
+HELP="Usage: $(basename "$0") [-cvkh] [-t <type>] [-f <filename>] [-e <excludename>]
+   -t  figure type: eps, pdf or svg (default: $type)
+   -c  remove tex file after making pdf (default: remain)
+   -v  vertical mode
+   -k  keep svg-inkscape directory (svg only)
+   -f  set output file name (default: $output)
+   -e  exclude word (can use multiple time)
+   -h  print this help
+"
+
+while getopts t:cvkf:e:h OPT;do
+  case $OPT in
+    t ) type=$OPTARG ;;
+    c ) remaintex=0 ;;
+    v ) vertical=1 ;;
+    k ) remaininkscape=1 ;;
+    f ) output=$OPTARG ;;
+    e ) exclude+=("$OPTARG") ;;
+    h ) echo "$HELP"; exit 0 ;;
+    \? ) echo "$HELP" >&2; exit 1 ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [ "$type" = "pdf" ];then
+  # PDFs converted from eps by pdflatex
+  exclude+=("-eps-converted-to$")
+fi
+
+# Figure size for horizontal/vertical mode
+case "$type" in
+  eps) hsize='height=0.9\vsize'; vsize='height=0.9\vsize' ;;
+  pdf) hsize='width=0.9\vsize'; vsize='height=0.9\vsize' ;;
+  svg) hsize='width=0.7\vsize'; vsize='height=0.7\vsize' ;;
+  *) echo "Unknown type: $type (eps, pdf or svg)" >&2; exit 1 ;;
+esac
+
+if [ "$type" = "svg" ] && ! type inkscape >&/dev/null;then
+  echo "Error: inkscape is required for svg." >&2
+  exit 1
+fi
+
+if type pdflatex >&/dev/null;then
+  engine=pdflatex
+  driver=""
+elif type platex >&/dev/null && type dvipdfmx >&/dev/null;then
+  engine=platex
+  dvipdf=dvipdfmx
+  driver="dvipdfmx,"
+elif type platex >&/dev/null && type dvipdfm >&/dev/null;then
+  engine=platex
+  dvipdf=dvipdfm
+  driver="dvipdfm,"
+else
+  echo "Error: pdflatex or platex with dvipdfmx/dvipdfm is required." >&2
+  exit 1
+fi
+
+# Collect figures
+figures=()
+while IFS= read -r file;do
+  # Match exclude words against the name without the extension
+  name=${file%."$type"}
+  if [ "$name" = "$output" ];then
+    continue
+  fi
+  flag=1
+  for e in "${exclude[@]}";do
+    if [[ "$name" =~ $e ]];then
+      flag=0
+      break
+    fi
+  done
+  if [ $flag -eq 1 ];then
+    figures+=("$file")
+  fi
+done < <(shopt -s nullglob; for f in *."$type";do echo "$f";done | sort -V)
+if [ ${#figures[@]} -eq 0 ];then
+  echo "No .$type files found." >&2
+  exit 1
+fi
+
+if [ $vertical -eq 0 ];then
+  landscape="landscape"
+  paper='landscape'
+else
+  landscape=""
+  paper='portrait'
+fi
+
+if [ "$type" = "svg" ];then
+  svgpackage='\usepackage{svg}'
+  figinc='\includesvg[inkscapelatex=false,#1]{\detokenize{#2.svg}}'
+else
+  svgpackage=""
+  figinc="\\includegraphics[#1]{#2.$type}"
+fi
+
+cat << EOF > "${output}.tex"
+\documentclass[$landscape]{article}
+\usepackage[paper=$paper, margin=0cm]{geometry}
+\usepackage[${driver%,}]{color,graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[${driver}colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=blue,pagecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
+\usepackage{underscore}
+$svgpackage
+\raggedright
+\setlength{\topskip}{0mm}
+\setlength{\footskip}{0mm}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\topmargin}{0mm}
+\setlength{\oddsidemargin}{0mm}
+\addtolength{\oddsidemargin}{-1truein}
+\addtolength{\oddsidemargin}{12mm}
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-24mm}
+\def\textfraction{.001}
+
+\newcommand{\figinc}[2]{$figinc}
+
+\newcommand{\makehisto}[2]{
+\begin{figure}[htbp]
+  \begin{center}
+    \figinc{$hsize}{#1}
+    \caption{\detokenize{#2}}
+  \end{center}
+\end{figure}
+}
+
+\newcommand{\makehistov}[2]{
+\begin{figure}[htbp]
+  \begin{center}
+    \figinc{$vsize}{#1}
+    \caption{\detokenize{#2}}
+  \end{center}
+\end{figure}
+}
+
+\newcommand{\somehisto}[2]{
+\makehisto{#1}{#2}
+\clearpage
+}
+
+\newcommand{\somehistov}[2]{
+\makehistov{#1}{#2}
+\clearpage
+}
+
+\newcommand{\minihisto}[1]{
+  \begin{minipage}{0.50\hsize}
+    \begin{center}
+      \figinc{width=1\hsize}{#1}
+      \caption{\detokenize{#1}}
+    \end{center}
+  \end{minipage}
+}
+
+\newcommand{\twohisto}[2]{
+\begin{figure}[htb]
+\minihisto{#1}
+\minihisto{#2}
+\end{figure}
+}
+
+\begin{document}
+\today \\\\
+\listoffigures
+\clearpage
+EOF
+
+for file in "${figures[@]}";do
+  name=${file%."$type"}
+  if [ $vertical -eq 0 ];then
+    printf '\\somehisto{%s}{%s}\n' "$name" "$name" >> "$output.tex"
+  else
+    printf '\\somehistov{%s}{%s}\n' "$name" "$name" >> "$output.tex"
+  fi
+done
+printf '\n\\end{document}\n' >> "$output.tex"
+
+latexopt=()
+if [ "$type" = "svg" ];then
+  # Pre-convert SVG to PDF in parallel (cached in svg-inkscape/).
+  # The svg LaTeX package looks for <base>_svg-raw.pdf under svg-inkscape/
+  # when inkscapelatex=false, so we generate those files up front in parallel
+  # and LaTeX will reuse them instead of invoking inkscape serially.
+  n_cpu=$(nproc 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
+  mkdir -p svg-inkscape
+  echo "Pre-converting SVG to PDF in parallel using $n_cpu CPUs..."
+  # shellcheck disable=SC2016
+  printf '%s\0' "${figures[@]}" | xargs -0 -n 1 -P "$n_cpu" bash -c '
+    src="$1"
+    base="${src%.svg}"
+    out="svg-inkscape/${base}_svg-raw.pdf"
+    if [ ! -f "$out" ] || [ "$src" -nt "$out" ]; then
+      inkscape --export-type=pdf --export-filename="$out" "$src" >/dev/null 2>&1
+    fi
+  ' _
+  latexopt=(--shell-escape)
+fi
+
+echo "$engine" "${latexopt[@]}" "$output.tex"
+# Run 3 times to stabilize page numbers in the list of figures
+"$engine" "${latexopt[@]}" "$output.tex"
+"$engine" "${latexopt[@]}" "$output.tex"
+if ! "$engine" "${latexopt[@]}" "$output.tex";then
+  echo "Error: $engine failed. See $output.log." >&2
+  exit 1
+fi
+if [ "$engine" = "platex" ];then
+  dvipdfopt=()
+  if [ $vertical -eq 0 ];then
+    dvipdfopt=(-l)
+  fi
+  if ! "$dvipdf" "${dvipdfopt[@]}" "$output.dvi";then
+    echo "Error: $dvipdf failed." >&2
+    exit 1
+  fi
+fi
+
+rm -f "$output".{log,lof,dvi,aux,out}
+if [ $remaintex -eq 0 ];then
+  rm -f "$output.tex"
+fi
+if [ "$type" = "svg" ] && [ $remaininkscape -eq 0 ];then
+  rm -rf svg-inkscape
+fi
