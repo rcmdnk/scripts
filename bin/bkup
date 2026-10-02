@@ -1,52 +1,70 @@
 #!/usr/bin/env bash
 
+# Back up origDir to bkupDir.
+# - Symbolic links are linked from bkupDir if not exist in bkupDir.
+# - Files larger than 1000 KB are replaced by empty placeholder files.
+# - Other files are copied only if they are newer than the backup.
+
 if [ $# -ne 2 ];then
   echo "usage: bkup origDir bkupDir"
   exit
 fi
 
+if [ ! -d "$1" ];then
+  echo "$1 is not a directory" >&2
+  exit 1
+fi
+
 checkdir() {
-  files=$(ls -A "${1}")
-  for file in "${files[@]}";do
-    #echo -n ${1}/${file}" "
-    if [ ! -e "${1}/${file}" ];then
-      #echo "does not exist (maybe including space in name)"
-      :
+  local src
+  local dst
+  local size
+  for src in "${1}"/* "${1}"/.*;do
+    case "${src##*/}" in
+      .|..) continue;;
+    esac
+    # Skip unmatched glob patterns
+    if [ ! -e "$src" ] && [ ! -L "$src" ];then
+      continue
+    fi
+    dst="${2}/${src##*/}"
+    if [ -L "$src" ];then
+      if [ ! -e "$dst" ] && [ ! -L "$dst" ];then
+        ln -s "$src" "$dst"
+      fi
+    elif [ -d "$src" ];then
+      mkdir -p "$dst"
+      checkdir "$src" "$dst"
+    elif [ ! -f "$src" ];then
+      echo "skip non-regular file: $src" >&2
     else
-      if [ -L "${1}/${file}" ];then
-        #echo is symbolic link
-        if [ -e "${2}/${file}" ];then
-          #echo "there are file in target to link"
-          :
-        else
-          ln -sf "${1}/${file}" "${2}/${file}"
-          #echo "ln -sf" "${1}/${file}" "${2}/${file}"
+      size=$(du -ks "$src" | awk '{print $1}')
+      if [ "$size" -gt 1000 ];then
+        if [ ! -e "$dst" ];then
+          touch "$dst"
         fi
-      elif [ -d "${1}/${file}" ];then
-        #echo is dir
-        mkdir -p "${2}/${file}"
-        checkdir "${1}/${file}" "${2}/${file}"
-      else
-        SIZE=$(du -ks "${1}/${file}" |awk '{print $1}')
-        if [ "$SIZE" -gt 1000 ];then
-          #echo is over 1000kb
-          if [ -e "${2}/${file}" ];then
-            #echo "there are file in target to link"
-            :
-          else
-            #ln -fs "${1}/${file}" "${2}/${file}"
-            touch "${2}/${file}"
-            #echo "ln -fs" "${1}/${file}" "${2}/${file}"
-          fi
-        else
-          #echo is file for copy
-          cp -au "${1}/${file}" "${2}/${file}"
-          #echo "cp -au" "${1}/${file}" "${2}/${file}"
-        fi
+      elif [ ! -e "$dst" ] || [ "$src" -nt "$dst" ];then
+        cp -a "$src" "$dst"
       fi
     fi
   done
 }
 
-#echo backup $1 to $2
-checkdir "$1" "$2"
+created=0
+if [ ! -d "$2" ];then
+  mkdir -p "$2" || exit 1
+  created=1
+fi
+orig=$(cd "$1" && pwd -P)
+bkup=$(cd "$2" && pwd -P)
+case "$bkup/" in
+  "$orig/"*)
+    echo "bkupDir must not be inside origDir" >&2
+    if [ "$created" -eq 1 ];then
+      rmdir "$2"
+    fi
+    exit 1
+    ;;
+esac
+
+checkdir "$orig" "$bkup"
