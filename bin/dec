@@ -2,28 +2,43 @@
 
 # decompression
 
-file="$1"
-if [[ ! -f "$file" ]];then
-  echo "Usage: dec <file>"
+if [[ $# -eq 0 ]];then
+  echo "Usage: dec <file> [<file>...]" >&2
+  exit 1
 fi
 
-if [[ "$file" == *tar.gz ]];then
-    tar zxf "$file"
-elif [[ "$file" == *tgz ]];then
-  tar zxf "$file"
-elif [[ "$file" == *gz ]];then
-  gzip -d "$file"
-elif [[ "$file" == *tar.xz ]];then
-  tar Jxf "$file"
-elif [[ "$file" == *tar.bz2 ]];then
-  tar jxf "$file"
-elif [[ "$file" == *tar.Z ]];then
-  tar zxf "$file"
-elif [[ "$file" == *tar ]];then
-  tar xf "$file"
-elif [[ "$file" == *zip ]];then
-  unzip "$file"
-else
-  echo "$1 is not supported."
-  return 1
-fi
+ret=0
+for file in "$@";do
+  if [[ ! -f "$file" ]];then
+    echo "$file does not exist." >&2
+    ret=1
+    continue
+  fi
+  # Avoid file names being parsed as options
+  if [[ "$file" == -* ]];then
+    file="./$file"
+  fi
+  case "$file" in
+    *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz|*.tbz2|*.tar.xz|*.txz|*.tar.Z|*.tar.zst|*.tzst)
+      # tar detects the compression format automatically
+      tar xf "$file" ;;
+    *.gz)
+      gzip -d "$file" ;;
+    *.bz2)
+      bzip2 -d "$file" ;;
+    *.xz)
+      xz -d "$file" ;;
+    *.zst)
+      zstd -d --rm "$file" ;;
+    *.Z)
+      uncompress "$file" ;;
+    *.zip)
+      unzip "$file" ;;
+    *.7z)
+      7z x "$file" ;;
+    *)
+      echo "$file is not supported." >&2
+      false ;;
+  esac || ret=1
+done
+exit $ret
