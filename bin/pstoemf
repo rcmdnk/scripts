@@ -4,9 +4,9 @@ if [ $# -eq 1 ];then
   emffile=$epsfile
 elif [ $# -eq 2 ];then
   epsfile=${1%.eps}
-  emffile=${1%.emf}
+  emffile=${2%.emf}
 else
-  echo "usage: pstoemf epsfile [emffile]"
-  exit
+  echo "usage: pstoemf epsfile [emffile]" >&2
+  exit 1
 fi
 pstoedit -f emf "$epsfile.eps" "$emffile.emf"
