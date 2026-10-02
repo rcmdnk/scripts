@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
 
-# Delete trailing white space
+# Delete trailing spaces and tabs (keep \r of CRLF files)
 if [ $# -eq 0 ];then
   echo "usage: del_tail <file> [<file>...]" >&2
   exit 1
 fi
 ret=0
 for f in "$@";do
-  # -i.bak works on both GNU and BSD sed
-  if sed -i.bak 's/[[:space:]]*$//' "$f";then
-    rm -f "$f.bak"
+  if [ ! -f "$f" ];then
+    echo "$f does not exist." >&2
+    ret=1
+    continue
+  fi
+  tmp=$(mktemp) || exit 1
+  # Write back with cat to keep permissions and links of the original file
+  if sed $'s/[ \t]*\\(\r\\{0,1\\}\\)$/\\1/' "$f" > "$tmp";then
+    cat "$tmp" > "$f"
   else
     ret=1
   fi
+  rm -f "$tmp"
 done
 exit $ret

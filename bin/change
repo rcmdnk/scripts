@@ -5,6 +5,12 @@ if [ $# -lt 2 ] || [ $# -gt 3 ];then
   echo "usage: change <file> <before> [<after>]" >&2
   exit 1
 fi
-# -i.bak works on both GNU and BSD sed
-sed -i.bak "s!$2!${3:-}!g" "$1" || exit 1
-rm -f "$1".bak
+if [ ! -f "$1" ];then
+  echo "$1 does not exist." >&2
+  exit 1
+fi
+tmp=$(mktemp) || exit 1
+trap 'rm -f "$tmp"' EXIT
+# Write back with cat to keep permissions and links of the original file
+sed "s!$2!${3:-}!g" "$1" > "$tmp" || exit 1
+cat "$tmp" > "$1"
