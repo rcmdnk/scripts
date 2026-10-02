@@ -10,25 +10,40 @@ usage: comp [-r] directory_name [package_name]
        if package_name is not given, it makes file:
        directory_name.tar.gz"
 
-if [[ $# -eq 0 ]];then
-  echo "$HELP"
-elif [[ "$1" = "-d" ]];then
-  remove=1
-  shift
+while getopts rdh OPT;do
+  case $OPT in
+    r|d ) remove=1 ;;
+    h ) echo "$HELP"; exit 0 ;;
+    \? ) echo "$HELP" >&2; exit 1 ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [[ $# -lt 1 ]] || [[ $# -gt 2 ]];then
+  echo "$HELP" >&2
+  exit 1
 fi
-dir=${1%/*}
-case "$#" in
-        0)
-  echo "$HELP"
-  ;;
-        1)
-  echo "${dir}"
-  tar czf "${dir}.tar.gz" "${dir}"
-  ;;
-        2)
-  tar czf "${2}" "${dir}"
-  ;;
+
+# Remove trailing slashes
+dir=$1
+while [[ "$dir" == */ ]] && [[ "$dir" != / ]];do
+  dir=${dir%/}
+done
+case "$dir" in
+  /|.|..|*/.|*/..)
+    echo "Cannot compress $1" >&2
+    exit 1
+    ;;
 esac
+if [[ ! -d "$dir" ]];then
+  echo "$1 is not a directory" >&2
+  exit 1
+fi
+
+package=${2:-${dir}.tar.gz}
+echo "${package}"
+tar czf "${package}" "${dir}" || exit 1
+
 if [[ $remove -eq 1 ]];then
   rm -rf "${dir}"
 fi
