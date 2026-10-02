@@ -5,18 +5,12 @@ function tmuxStatus {
 }
 
 function tmuxWindowName {
-  IFS_ORIG=$IFS
-  IFS=$'\n'
-  wins=($(tmux list-windows -F "#I #{window_active}"))
-  IFS=$IFS_ORIG
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I #{window_active}")
   noview=0
   for w in "${wins[@]}";do
     iw=$(printf "$w"|cut -d' ' -f1)
     fw=$(printf "$w"|cut -d' ' -f2)
-    IFS_ORIG=$IFS
-    IFS=$'\n'
-    panes=($(tmux list-panes -t "$iw" -F "#D #{pane_active} #{pane_current_path}"))
-    IFS=$IFS_ORIG
+    IFS=$'\n' read -r -d '' -a panes < <(tmux list-panes -t "$iw" -F "#D #{pane_active} #{pane_current_path}")
     first=1
     status=""
     for p in "${panes[@]}";do
@@ -41,19 +35,13 @@ function tmuxWindowName {
 }
 
 function tmuxLeftStatus {
-  IFS_ORIG=$IFS
-  IFS=$'\n'
-  wins=($(tmux list-windows -F "#I #{window_active}"))
-  IFS=$IFS_ORIG
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I #{window_active}")
   status=""
   noview=0
   for w in "${wins[@]}";do
     iw=$(printf "$w"|cut -d' ' -f1)
     fw=$(printf "$w"|cut -d' ' -f2)
-    IFS_ORIG=$IFS
-    IFS=$'\n'
-    panes=($(tmux list-panes -t "$iw" -F "#D #{pane_active} #T"))
-    IFS=$IFS_ORIG
+    IFS=$'\n' read -r -d '' -a panes < <(tmux list-panes -t "$iw" -F "#D #{pane_active} #T")
     first=1
     for p in "${panes[@]}";do
       ip=$(echo "$p"|cut -d' ' -f1|sed 's/%//')
@@ -84,7 +72,7 @@ function tmuxLeftStatus {
 }
 
 function tmuxAlign {
-  wins=($(tmux list-windows -F "#I"))
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I")
   if [ ${#wins[@]} -lt 2 ];then
     return
   fi
@@ -95,7 +83,7 @@ function tmuxAlign {
   local i
   local j
   for i in $(seq 2 $((${#wins[@]}-1)));do
-    panes=($(tmux list-panes -t "${wins[$i]}" -F "#P"))
+    IFS=$'\n' read -r -d '' -a panes < <(tmux list-panes -t "${wins[$i]}" -F "#P")
     for j in $(seq 0 $((${#panes[@]}-1)));do
       tmux join-pane -d -s :${wins[$i]}.${panes[$j]} -t :${wins[1]}.bottom
     done
@@ -103,7 +91,7 @@ function tmuxAlign {
 }
 
 function tmuxCreate {
-  wins=($(tmux list-windows -F "#I"))
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I")
   if [ ${#wins[@]} -eq 1 ];then
     tmux new-window -d
     tmux swap-pane -d -s :+
@@ -115,7 +103,7 @@ function tmuxCreate {
 }
 
 function tmuxSplit {
-  wins=($(tmux list-windows -F "#I"))
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I")
   if [ ${#wins[@]} -eq 1 ];then
     tmux split-window -v
   else
@@ -124,7 +112,7 @@ function tmuxSplit {
 }
 
 function tmuxVSplit {
-  wins=($(tmux list-windows -F "#I"))
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I")
   if [ ${#wins[@]} -eq 1 ];then
     tmux split-window -h
   else
@@ -133,14 +121,11 @@ function tmuxVSplit {
 }
 
 function tmuxOnly {
-  wins=($(tmux list-windows -F "#I"))
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I")
   if [ ${#wins[@]} -eq 1 ];then
     tmux break-pane
   else
-    IFS_ORIG=$IFS
-    IFS=$'\n'
-    panes=($(tmux list-panes -F "#D #{pane_active}"))
-    IFS=$IFS_ORIG
+    IFS=$'\n' read -r -d '' -a panes < <(tmux list-panes -F "#D #{pane_active}")
     for p in "${panes[@]}";do
       ip=$(echo "$p"|cut -d' ' -f1)
       fp=$(echo "$p"|cut -d' ' -f2)
@@ -155,7 +140,7 @@ function tmuxOnly {
 function tmuxFour {
   tmuxOnly
   npanes=1
-  wins=($(tmux list-windows -F "#I"))
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I")
   if [ ${#wins[@]} -ne 1 ];then
     npanes=$((npanes+$(tmux list-panes -t:+|grep -c ^)))
   fi
@@ -174,15 +159,12 @@ function tmuxFour {
 }
 
 function tmuxMove {
-  wins=($(tmux list-windows -F "#I"))
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I")
   if [ ${#wins[@]} -eq 1 ];then
     tmux break-pane
     tmux select-window -t:+
   else
-    IFS_ORIG=$IFS
-    IFS=$'\n'
-    panes=($(tmux list-panes -F "#D #{pane_active}"))
-    IFS=$IFS_ORIG
+    IFS=$'\n' read -r -d '' -a panes < <(tmux list-panes -F "#D #{pane_active}")
     for p in "${panes[@]}";do
       ip=$(echo "$p"|cut -d' ' -f1)
       fp=$(echo "$p"|cut -d' ' -f2)
@@ -238,17 +220,11 @@ function tmuxChoose {
   fi
   tmuxAlign
   all=()
-  IFS_ORIG=$IFS
-  IFS=$'\n'
-  wins=($(tmux list-windows -F "#I #{window_active}"))
-  IFS=$IFS_ORIG
+  IFS=$'\n' read -r -d '' -a wins < <(tmux list-windows -F "#I #{window_active}")
   for w in "${wins[@]}";do
     iw=$(printf "$w"|cut -d' ' -f1)
     fw=$(printf "$w"|cut -d' ' -f2)
-    IFS_ORIG=$IFS
-    IFS=$'\n'
-    panes=($(tmux list-panes -t "$iw" -F "#D #P #{pane_active} #{pane_current_path} #T"))
-    IFS=$IFS_ORIG
+    IFS=$'\n' read -r -d '' -a panes < <(tmux list-panes -t "$iw" -F "#D #P #{pane_active} #{pane_current_path} #T")
     first=1
     for p in "${panes[@]}";do
       ip=$(echo "$p"|cut -d' ' -f1|sed 's/%//')
