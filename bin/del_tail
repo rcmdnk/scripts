@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
 
 # Delete trailing white space
-if sed --version 2>/dev/null |grep -q GNU;then
-  sed -i"" 's/ *$//g' "$1"
-else
-  sed -i "" 's/ *$//g' "$1"
+if [ $# -eq 0 ];then
+  echo "usage: del_tail <file> [<file>...]" >&2
+  exit 1
 fi
+ret=0
+for f in "$@";do
+  # -i.bak works on both GNU and BSD sed
+  if sed -i.bak 's/[[:space:]]*$//' "$f";then
+    rm -f "$f.bak"
+  else
+    ret=1
+  fi
+done
+exit $ret
