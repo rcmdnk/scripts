@@ -21,10 +21,19 @@ if [ -f ~/.mailto ];then
   mailto=$(eval echo "$mailto")
 fi
 
-crontmp=.cron.$HOSTNAME.$PPID
+if [ $# -eq 0 ];then
+  echo "usage: cronWrapper <command> [<args>...]" >&2
+  exit 1
+fi
+
+crontmp=$(mktemp "${TMPDIR:-/tmp}/cronWrapper.XXXXXX") || exit 1
+trap 'rm -f "$crontmp"' EXIT
 "$@" >"$crontmp" 2>&1
+ret=$?
+if [ $ret -ne 0 ];then
+  echo "exit status: $ret" >> "$crontmp"
+fi
 if [ -s "$crontmp" ];then
-  #node=$(hostname)
   exe=$(basename "$1")
   shift
   if [ "$mailto" != "" ];then
@@ -33,4 +42,4 @@ if [ -s "$crontmp" ];then
     cat "$crontmp"
   fi
 fi
-rm -f "$crontmp"
+exit $ret
