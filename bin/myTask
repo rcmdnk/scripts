@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-/usr/local/bin/icalBuddy uncompletedTasks | sed -e "s/*/-/"
+if ! type icalBuddy >& /dev/null;then
+  echo "Please install icalBuddy" >&2
+  exit 1
+fi
+icalBuddy uncompletedTasks | sed -e "s/*/-/"
