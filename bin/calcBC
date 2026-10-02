@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+
+# Calculate with bc
+# Scientific notation (1e5, 1.5E-3, ...) and ** are converted for bc.
+# Only numbers are converted, so bc -l functions like e(1) are kept.
+
 eq="$*"
-eq=$(echo "$eq"|sed "s/e+\([0-9]*\)/*10^\1/g")
-eq=$(echo "$eq"|sed "s/e\([0-9]*\)/*10^\1/g")
-eq=$(echo "$eq"|sed "s/e\(-[0-9]*\)/*10^\1/g")
-eq=$(echo "$eq"|sed "s/E+\([0-9]*\)/*10^\1/g")
-eq=$(echo "$eq"|sed "s/E\([0-9]*\)/*10^\1/g")
-eq=$(echo "$eq"|sed "s/E\(-[0-9]*\)/*10^\1/g")
-eq=$(echo "$eq"|sed "s/\*\*/^/g")
+eq=$(echo "$eq"|sed -E \
+  -e 's/(^|[^a-zA-Z0-9_.])([0-9]+\.?[0-9]*|\.[0-9]+)[eE]\+?(-?[0-9]+)/\1(\2*10^(\3))/g' \
+  -e 's/\*\*/^/g')
 echo "$eq"|bc -l
