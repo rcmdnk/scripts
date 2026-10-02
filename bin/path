@@ -3,10 +3,35 @@
 # Get full path
 
 if [[ $# -eq 0 ]];then
-    echo "usage: path file/directory"
-    return 1
+  echo "usage: path file/directory [file/directory...]" >&2
+  exit 1
 fi
-fullpath="$(cd "$(dirname "$1")";pwd)/$(basename "$1")"
-echo $fullpath
 
-[[ "$TERM" =~ screen ]] && [[ -n "$STY" ]] && type multi_clipboard >&/dev/null && multi_clipboard -s "$fullpath"
+# cd without CDPATH and option parsing
+safe_cd() {
+  local d=$1
+  if [[ "$d" != /* ]];then
+    d="./$d"
+  fi
+  CDPATH='' cd -- "$d" || return
+}
+
+ret=0
+for f in "$@";do
+  if [[ -d "$f" ]];then
+    fullpath="$(safe_cd "$f" && pwd)" || { ret=1; continue; }
+  else
+    dir="$(safe_cd "$(dirname -- "$f")" 2>/dev/null && pwd)" || {
+      echo "$(dirname -- "$f"): No such directory" >&2
+      ret=1
+      continue
+    }
+    fullpath="${dir%/}/$(basename -- "$f")"
+  fi
+  echo "$fullpath"
+done
+
+if [[ $# -eq 1 ]] && [[ $ret -eq 0 ]];then
+  [[ "$TERM" =~ screen ]] && [[ -n "$STY" ]] && type multi_clipboard >&/dev/null && multi_clipboard -s "$fullpath"
+fi
+exit $ret
