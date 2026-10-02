@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-cd "$(git root)" || exit 1
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
 
 if [ -f .mise.toml ] && [ -n "$MISE_TRUST_REPO" ];then
-  github_user=$(git remote get-url origin | awk -F'[:/]' '{printf "%s\n", $(NF-1)}')
-  if [ -n "$github_user" ] && echo " $MISE_TRUST_REPO " | grep -q "$github_user";then
+  github_user=$(git remote get-url origin 2>/dev/null | awk -F'[:/]' '{printf "%s\n", $(NF-1)}')
+  if [ -n "$github_user" ] && [[ " $MISE_TRUST_REPO " == *" $github_user "* ]];then
     mise trust
   fi
 fi
@@ -16,7 +17,9 @@ fi
 if [ -f .pre-commit-config.yaml ] && [ ! -x "$(git rev-parse --git-path hooks/pre-commit)" ];then
   if [ -f uv.lock ] && type uv >&/dev/null && uv run which pre-commit >&/dev/null;then
     uv run pre-commit install
-  elif type p-re-commit >& /dev/null;then
+  elif type prek >& /dev/null;then
+    prek install
+  elif type pre-commit >& /dev/null;then
     pre-commit install
   fi
 fi
