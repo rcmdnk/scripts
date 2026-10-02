@@ -1,17 +1,33 @@
 #!/usr/bin/env bash
 
+# Show public functions in <source> which do not have test_<name> in <test_file>
 
-source=$1
-test_file=$2
+if [ $# -ne 2 ];then
+  echo "usage: pytest_check <source> <test_file>" >&2
+  exit 1
+fi
 
-
-source_funcs=$(grep "def " "$source"|awk '{print $2}'|grep -v "^_"|cut -d "(" -f1)
-test_funcs=$(grep "def test_" "$test_file"|awk '{print $2}'|cut -d "(" -f1|cut -d "_" -f2-)
-
-for f in ${source_funcs};do
-  if ! echo "$test_funcs" | grep -q "^${f}$";then
-    echo "$f"
-  fi
-done
+python3 - "$1" "$2" <<'EOF'
+import ast
+import sys
 
 
+def funcs(path):
+    with open(path) as f:
+        tree = ast.parse(f.read(), filename=path)
+    return [
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ]
+
+
+source, test_file = sys.argv[1:]
+tests = {f[len("test_"):] for f in funcs(test_file) if f.startswith("test_")}
+seen = set()
+for f in funcs(source):
+    if f.startswith("_") or f in tests or f in seen:
+        continue
+    seen.add(f)
+    print(f)
+EOF
