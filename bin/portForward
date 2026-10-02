@@ -1,30 +1,27 @@
 #!/usr/bin/env bash
+
+# Keep a reverse ssh tunnel: <host>:<port> -> localhost:22
+
 if [ $# -lt 2 ];then
-  echo "usage: port_forward <host> <port> [<host only on which to be run>]"
+  echo "usage: portForward <host> <port> [<host only on which to be run>]" >&2
   exit 1
 fi
 host=$1
 port=$2
 
-maxtry=1
-i=0
-while [ $i -lt $maxtry ];do
-  if ! ret=$(ssh -x "$host" netstat -a 2>/dev/null);then
-    # Could be offline
-    #echo "Cound not resolve hostname $host"
-    exit 0
-  fi
-  if echo "$ret"|grep "$port"|grep -q "LISTEN";then
-    #echo "Already running"
-    exit 0
-  fi
-  cmd="ssh -S none -x -f -N -R ${port}:localhost:22 ${host}"
-  pids=($(pgrep -u"$USER" -f "$cmd"))
-  if [ "${#pids[@]}" -ne 0 ];then
-    #echo "kill -kill ${pids[@]}"
-    kill -kill "${pids[@]}" >& /dev/null
-  fi
-  eval "$cmd"
-  ((i++))
-  sleep 1
-done
+if [ -n "$3" ] && [ "$(hostname -s)" != "$3" ];then
+  exit 0
+fi
+
+if ! ret=$(ssh -x "$host" netstat -an 2>/dev/null);then
+  # Could be offline
+  exit 0
+fi
+if echo "$ret" | grep -E "[:.]${port}[[:space:]]" | grep -q "LISTEN";then
+  # Already running
+  exit 0
+fi
+
+cmd=(ssh -S none -x -f -N -R "${port}:localhost:22" "$host")
+pkill -KILL -u "$USER" -f "${cmd[*]}" >& /dev/null
+"${cmd[@]}"
