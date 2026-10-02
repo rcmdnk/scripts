@@ -266,70 +266,46 @@ function tmuxChoose {
   fi
 }
 
-function tmuxClipborad {
+function tmuxClipboard {
   if [ "$CLX" = "" ];then
-    if [[ "$OSTYPE" =~ linux ]];then
-      if which -s xsel;then
-        CLX="xsel"
-      elif which -s xsel;then
-        CLX="xclip"
+    local c
+    for c in pbcopy wl-copy "xsel -bi" "xclip -selection clipboard" putclip;do
+      if type "${c%% *}" >& /dev/null;then
+        CLX=$c
+        break
       fi
-    elif [[ "$OSTYPE" =~ cygwin ]];then
-      if which -s putclip;then
-        CLX="putclip"
-      elif which -s xsel;then
-        CLX="xsel"
-      elif which -s xsel;then
-        CLX="xclip"
-      fi
-    elif [[ "$OSTYPE" =~ darwin ]];then
-      if which -s pbcopy;then
-        CLX="pbcopy"
-      fi
-    fi
+    done
   fi
   if [ "$CLX" != "" ];then
-    tmux save-buffer -| $CLX
+    # shellcheck disable=SC2086
+    tmux save-buffer - | $CLX
     tmux display-message "clipboard: $(tmux save-buffer -)"
   else
     tmux display-message "No clipboard software is found."
   fi
 }
 
-if [ "$1" = "status" ];then
-  tmuxStatus
-elif [ "$1" = "winname" ];then
-  tmuxWindowName
-elif [ "$1" = "leftstatus" ];then
-  tmuxLeftStatus
-elif [ "$1" = "create" ];then
-  tmuxCreate
-elif [ "$1" = "align" ];then
-  tmuxAlign
-elif [ "$1" = "split" ];then
-  tmuxSplit
-elif [ "$1" = "vsplit" ];then
-  tmuxVSplit
-elif [ "$1" = "only" ];then
-  tmuxOnly
-elif [ "$1" = "four" ];then
-  tmuxFour
-elif [ "$1" = "move" ];then
-  tmuxMove
-elif [ "$1" = "next" ];then
-  tmuxNext
-elif [ "$1" = "prev" ];then
-  tmuxPrev
-elif [ "$1" = "left" ];then
-  tmuxLeft
-elif [ "$1" = "down" ];then
-  tmuxDown
-elif [ "$1" = "up" ];then
-  tmuxUp
-elif [ "$1" = "right" ];then
-  tmuxRight
-elif [ "$1" = "choose" ];then
-  tmuxChoose
-elif [ "$1" = "clip" ];then
-  tmuxClipborad
-fi
+case "$1" in
+  status) tmuxStatus ;;
+  winname) tmuxWindowName ;;
+  leftstatus) tmuxLeftStatus ;;
+  create) tmuxCreate ;;
+  align) tmuxAlign ;;
+  split) tmuxSplit ;;
+  vsplit) tmuxVSplit ;;
+  only) tmuxOnly ;;
+  four) tmuxFour ;;
+  move) tmuxMove ;;
+  next) tmuxNext ;;
+  prev) tmuxPrev ;;
+  left) tmuxLeft ;;
+  down) tmuxDown ;;
+  up) tmuxUp ;;
+  right) tmuxRight ;;
+  choose) tmuxChoose ;;
+  clip) tmuxClipboard ;;
+  *)
+    echo "usage: tmuxUtils {status|winname|leftstatus|create|align|split|vsplit|only|four|move|next|prev|left|down|up|right|choose|clip}" >&2
+    exit 1
+    ;;
+esac
