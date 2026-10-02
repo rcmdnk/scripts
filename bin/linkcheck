@@ -8,23 +8,26 @@ fi
 
 link="$1"
 prelink="$1"
-curdir=$PWD
+n=0
 while :;do
+  n=$((n+1))
+  if [[ $n -gt 40 ]];then
+    echo "Too many levels of symbolic links" >&2
+    exit 3
+  fi
   if [[ -L "$link" ]];then
     echo "$link ->"
     prelink=$link
     link=$(readlink "$link")
     dir="$(dirname "$prelink")"
     if [[ -d "$dir" ]];then
-      cd "$dir"
+      cd "$dir" || exit 2
     fi
   elif [[ -e "$link" ]];then
     echo "$link"
     exit 0
   else
     echo "$link does not exist!" >&2
-    cd "$curdir"
     exit 2
   fi
 done
-cd "$curdir"
