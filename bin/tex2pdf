@@ -14,7 +14,7 @@ if type latexmk >&/dev/null;then
   latexmk -pdf -shell-escape "$name.tex"
 elif type pdflatex >&/dev/null;then
   pdflatex --shell-escape "$name".tex
-  if grep -q '\\bibliography{' "$name.tex";then
+  if grep -q '\\bibdata' "$name.aux" 2>/dev/null;then
     bibtex "$name"
   fi
   pdflatex --shell-escape "$name".tex
@@ -22,7 +22,7 @@ elif type pdflatex >&/dev/null;then
 else
   rm -f "$name"{.aux,.bbl,.blg}
   platex --shell-escape "$name"
-  if grep -q '\\bibliography{' "$name.tex";then
+  if grep -q '\\bibdata' "$name.aux" 2>/dev/null;then
     bibtex "$name"
   fi
   platex --shell-escape "$name"
