@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 exclude=()
 sm_files=( \
+  "submodules/cs/etc/cs" \
   "submodules/ec2/bin/ec2" \
   "submodules/ec2/etc/bash_completion.d/ec2" \
   "submodules/ec2/share/zsh/site-functions/_ec2" \
